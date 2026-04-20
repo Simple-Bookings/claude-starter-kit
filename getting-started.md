@@ -12,10 +12,10 @@ Denne guide er lavet til at få et nyt repo i gang med et mini AI-team på under
 
 ## Trin 1: Kopiér starter-kittet ind i dit repo
 
-Kopiér indholdet af `docs/guides/starter-kit/` til roden af dit nye repo:
+Kopiér indholdet af `starter-kit/` til roden af dit nye repo:
 
 ```bash
-cp -R docs/guides/starter-kit/. /path/to/dit-repo/
+cp -R starter-kit/. /path/to/dit-repo/
 ```
 
 Når kopien er på plads, bør du mindst have:
@@ -175,5 +175,4 @@ Installer `jq`, eller brug `python3 -m json.tool` som alternativ.
 
 ## Næste skridt
 
-- **CLI-værktøjer:** Se [`cli-setup.md`](./cli-setup.md) for at installere gh, Claude Code og Heimsense
-- **Lokal devcontainer:** Se [`local-devcontainer.md`](./local-devcontainer.md) for at køre projektet i Docker lokalt
+Du er klar. Start Claude Code i dit projekt og kør `/feature-branch` for at tage det første flow i brug.

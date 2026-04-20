@@ -341,5 +341,4 @@ source ~/.zshrc
 
 ## Næste skridt
 
-- **Lokal devcontainer:** Se [`local-devcontainer.md`](./local-devcontainer.md) for at køre projektet i Docker lokalt
-- **AI-team og skills:** Se [`getting-started.md`](./getting-started.md) for at sætte et mini AI-team op i dit projekt
+- **AI-team og skills:** Se [`getting-started.md`](./getting-started.md) for at kopiére starter-kittet ind i dit projekt og aktivere AI-teamet
