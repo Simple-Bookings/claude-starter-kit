@@ -1,4 +1,6 @@
-# Starter-Kit — AI-team til dit repo
+# Starter-Kit — standardiseret Claude Code-flow i dit repo
+
+Denne guide viser, hvordan du kopierer starter-kittet ind i et repo, tilpasser det til projektet og kører det første Claude Code-flow fra issue til implementering.
 
 ## Forudsætninger
 

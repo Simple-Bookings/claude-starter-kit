@@ -6,6 +6,8 @@ Standardiseret udviklingsflow og onboarding til Claude Code — fra GitHub issue
 
 ## Hurtigste vej
 
+Brug "Hurtigste vej" hvis du allerede har `gh` og Claude Code. Brug "Fuld opsætning" hvis du starter fra nul.
+
 Har du `gh` og Claude Code installeret? Så er du i gang på 5 minutter:
 
 ```bash
@@ -15,6 +17,8 @@ git clone --depth 1 --filter=blob:none --sparse \
 cd claude-starter-kit && git sparse-checkout set starter-kit
 cp -R starter-kit/. /path/to/dit-repo/
 ```
+
+Starter-kittet kopierer `CLAUDE.md`, agents, skills, rules og docs-templates ind i dit repo, så Claude Code kan arbejde efter et fast workflow.
 
 Udfyld `CLAUDE.md` med projekt-navn, tech stack og key commands. Start derefter Claude Code:
 
@@ -40,6 +44,12 @@ Lav en konkret task-liste for issue #<nr> med fil-paths og verify-kommandoer
 ## Fuld opsætning
 
 Har du ikke gh og Claude Code endnu, følg disse trin i rækkefølge:
+
+| Dokument | Indhold |
+|----------|---------|
+| [DEV_SETUP.md](DEV_SETUP.md) | Lokal devcontainer og VSCode-setup |
+| [CLAUDE_SETUP.md](CLAUDE_SETUP.md) | CLI-værktøjer og Heimsense |
+| [STARTER_KIT.md](STARTER_KIT.md) | Kopiering af starter-kit og første Claude Code-flow |
 
 ### Trin 1 — Udviklingsmiljø
 
