@@ -33,7 +33,7 @@ cat >> plans/{issue}-progress.md << 'TASKS'
 TASKS
 ```
 
-If all `[INT-*]` tasks are `[x]` → write `MERGED` to status and stop.
+If all `[INT-*]` tasks are `[x]` → `INT-6` has written `MERGED` to `## Status`. Stop.
 
 ---
 
