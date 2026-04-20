@@ -27,12 +27,12 @@ Første session:
 
 ```text
 /feature-branch
-Opret en feature-branch fra develop til issue #1
+Opret en feature-branch fra develop til issue #<nr>
 ```
 
 ```text
 /plan
-Lav en konkret task-liste for issue #1 med fil-paths og verify-kommandoer
+Lav en konkret task-liste for issue #<nr> med fil-paths og verify-kommandoer
 ```
 
 ---

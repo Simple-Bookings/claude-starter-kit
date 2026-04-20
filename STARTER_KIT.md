@@ -7,7 +7,7 @@
 
 ---
 
-## Første succes på 5 minutter
+## Første succes
 
 ### 1. Kopiér starter-kittet
 
@@ -30,6 +30,8 @@ cp -R starter-kit/. /path/to/dit-repo/
 
 Hold det kort. En ny udvikler skal kunne læse det på to minutter.
 
+> **Git workflow:** Starter-kittet bruger `develop` som integrationsgren. Bruger dit repo `main` + feature-branches direkte, tilpas git workflow-sektionen i `CLAUDE.md`.
+
 ### 3. Commit og start Claude Code
 
 ```bash
@@ -42,14 +44,14 @@ claude
 
 ```text
 /feature-branch
-Opret en feature-branch fra develop til issue #1
+Opret en feature-branch fra develop til issue #<nr>
 ```
 
 Derefter:
 
 ```text
 /plan
-Lav en konkret task-liste for issue #1 med fil-paths og verify-kommandoer
+Lav en konkret task-liste for issue #<nr> med fil-paths og verify-kommandoer
 ```
 
 Når planen er godkendt:
@@ -144,7 +146,7 @@ Aktiveres ved at skrive `/skill-navn` i Claude Code.
 
 ## Reference: Docs-templates
 
-Ligge i `docs/`. Holdes i sync via `/docs-keeper`.
+Ligger i `docs/`. Holdes i sync via `/docs-keeper`.
 
 | Fil | Indhold |
 |-----|---------|
