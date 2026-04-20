@@ -22,7 +22,7 @@ Installer gh, Copilot CLI, Claude Code og Heimsense (proxy til Copilot-licensen)
 
 Kopiér starter-kittet ind i dit repo og konfigurér teamet:
 
-→ **[getting-started.md](getting-started.md)**
+→ **[skills-and-agents.md](skills-and-agents.md)**
 
 ---
 

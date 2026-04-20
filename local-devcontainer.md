@@ -288,4 +288,4 @@ Genindlæs VSCode eller genstart containeren for at ændringer træder i kraft.
 ## Næste skridt
 
 - **CLI-værktøjer:** Se [`cli-setup.md`](./cli-setup.md) for at installere gh, Claude Code og Heimsense
-- **AI-team og skills:** Se [`getting-started.md`](./getting-started.md) for at sætte et mini AI-team op i dit projekt
+- **Skills og agents:** Se [`skills-and-agents.md`](./skills-and-agents.md) for at sætte et mini AI-team op i dit projekt
