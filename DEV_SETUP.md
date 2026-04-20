@@ -1,6 +1,6 @@
 # Lokal VSCode Devcontainer-opsætning
 
-Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en devcontainer — et identisk udviklingsmiljø til GitHub Codespaces, men kørende på din egen maskine.
+Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en devcontainer — samme `.devcontainer/`-konfiguration som GitHub Codespaces, men kørende på din egen maskine.
 
 ---
 
@@ -10,12 +10,12 @@ Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en
 |---|---|---|
 | **Kræver internet** | Ja — altid | Kun til første download |
 | **Latency** | Afhænger af forbindelsen | Ingen — kører lokalt |
-| **Pris** | Trækker på Codespaces-kvota | Gratis |
+| **Pris** | Betalt eller kvotebegrænset GitHub-tjeneste | Gratis (bortset fra din egen hardware og strøm) |
 | **Hardware** | GitHub's servere | Din egen maskine |
 | **Opsætning** | Nul — start med det samme | Engangsinstallation |
 | **Data** | I skyen | Lokal — bedre kontrol |
 
-Begge miljøer bruger nøjagtigt den samme `.devcontainer/`-konfiguration i repo'ets rod, så adfærd, afhængigheder og extensions er identiske.
+Begge miljøer bruger den samme `.devcontainer/`-konfiguration i repo'ets rod. Adfærd, afhængigheder og extensions er i praksis de samme, men der kan være mindre forskelle i hardware-specifik adfærd.
 
 ---
 
@@ -287,5 +287,5 @@ Genindlæs VSCode eller genstart containeren for at ændringer træder i kraft.
 
 ## Næste skridt
 
-- **CLI-værktøjer:** Se [`CLAUDE_SETUP.md`](./CLAUDE_SETUP.md) for at installere gh, Claude Code og Heimsense
-- **Skills og agents:** Se [`STARTER_KIT.md`](./STARTER_KIT.md) for at sætte et mini AI-team op i dit projekt
+- **CLI-værktøjer:** Se [`cli-setup.md`](./cli-setup.md) for at installere gh, Claude Code og Heimsense
+- **AI-team og skills:** Se [`getting-started.md`](./getting-started.md) for at sætte et mini AI-team op i dit projekt

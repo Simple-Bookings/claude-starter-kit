@@ -44,7 +44,6 @@ If all `[INT-*]` tasks are `[x]` → write `MERGED` to status and stop.
 ```bash
 BRANCH=$(git branch --show-current)
 
-REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 PR_NUM=$(gh pr list --state all --json number,headRefName \
   --jq "[.[] | select(.headRefName == \"$BRANCH\")][0].number // empty")
 
@@ -273,11 +272,18 @@ After marking the task done, check if integration is complete:
 
 ```bash
 REMAINING=$(grep -c '^\- \[ \] \[INT-' plans/{issue}-progress.md || echo 0)
-MERGED=$(grep -c '^MERGED$' plans/{issue}-progress.md || echo 0)
-echo "Remaining INT tasks: $REMAINING, Merged: $MERGED"
+STATUS=$(python3 - << 'EOF'
+import re
+with open('plans/{issue}-progress.md') as f:
+    body = f.read()
+m = re.search(r'## Status\n([A-Z_]+)', body)
+print(m.group(1) if m else '')
+EOF
+)
+echo "Remaining INT tasks: $REMAINING, Status: $STATUS"
 ```
 
-**If integration is NOT complete (tasks remain or MERGED not written):**
+**If integration is NOT complete (`REMAINING > 0` or `STATUS != MERGED`):**
 
 Schedule the next integration iteration using CronCreate:
 
@@ -289,7 +295,7 @@ CronCreate(
 )
 ```
 
-**If `MERGED` is written in the progress file:**
+**If `STATUS = MERGED`:**
 
 Do not schedule another iteration. Integration is complete.
 

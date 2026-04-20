@@ -20,6 +20,8 @@ git checkout -b feature/kort-beskrivelse
 - Lav små commits der efterlader repoet i en fungerende tilstand
 - Opret PR til `develop`, ikke `main`
 
+> Bruger dit repo ikke `develop`? Tilpas git workflow-sektionen i `CLAUDE.md` først — resten af kittet læser branch-konventionen derfra.
+
 ## Før PR
 
 Kør test og build med de kommandoer der er defineret i `CLAUDE.md` → Key commands. Eksempel for npm-projekter:
