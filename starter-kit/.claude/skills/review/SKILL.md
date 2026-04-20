@@ -155,14 +155,15 @@ gh pr list --state all --json number,title,headRefName \
 
 Create if missing:
 ```bash
-gh pr create --base main \
+gh pr create --base develop \
   --title "feat(#{issue}): <description>" \
   --body "Part of #{issue}"
 ```
 
 Post inline review comments for each finding:
 ```bash
-gh api "repos/{owner}/{repo}/pulls/$PR_NUM/comments" \
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+gh api "repos/$REPO/pulls/$PR_NUM/comments" \
   --method POST \
   -f body="**Finding:** description" \
   -f path="path/to/file.ts" \

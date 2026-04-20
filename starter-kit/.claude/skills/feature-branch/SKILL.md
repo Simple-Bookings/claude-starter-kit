@@ -22,9 +22,16 @@ git checkout -b feature/kort-beskrivelse
 
 ## Før PR
 
+Kør test og build med de kommandoer der er defineret i `CLAUDE.md` → Key commands. Eksempel for npm-projekter:
+
 ```bash
 npm test
 npm run build
+```
+
+Sync derefter med develop:
+
+```bash
 git fetch origin develop
 git merge origin/develop --no-edit
 ```

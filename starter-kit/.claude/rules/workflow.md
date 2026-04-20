@@ -6,7 +6,7 @@ type: rule
 
 # Ansvarsområder & Delegering
 
-**Hver coworker ejer et domæne** (defineret i `profile.md` → `## Ansvarsområder`). Ejerskab betyder: informeres om ændringer, involveres i beslutninger, tildeles relevante issues.
+**Hver coworker ejer et domæne** (defineret i `.claude/agents/{navn}.md`). Ejerskab betyder: informeres om ændringer, involveres i beslutninger, tildeles relevante issues.
 
 ## ⛔ Delegering — ALDRIG bare "sige det højt"
 
@@ -25,7 +25,7 @@ type: rule
 
 Når du støder på noget uden for dit ansvarsområde:
 
-1. **Identificér ansvarlig** — tjek `.claude/team/{navn}/profile.md`
+1. **Identificér ansvarlig** — tjek `.claude/agents/{navn}.md`
 2. **Opret sporbart artefakt** — issue, email eller comment (ALDRIG kun mundtligt)
 3. **Inkludér kontekst** — hvad du fandt, hvorfor det er relevant, hvad der skal gøres
 4. **Nævn det kort** i samtalen — "Jeg har oprettet #XXXX og tildelt [navn]"

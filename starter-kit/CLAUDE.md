@@ -18,6 +18,8 @@ Guidance for AI assistants i dette repo.
 - Test: [fx Vitest, Playwright, pytest]
 - Deployment: [fx GitHub Actions, Docker, VPS]
 
+> **Bemærk:** Starter-kittets skills og rules er optimeret til GitHub-baserede workflows med JavaScript/TypeScript-lignende kodebaser. De kan bruges med andre stacks, men eksempler og kommandoer (fx `npm test`) skal tilpasses i Key commands nedenfor.
+
 ## Sprog
 
 - Samtale, issues, docs og commits: dansk
