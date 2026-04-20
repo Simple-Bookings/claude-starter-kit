@@ -118,17 +118,7 @@ gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
 
 **If checks are still running:**
 
-Do not use `sleep`. Stop this iteration and let CronCreate schedule the next:
-
-```
-CronCreate(
-  cron: "*/2 * * * *",
-  prompt: "/integrate — CI still running, check again. Issue #{issue}. Progress: plans/{issue}-progress.md",
-  recurring: false
-)
-```
-
-INT-3 is not marked done until all required checks are green.
+Do not use `sleep`. Do NOT mark INT-3 done. Stop this iteration — the general loop at the end of this skill will schedule the next check via CronCreate.
 
 **If failures exist:**
 1. Get logs: `gh run view $RUN_ID --log-failed 2>&1 | tail -200`
@@ -156,6 +146,9 @@ gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
 ### [INT-4] Rebase if BEHIND
 
 ```bash
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+PR_NUM=$(gh pr list --state open --json number,headRefName \
+  --jq "[.[] | select(.headRefName == \"$(git branch --show-current)\")][0].number")
 MERGE_STATE=$(gh pr view "$PR_NUM" --json mergeStateStatus --jq '.mergeStateStatus')
 
 if [ "$MERGE_STATE" = "BEHIND" ] || [ "$MERGE_STATE" = "DIRTY" ]; then
@@ -176,6 +169,8 @@ fi
 ### [INT-5] Merge PR
 
 ```bash
+PR_NUM=$(gh pr list --state open --json number,headRefName \
+  --jq "[.[] | select(.headRefName == \"$(git branch --show-current)\")][0].number")
 MERGE_STATE=$(gh pr view "$PR_NUM" --json mergeStateStatus --jq '.mergeStateStatus')
 
 if [ "$MERGE_STATE" = "CLEAN" ]; then
@@ -189,6 +184,11 @@ fi
 ---
 
 ### [INT-6] Post-merge: docs + DoD/AC + close issue
+
+```bash
+PR_NUM=$(gh pr list --state merged --json number,headRefName \
+  --jq "[.[] | select(.headRefName == \"$(git branch --show-current)\")][0].number")
+```
 
 **a) Verify docs are up to date:**
 ```bash
