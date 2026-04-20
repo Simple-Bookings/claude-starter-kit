@@ -7,6 +7,8 @@ Denne guide viser, hvordan du kopierer starter-kittet ind i et repo, tilpasser d
 - `gh` (GitHub CLI) og Claude Code installeret — se [CLAUDE_SETUP.md](CLAUDE_SETUP.md)
 - `git` og `jq`
 
+Se oversigten over tredjeparts-værktøjer i [README.md](../README.md) for en samlet liste over hvad starter-kittet bygger på.
+
 ---
 
 ## Første succes

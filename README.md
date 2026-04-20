@@ -4,6 +4,23 @@ Standardiseret udviklingsflow og onboarding til Claude Code — fra GitHub issue
 
 ---
 
+## Tredjeparts-værktøjer
+
+Starter-kittet bygger på disse eksterne værktøjer og tjenester:
+
+| Værktøj | Rolle | Obligatorisk |
+|---------|-------|-------------|
+| [Claude Code](https://claude.ai/code) | Kører skills og workflowet i repoet | Ja |
+| [GitHub CLI (`gh`)](https://cli.github.com) | Issues, PR'er og GitHub-automation fra terminalen | Ja |
+| [Heimsense](https://github.com/strowk/heimsense) | Proxy der lader Claude Code bruge Copilot API i stedet for direkte Anthropic API | Ja (hvis Copilot-licens) |
+| [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli) | Copilot i terminalen — bruges til auth-flow med Heimsense | Ja (hvis Copilot-licens) |
+| [Docker Desktop](https://www.docker.com/products/docker-desktop) | Kører lokal devcontainer | Nej (kun lokal dev) |
+| [VSCode + Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) | Lokal udvikling i reproducerbart container-miljø | Nej (kun lokal dev) |
+
+Se [`CLAUDE_SETUP.md`](CLAUDE_SETUP.md) for installation af CLI-værktøjer og Heimsense. Se [`DEV_SETUP.md`](DEV_SETUP.md) for lokal devcontainer-opsætning.
+
+---
+
 ## Hurtigste vej
 
 Brug "Hurtigste vej" hvis du allerede har `gh` og Claude Code. Brug "Fuld opsætning" hvis du starter fra nul.
