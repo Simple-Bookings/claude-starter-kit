@@ -1,6 +1,6 @@
 # Claude Code Starter-Kit
 
-Et mini AI-team til dit repo — 7 AI-coworkers og 16 skills der driver workflow'et fra GitHub issue til merged PR.
+Standardiseret udviklingsflow og onboarding til Claude Code — fra GitHub issue til merged PR uden manuel opfølgning.
 
 ---
 
