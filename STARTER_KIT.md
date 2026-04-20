@@ -8,7 +8,7 @@ Denne guide er lavet til at få et nyt repo i gang med et mini AI-team på under
 - `gh` (GitHub CLI)
 - `bash`
 - `jq` (anbefalet, især til helper-scripts)
-- Claude Code installeret — se [`cli-setup.md`](./cli-setup.md)
+- Claude Code installeret — se [`CLAUDE_SETUP.md`](./CLAUDE_SETUP.md)
 
 ## Trin 1: Kopiér starter-kittet ind i dit repo
 

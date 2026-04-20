@@ -341,4 +341,4 @@ source ~/.zshrc
 
 ## Næste skridt
 
-- **Skills og agents:** Se [`skills-and-agents.md`](./skills-and-agents.md) for at kopiére starter-kittet ind i dit projekt og aktivere AI-teamet
+- **Skills og agents:** Se [`STARTER_KIT.md`](./STARTER_KIT.md) for at kopiére starter-kittet ind i dit projekt og aktivere AI-teamet

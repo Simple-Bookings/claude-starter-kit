@@ -10,19 +10,19 @@ Et mini AI-team til dit repo — 7 AI-coworkers, 16 skills og et komplet workflo
 
 Installer Docker og VSCode devcontainer så du har et reproducerbart miljø:
 
-→ **[local-devcontainer.md](local-devcontainer.md)**
+→ **[DEV_SETUP.md](DEV_SETUP.md)**
 
 ### Trin 2 — Installer CLI-værktøjer
 
 Installer gh, Copilot CLI, Claude Code og Heimsense (proxy til Copilot-licensen):
 
-→ **[cli-setup.md](cli-setup.md)**
+→ **[CLAUDE_SETUP.md](CLAUDE_SETUP.md)**
 
 ### Trin 3 — Aktivér AI-teamet
 
 Kopiér starter-kittet ind i dit repo og konfigurér teamet:
 
-→ **[skills-and-agents.md](skills-and-agents.md)**
+→ **[STARTER_KIT.md](STARTER_KIT.md)**
 
 ---
 
