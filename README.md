@@ -22,6 +22,14 @@ Installer gh, Copilot CLI, Claude Code og Heimsense (proxy til Copilot-licensen)
 
 Kopiér starter-kittet ind i dit repo og konfigurér teamet:
 
+```bash
+git clone --depth 1 --filter=blob:none --sparse \
+  https://github.com/Simple-Bookings/claude-starter-kit.git
+cd claude-starter-kit
+git sparse-checkout set starter-kit
+cp -R starter-kit/. /path/to/dit-repo/
+```
+
 → **[STARTER_KIT.md](STARTER_KIT.md)**
 
 ---

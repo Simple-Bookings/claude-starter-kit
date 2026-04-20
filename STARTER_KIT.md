@@ -12,9 +12,11 @@ Denne guide er lavet til at få et nyt repo i gang med et mini AI-team på under
 
 ## Trin 1: Kopiér starter-kittet ind i dit repo
 
-Kopiér indholdet af `starter-kit/` til roden af dit nye repo:
-
 ```bash
+git clone --depth 1 --filter=blob:none --sparse \
+  https://github.com/Simple-Bookings/claude-starter-kit.git
+cd claude-starter-kit
+git sparse-checkout set starter-kit
 cp -R starter-kit/. /path/to/dit-repo/
 ```
 
