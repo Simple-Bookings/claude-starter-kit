@@ -1,34 +1,61 @@
 # Claude Code Starter-Kit
 
-Et mini AI-team til dit repo — 7 AI-coworkers, 16 skills og et komplet workflow fra GitHub issue til merged PR.
+Et mini AI-team til dit repo — 7 AI-coworkers og 16 skills der driver workflow'et fra GitHub issue til merged PR.
 
 ---
 
-## Kom i gang på 3 trin
+## Hurtigste vej
 
-### Trin 1 — Sæt udviklingsmiljøet op
+Har du `gh` og Claude Code installeret? Så er du i gang på 5 minutter:
 
-Installer Docker og VSCode devcontainer så du har et reproducerbart miljø:
+```bash
+# Hent starter-kittet
+git clone --depth 1 --filter=blob:none --sparse \
+  https://github.com/Simple-Bookings/claude-starter-kit.git
+cd claude-starter-kit && git sparse-checkout set starter-kit
+cp -R starter-kit/. /path/to/dit-repo/
+```
+
+Udfyld `CLAUDE.md` med projekt-navn, tech stack og key commands. Start derefter Claude Code:
+
+```bash
+cd /path/to/dit-repo
+claude
+```
+
+Første session:
+
+```text
+/feature-branch
+Opret en feature-branch fra develop til issue #1
+```
+
+```text
+/plan
+Lav en konkret task-liste for issue #1 med fil-paths og verify-kommandoer
+```
+
+---
+
+## Fuld opsætning
+
+Har du ikke gh og Claude Code endnu, følg disse trin i rækkefølge:
+
+### Trin 1 — Udviklingsmiljø
+
+Installer Docker og VSCode devcontainer:
 
 → **[DEV_SETUP.md](DEV_SETUP.md)**
 
-### Trin 2 — Installer CLI-værktøjer
+### Trin 2 — CLI-værktøjer
 
-Installer gh, Copilot CLI, Claude Code og Heimsense (proxy til Copilot-licensen):
+Installer gh, Copilot CLI, Claude Code og Heimsense:
 
 → **[CLAUDE_SETUP.md](CLAUDE_SETUP.md)**
 
-### Trin 3 — Aktivér AI-teamet
+### Trin 3 — AI-teamet
 
-Kopiér starter-kittet ind i dit repo og konfigurér teamet:
-
-```bash
-git clone --depth 1 --filter=blob:none --sparse \
-  https://github.com/Simple-Bookings/claude-starter-kit.git
-cd claude-starter-kit
-git sparse-checkout set starter-kit
-cp -R starter-kit/. /path/to/dit-repo/
-```
+Kopiér starter-kittet og konfigurér teamet:
 
 → **[STARTER_KIT.md](STARTER_KIT.md)**
 
@@ -37,19 +64,13 @@ cp -R starter-kit/. /path/to/dit-repo/
 ## Indhold
 
 ```
-starter-kit/          ← kopiér ind i dit repo
-├── CLAUDE.md
+starter-kit/
+├── CLAUDE.md             ← tilpas til dit projekt
 ├── .claude/
-│   ├── agents/       ← 7 AI-coworkers
-│   ├── skills/       ← 16 aktiverbare skills
-│   └── rules/        ← auto-indlæst kontekst
-└── docs/             ← dokumentations-templates
-    ├── VISION.md
-    ├── FEATURES.md
-    ├── ARCHITECTURE.md
-    ├── API.md
-    ├── SYSTEM.md
-    └── E2E_TESTS.md
+│   ├── agents/           ← 7 AI-coworkers
+│   ├── skills/           ← 16 aktiverbare skills
+│   └── rules/            ← auto-indlæst kontekst
+└── docs/                 ← dokumentations-templates
 ```
 
 ---
