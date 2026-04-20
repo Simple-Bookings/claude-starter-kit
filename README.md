@@ -6,16 +6,24 @@ Kittet giver dig 7 AI-coworkers, 16 skills og et komplet workflow fra GitHub iss
 
 ---
 
+## Guides
+
+| Fil | Indhold |
+|-----|---------|
+| [getting-started.md](getting-started.md) | Overblik over kittet — skills, agents, rules og docs |
+| [cli-setup.md](cli-setup.md) | Installer gh, Copilot CLI, Claude Code og Heimsense |
+| [local-devcontainer.md](local-devcontainer.md) | Opsæt lokal devcontainer med VSCode |
+
+---
+
 ## Kom i gang
 
-### 1. Kopiér ind i dit repo
+### 1. Kopiér starter-kittet ind i dit repo
 
 ```bash
-# Klon starter-kittet
 git clone https://github.com/Simple-Bookings/claude-starter-kit.git
 
-# Kopiér indholdet til dit eget repo
-cp -R claude-starter-kit/. /path/to/dit-repo/
+cp -R claude-starter-kit/starter-kit/. /path/to/dit-repo/
 ```
 
 Når kopien er på plads, har du:
@@ -38,26 +46,16 @@ dit-repo/
 
 ### 2. Tilpas `CLAUDE.md`
 
-Udfyld de fem vigtigste felter:
+Udfyld de fem vigtigste felter: projekt-overview, tech stack, sprog-regler, git workflow og key commands.
 
-1. Projekt-overview
-2. Tech stack
-3. Sprog-regler
-4. Git workflow
-5. Key commands
-
-### 3. Start med `/feature-branch`
+### 3. Start Claude Code
 
 ```bash
 cd dit-repo
 claude
 ```
 
-Inde i Claude Code:
-
-```text
-/feature-branch
-```
+Kør `/feature-branch` for at starte dit første flow.
 
 ---
 
@@ -68,8 +66,6 @@ Inde i Claude Code:
 Aktiveres ved at skrive `/skill-navn` i Claude Code.
 
 #### Udviklingsflow
-
-Fire skills der driver hele cyklussen fra issue til merged PR:
 
 | Skill | Hvem | Hvad |
 |-------|------|------|
@@ -119,7 +115,7 @@ Fire skills der driver hele cyklussen fra issue til merged PR:
 
 ### Agents
 
-7 AI-coworkers i `.claude/agents/`. Spawnes med `Agent(subagent_type: "navn")`.
+7 AI-coworkers i `starter-kit/.claude/agents/`:
 
 | Agent | Rolle |
 |-------|-------|
@@ -133,26 +129,26 @@ Fire skills der driver hele cyklussen fra issue til merged PR:
 
 ### Rules
 
-3 filer i `.claude/rules/` — indlæses automatisk af Claude Code som kontekst:
+3 filer i `starter-kit/.claude/rules/` — indlæses automatisk som kontekst:
 
 | Fil | Indhold |
 |-----|---------|
-| `coding-patterns.md` | CronCreate vs sleep, bash `local`-gotcha, GitHub CLI patterns |
-| `testing.md` | Test-disciplin, test data gotchas, DoD, E2E timeouts |
-| `workflow.md` | Delegering og handover-protokol |
+| [`coding-patterns.md`](starter-kit/.claude/rules/coding-patterns.md) | CronCreate vs sleep, bash `local`-gotcha, GitHub CLI patterns |
+| [`testing.md`](starter-kit/.claude/rules/testing.md) | Test-disciplin, test data gotchas, DoD, E2E timeouts |
+| [`workflow.md`](starter-kit/.claude/rules/workflow.md) | Delegering og handover-protokol |
 
 ### Docs
 
-6 templates i `docs/` — holdes i sync med koden via `/docs-keeper`:
+6 templates i `starter-kit/docs/`:
 
 | Fil | Indhold |
 |-----|---------|
-| `VISION.md` | Mission, problem, brugersegmenter og roadmap |
-| `FEATURES.md` | Use cases og acceptkriterier (✅/❌) |
-| `ARCHITECTURE.md` | Systemstruktur og Architecture Decision Records |
-| `API.md` | REST endpoint-reference med request/response-eksempler |
-| `SYSTEM.md` | Miljøer, env vars, deployment og rollback |
-| `E2E_TESTS.md` | E2E test-oversigt, gotchas og flaky tests |
+| [`VISION.md`](starter-kit/docs/VISION.md) | Mission, problem, brugersegmenter og roadmap |
+| [`FEATURES.md`](starter-kit/docs/FEATURES.md) | Use cases og acceptkriterier (✅/❌) |
+| [`ARCHITECTURE.md`](starter-kit/docs/ARCHITECTURE.md) | Systemstruktur og Architecture Decision Records |
+| [`API.md`](starter-kit/docs/API.md) | REST endpoint-reference med request/response-eksempler |
+| [`SYSTEM.md`](starter-kit/docs/SYSTEM.md) | Miljøer, env vars, deployment og rollback |
+| [`E2E_TESTS.md`](starter-kit/docs/E2E_TESTS.md) | E2E test-oversigt, gotchas og flaky tests |
 
 ---
 
