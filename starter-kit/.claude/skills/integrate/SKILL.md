@@ -27,7 +27,7 @@ cat >> plans/{issue}-progress.md << 'TASKS'
 - [ ] [INT-1] Create/find PR and enable auto-merge
 - [ ] [INT-2] Handle all open PR review comments
 - [ ] [INT-3] Check CI status — fix failing checks (repeated until green)
-- [ ] [INT-4] Rebase branch if BEHIND main
+- [ ] [INT-4] Rebase branch if BEHIND develop
 - [ ] [INT-5] Merge PR
 - [ ] [INT-6] Post-merge: docs verification + DoD/AC + close issue
 TASKS
@@ -44,11 +44,12 @@ If all `[INT-*]` tasks are `[x]` → write `MERGED` to status and stop.
 ```bash
 BRANCH=$(git branch --show-current)
 
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 PR_NUM=$(gh pr list --state all --json number,headRefName \
   --jq "[.[] | select(.headRefName == \"$BRANCH\")][0].number // empty")
 
 if [ -z "$PR_NUM" ]; then
-  gh pr create --base main \
+  gh pr create --base develop \
     --title "fix(#{issue}): <description>" \
     --body "Part of #{issue}"
   PR_NUM=$(gh pr list --state all --json number,headRefName \
@@ -65,14 +66,16 @@ gh pr merge "$PR_NUM" --auto --squash 2>/dev/null \
 ### [INT-2] Handle open PR review comments
 
 ```bash
-PR_NUM=...
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+PR_NUM=$(gh pr list --state open --json number,headRefName \
+  --jq "[.[] | select(.headRefName == \"$(git branch --show-current)\")][0].number")
 
 # Inline comments
-gh api "repos/{owner}/{repo}/pulls/$PR_NUM/comments" \
+gh api "repos/$REPO/pulls/$PR_NUM/comments" \
   --jq '.[] | {id: .id, body: .body, path: .path, line: .line}'
 
 # Reviews requesting changes
-gh api "repos/{owner}/{repo}/pulls/$PR_NUM/reviews" \
+gh api "repos/$REPO/pulls/$PR_NUM/reviews" \
   --jq '.[] | select(.state == "CHANGES_REQUESTED") | {id: .id, body: .body}'
 ```
 
@@ -87,7 +90,7 @@ For each comment:
 
 Reply to a comment:
 ```bash
-gh api "repos/{owner}/{repo}/pulls/$PR_NUM/comments/$COMMENT_ID/replies" \
+gh api "repos/$REPO/pulls/$PR_NUM/comments/$COMMENT_ID/replies" \
   --method POST \
   -f body="Fixed in $(git rev-parse --short HEAD): <what and why>"
 ```
@@ -97,7 +100,9 @@ gh api "repos/{owner}/{repo}/pulls/$PR_NUM/comments/$COMMENT_ID/replies" \
 ### [INT-3] Check CI — fix failing checks
 
 ```bash
-PR_NUM=...
+REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
+PR_NUM=$(gh pr list --state open --json number,headRefName \
+  --jq "[.[] | select(.headRefName == \"$(git branch --show-current)\")][0].number")
 HEAD_SHA=$(gh pr view "$PR_NUM" --json headRefOid --jq '.headRefOid')
 PR_STATE=$(gh pr view "$PR_NUM" --json state --jq '.state')
 
@@ -107,23 +112,30 @@ if [ "$PR_STATE" = "MERGED" ]; then
 fi
 
 # Check failing runs
-gh api "repos/{owner}/{repo}/commits/$HEAD_SHA/check-runs?per_page=100" \
+gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
   --jq '.check_runs[] | select(.conclusion == "failure") | {name: .name}'
 ```
 
 **If checks are still running:**
-```bash
-echo "Waiting for CI..."
-sleep 60
-# check again — INT-3 repeats until green
+
+Do not use `sleep`. Stop this iteration and let CronCreate schedule the next:
+
 ```
+CronCreate(
+  cron: "*/2 * * * *",
+  prompt: "/integrate — CI still running, check again. Issue #{issue}. Progress: plans/{issue}-progress.md",
+  recurring: false
+)
+```
+
+INT-3 is not marked done until all required checks are green.
 
 **If failures exist:**
 1. Get logs: `gh run view $RUN_ID --log-failed 2>&1 | tail -200`
 2. Identify root cause
 3. Check if failure is in your blast radius:
    ```bash
-   git diff --name-only origin/main..HEAD | grep -E '\.(ts|tsx)$'
+   git diff --name-only origin/develop..HEAD
    ```
 4. If NOT in blast radius → retrigger CI with an empty commit:
    ```bash
@@ -134,7 +146,7 @@ sleep 60
 
 **Only mark INT-3 done** when all required checks are `success`:
 ```bash
-gh api "repos/{owner}/{repo}/commits/$HEAD_SHA/check-runs?per_page=100" \
+gh api "repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100" \
   --jq '[.check_runs[] | select(.name | test("gate|required")) | .conclusion] | all(. == "success")'
 # → true = CI green
 ```
@@ -147,13 +159,13 @@ gh api "repos/{owner}/{repo}/commits/$HEAD_SHA/check-runs?per_page=100" \
 MERGE_STATE=$(gh pr view "$PR_NUM" --json mergeStateStatus --jq '.mergeStateStatus')
 
 if [ "$MERGE_STATE" = "BEHIND" ] || [ "$MERGE_STATE" = "DIRTY" ]; then
-  git fetch origin main
-  git rebase origin/main
+  git fetch origin develop
+  git rebase origin/develop
 
   # Conflict strategy:
-  # - Docs (*.md): keep main as base, add branch changes manually
-  # - Source (*.ts): analyse manually — never blind --theirs
-  # - Lock files: git checkout --theirs -- package-lock.json && npm install
+  # - Docs (*.md): keep develop as base, add branch changes manually
+  # - Source files: analyse manually — never blind --theirs
+  # - Lock files (package-lock.json, yarn.lock): --theirs + reinstall dependencies
 
   git push origin HEAD --force-with-lease
 fi
@@ -208,18 +220,27 @@ REMAINING=$(gh issue view "$GH_ISSUE" --json body --jq '.body' \
   | grep -c '^\- \[ \]' || echo 0)
 
 if [ "$REMAINING" -eq 0 ]; then
-  gh issue close "$GH_ISSUE" --comment "Implementation complete. PR merged to main. All DoD verified."
+  gh issue close "$GH_ISSUE" --comment "Implementation complete. PR merged to develop. All DoD verified."
 else
   echo "$REMAINING unchecked DoD items — issue not closed"
   gh issue comment "$GH_ISSUE" --body "$REMAINING DoD checkboxes still open — needs manual verification."
 fi
 ```
 
-Write final status:
+Write final status (update `## Status` section, don't just append):
 ```bash
-echo "MERGED" >> plans/{issue}-progress.md
+python3 << 'EOF'
+with open('plans/{issue}-progress.md') as f:
+    body = f.read()
+if '## Status' in body:
+    body = body.replace('## Status\nIN_PROGRESS', '## Status\nMERGED')
+else:
+    body += '\n## Status\nMERGED\n'
+with open('plans/{issue}-progress.md', 'w') as f:
+    f.write(body)
+EOF
 git add plans/{issue}-progress.md
-git commit -m "done: issue closed — MERGED" || true
+git commit -m "done: issue #{issue} closed — MERGED" || true
 git push origin HEAD || true
 ```
 
