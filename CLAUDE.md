@@ -61,6 +61,32 @@ Tilpas kommandoerne ovenfor til projektet, og hold dem korte nok til at en ny ud
 - Tilføj ikke skjult magi eller hardcodede lokale paths
 - Luk ikke issues med åbne DoD-checkboxes
 
+## ⛔ Secrets — ABSOLUT FORBUD mod push
+
+Filer der indeholder eller ligner secrets må **aldrig** committes eller pushes uden eksplicit tilladelse fra brugeren.
+
+**Hvad der tæller som secrets:**
+- API-nøgler, tokens, passwords, private keys
+- `.env`-filer og varianter (`.env.local`, `.env.production`, osv.)
+- Filer med mønstre som `SECRET`, `PASSWORD`, `API_KEY`, `PRIVATE_KEY`, `TOKEN` i værdier
+- Certifikater og nøglefiler (`.pem`, `.key`, `.p12`, `.pfx`)
+- Credential-filer (`credentials.json`, `serviceAccount.json`, osv.)
+
+**Procedure ved fund:**
+
+1. Stop — commit eller push IKKE filen
+2. Tilføj filen til `.gitignore` med det samme
+3. Fortæl brugeren hvad du fandt og hvorfor du ikke pusher det
+4. Afvent eksplicit tilladelse før du fortsætter
+
+```bash
+# ✅ KORREKT — tilføj til .gitignore før noget andet
+echo ".env.local" >> .gitignore
+echo "credentials.json" >> .gitignore
+```
+
+> Hvis brugeren eksplicit beder dig committe en fil med secrets, bekræft én gang til og dokumentér tilladelsen i commit-beskeden.
+
 ## Dokumentation
 
 Projektdokumentation ligger i `docs/`. Holdes i sync med koden via `/docs-keeper`.
