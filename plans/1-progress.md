@@ -21,8 +21,16 @@ DONE
 - **Ingen findings**
 
 ## Status
-APPROVED
+MERGED
 
 ## Noter
 - Alle fire tasks er uafhængige af hinanden
 - `@2.1.116` er verificeret som den aktuelle version i devcontaineren
+
+## Integration Tasks
+- [x] [INT-1] Create/find PR — N/A: commits gik direkte til main
+- [x] [INT-2] Handle PR review comments — N/A: ingen PR
+- [x] [INT-3] Check CI — grøn: Validate=success, CodeQL=success
+- [x] [INT-4] Rebase — N/A: ingen feature-branch
+- [x] [INT-5] Merge PR — N/A: direkte på main
+- [x] [INT-6] Post-merge: docs OK, alle DoD krydset, issue #1 lukket
