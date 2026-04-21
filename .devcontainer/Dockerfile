@@ -11,7 +11,7 @@ RUN apt-get update && apt-get install -y \
 # Install global npm packages (pinned versions for reproducibility)
 RUN npm install -g \
     pm2@6.0.14 \
-    @anthropic-ai/claude-code@latest
+    @anthropic-ai/claude-code@2.1.116
 
 # Kør som node-bruger (samme som GitHub Codespaces)
 USER node
