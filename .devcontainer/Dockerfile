@@ -15,10 +15,9 @@ RUN npm install -g \
     @github/copilot
 
 # Install Heimsense (proxy for Copilot API)
-RUN curl -fsSL https://github.com/strowk/heimsense/releases/latest/download/heimsense-linux-amd64 \
-    -o /usr/local/bin/heimsense && chmod +x /usr/local/bin/heimsense
-
-# Kør som node-bruger (samme som GitHub Codespaces)
+RUN curl -fsSL https://raw.githubusercontent.com/fajarhide/heimsense/main/scripts/install.sh | bash
+    
+# Kør som node-bruger
 USER node
 
 # Set up workspace directory
