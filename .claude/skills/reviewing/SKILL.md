@@ -213,29 +213,23 @@ If no test files exist for changed code, note it as an observation (not necessar
 
 ## Step 5: PR Status
 
-**Read `## Environment` from the progress file first.**
+**Reviewing ejer IKKE PR-oprettelse** — det er integrations ansvar (INT-1). Reviewing tjekker kun om en PR eksisterer og poster findings som kommentarer hvis den gør.
 
-- If `PR needed: no` (commits directly on integration branch) → skip PR creation, note "no PR — committed directly to [branch]"
-- If `PR needed: yes` (feature branch) → check if PR exists:
+**Read `## Environment` from the progress file first.**
 
 ```bash
 BRANCH=$(git branch --show-current)
-gh pr list --state all --json number,title,headRefName \
-  --jq "[.[] | select(.headRefName == \"$BRANCH\")][0]"
+PR_NUM=$(gh pr list --state open --json number,headRefName \
+  --jq "[.[] | select(.headRefName == \"$BRANCH\")][0].number // empty")
+
+if [ -z "$PR_NUM" ]; then
+  echo "Ingen åben PR fundet — findings noteres kun i progress-filen. PR oprettes af /integration INT-1."
+else
+  echo "PR #$PR_NUM fundet"
+fi
 ```
 
-Create if missing, targeting the detected integration branch:
-
-```bash
-# Use integration branch from ## Environment (develop or main)
-INTEGRATION_BRANCH="develop"  # or "main" if no develop branch
-
-gh pr create --base "$INTEGRATION_BRANCH" \
-  --title "feat(#{issue}): <description>" \
-  --body "Part of #{issue}"
-```
-
-Post inline review comments for each finding:
+Hvis PR eksisterer, post inline kommentarer for hvert finding:
 ```bash
 REPO=$(gh repo view --json nameWithOwner --jq '.nameWithOwner')
 gh api "repos/$REPO/pulls/$PR_NUM/comments" \
@@ -245,6 +239,8 @@ gh api "repos/$REPO/pulls/$PR_NUM/comments" \
   -f line=42 \
   -f side=RIGHT
 ```
+
+Hvis ingen PR: skriv findings kun til progress-filen — de håndteres af /integration.
 
 ---
 

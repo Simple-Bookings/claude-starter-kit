@@ -14,6 +14,26 @@ Your role: **Integration Engineer**. Execute exactly ONE integration task, mark 
 
 ## Step 1: Find Next Task
 
+**Tjek først at reviewing er godkendt — integration må ikke starte uden APPROVED:**
+
+```bash
+STATUS=$(python3 -c "
+import re
+with open('plans/{issue}-progress.md') as f: body = f.read()
+m = re.search(r'## Status\n([A-Z_]+)', body)
+print(m.group(1) if m else 'UNKNOWN')
+")
+echo "Status: $STATUS"
+
+if [ "$STATUS" != "APPROVED" ] && [ "$STATUS" != "IN_PROGRESS" ] && [ "$STATUS" != "MERGED" ]; then
+  echo "STOP: Status er '$STATUS' — /integration kræver at /reviewing har sat status til APPROVED."
+  echo "Kør /reviewing før /integration."
+  exit 1
+fi
+```
+
+Hvis status er `IN_PROGRESS` og der allerede er INT-tasks, er en tidligere integration-iteration i gang — fortsæt.
+
 ```bash
 grep -n '^\- \[ \] \[INT-' plans/{issue}-progress.md | head -1
 ```

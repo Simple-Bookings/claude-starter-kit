@@ -8,7 +8,7 @@ permissionMode: bypassPermissions
 skills:
   - release
   - hotfix
-  - integrate
+  - integration
   - git-worktree
   - bash-tui
 ---
