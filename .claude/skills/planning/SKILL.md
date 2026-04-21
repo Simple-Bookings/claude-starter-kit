@@ -12,6 +12,47 @@ Your role: **Scrum Master / Planning Lead**. Analyse the issue, understand the c
 
 ---
 
+## Step 0: Find or Create Issue
+
+Tjek om brugeren har angivet et issue-nummer (fx `#42`, `issue 42` eller blot `42` i prompten). Kig også i argumenterne til dette kald.
+
+Hvis et issue-nummer er nævnt:
+```bash
+GH_ISSUE=<nummer>
+gh issue view $GH_ISSUE --json title,state | head -5
+```
+
+**Hvis intet issue er nævnt** — spørg brugeren:
+
+> "Hvad skal implementeres? Beskriv kort — jeg opretter et GitHub issue med acceptkriterier og DoD, og planlægger derefter."
+
+Vent på svar. Opret derefter issue med `/github-issues`-skabelonen:
+
+```bash
+gh issue create \
+  --title "<kort beskrivelse>" \
+  --body "$(cat <<'EOF'
+## Beskrivelse
+<hvad brugeren beskrev>
+
+## Acceptance Criteria
+- [ ] AC-1: <specifikt og verificerbart kriterium>
+
+## Definition of Done
+- [ ] Relevante tests er grønne
+- [ ] Code review foretaget
+- [ ] PR merged
+EOF
+)"
+# Gem issue-nummeret
+GH_ISSUE=$(gh issue list --limit 1 --json number --jq '.[0].number')
+echo "Oprettet issue #$GH_ISSUE"
+```
+
+Fortsæt med Step 1 med det oprettede eller angivne `$GH_ISSUE`.
+
+---
+
 ## Step 1: Load Issue Context
 
 ```bash

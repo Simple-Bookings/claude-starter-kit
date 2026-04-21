@@ -14,10 +14,30 @@ Your role: **Executor**. Implement exactly ONE task from the task list, verify i
 
 ## Step 0: Orient Yourself
 
-```bash
-# Confirm you are on the right branch
-git rev-parse --abbrev-ref HEAD
+**Tjek branch — kør `/feature-branch` automatisk hvis nødvendigt:**
 
+```bash
+BRANCH=$(git rev-parse --abbrev-ref HEAD)
+echo "Current branch: $BRANCH"
+
+# Er vi på en integration-branch (main/master/develop)?
+echo "$BRANCH" | grep -qE "^(main|master|develop)$" && ON_INTEGRATION=true || ON_INTEGRATION=false
+echo "On integration branch: $ON_INTEGRATION"
+```
+
+Hvis `ON_INTEGRATION=true` og der ikke allerede eksisterer en feature-branch for dette issue:
+
+```bash
+# Kør /feature-branch skill for at oprette feature-branch
+# Brug issue-nummeret fra plan-filen
+ISSUE=$(ls plans/*-plan.md 2>/dev/null | head -1 | grep -oP '\d+')
+```
+
+Fortæl brugeren: "Jeg opretter en feature-branch for issue #$ISSUE inden jeg starter implementeringen." Kald derefter `/feature-branch`-skillen og fortsæt på den nye branch.
+
+Hvis `ON_INTEGRATION=false` (allerede på feature-branch) — fortsæt direkte.
+
+```bash
 # Read the plan
 cat plans/{issue}-plan.md
 

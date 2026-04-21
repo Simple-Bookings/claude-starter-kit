@@ -64,21 +64,17 @@ Start med `/onboarding` — det scanner repo-tilstanden, husker din fremgang på
 Derefter, når onboarding er grøn:
 
 ```text
-/feature-branch
-Opret en feature-branch fra develop til issue #<nr>
-```
-
-```text
 /planning
-Lav en konkret task-liste for issue #<nr> med fil-paths og verify-kommandoer
+Jeg vil gerne bygge <beskriv hvad du vil implementere>
 ```
 
-Når planen er godkendt:
+`/planning` opretter automatisk et GitHub issue hvis du ikke har et, udfylder acceptkriterier og producerer en konkret task-liste. Derefter:
 
 ```text
 /execution
-Implementér den første task fra planen
 ```
+
+`/execution` opretter automatisk en feature-branch hvis du er på `main` eller `develop`, og implementerer én task ad gangen indtil alt er done.
 
 ---
 
