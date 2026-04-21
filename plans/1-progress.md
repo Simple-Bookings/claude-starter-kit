@@ -1,0 +1,14 @@
+# Progress: Issue #1 — DevOps basishygiejne
+
+## Status
+IN_PROGRESS
+
+## Tasks
+- [x] Task 1: Opret `.gitignore` — **Evidence:** `.gitignore:2:.env	.env` (git check-ignore returnerede hit)
+- [ ] Task 2: Pin claude-code i Dockerfile til `@2.1.116` — **Fil:** `.devcontainer/Dockerfile` — **Verify:** `grep "claude-code" .devcontainer/Dockerfile`
+- [ ] Task 3: Opret `.github/workflows/ci.yml` — **Fil:** `.github/workflows/ci.yml` — **Verify:** `gh workflow list`
+- [ ] Task 4: Dokumentér `ANTHROPIC_API_KEY` som Codespace secret — **Fil:** `.devcontainer/devcontainer.json`, `starter-kit/DEV_SETUP.md` — **Verify:** `grep -i "ANTHROPIC_API_KEY" .devcontainer/devcontainer.json starter-kit/DEV_SETUP.md`
+
+## Noter
+- Alle fire tasks er uafhængige af hinanden
+- `@2.1.116` er verificeret som den aktuelle version i devcontaineren

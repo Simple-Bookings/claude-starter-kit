@@ -1,0 +1,26 @@
+# Secrets og credentials — MÅ ALDRIG committes
+.env
+.env.*
+credentials.json
+serviceAccount.json
+*.pem
+*.key
+*.p12
+*.pfx
+*.secret
+
+# Dependencies
+node_modules/
+
+# Build-output
+dist/
+.next/
+out/
+build/
+.cache/
+
+# IDE og OS
+.DS_Store
+Thumbs.db
+.vscode/settings.json
+*.swp
