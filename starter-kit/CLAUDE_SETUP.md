@@ -5,6 +5,34 @@ Målet er at køre Claude Code gratis via din Copilot-licens i stedet for at bet
 
 ---
 
+## Quick Check — I'm already running in devcontainer?
+
+Devcontaineren har Claude Code, Copilot CLI og Heimsense allerede installeret. Du skal kun:
+
+1. **Logge ind på GitHub:**
+   ```bash
+   gh auth login
+   ```
+
+2. **Logge ind på Copilot:**
+   ```bash
+   copilot login
+   ```
+
+3. **Konfigurere Heimsense** — hop til trin 4 nedenfor, afsnit "Konfiguration"
+
+4. **Verificer alt virker:**
+   ```bash
+   gh auth status
+   copilot --version
+   claude --version
+   heimsense --help
+   ```
+
+Hvis du er UDEN for devcontaineren (lokal maskine), følg hele guiden nedenfor.
+
+---
+
 ## Forudsætninger
 
 - **Node.js 22+** — [nodejs.org](https://nodejs.org) *(Copilot CLI kræver Node.js 22 eller nyere; `gh` er et separat værktøj med sin egen installation)*
@@ -120,9 +148,12 @@ gh auth token
 
 ### Installation
 
+**Lokal maskine:**
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
+
+**I devcontaineren:** allerede installeret ✅
 
 ### Verificer
 
