@@ -26,6 +26,69 @@ cat plans/{issue}-progress.md
 
 ---
 
+## Step 0.5: Probe the Environment
+
+Before reviewing anything, understand the repo's actual setup. Run all commands, then record findings in the progress file under `## Environment`.
+
+```bash
+# Which branches exist locally and remotely?
+git branch -a
+
+# What is the current branch?
+CURRENT_BRANCH=$(git branch --show-current)
+echo "Current branch: $CURRENT_BRANCH"
+
+# Does a develop branch exist?
+git branch -a | grep -q "develop" && echo "HAS_DEVELOP=true" || echo "HAS_DEVELOP=false"
+
+# Is the current branch a feature branch or an integration branch (main/develop)?
+echo "$CURRENT_BRANCH" | grep -qE "^(main|master|develop)$" \
+  && echo "BRANCH_TYPE=integration" \
+  || echo "BRANCH_TYPE=feature"
+
+# What CI workflows exist?
+ls .github/workflows/ 2>/dev/null && cat .github/workflows/*.yml 2>/dev/null | grep -E "^name:|^\s+name:" | head -20 \
+  || echo "NO_CI_WORKFLOWS"
+
+# What test runner does the project use?
+if [ -f package.json ]; then
+  cat package.json | python3 -c "import sys,json; p=json.load(sys.stdin); print(p.get('scripts',{}))"
+fi
+ls vitest.config.* jest.config.* pytest.ini setup.cfg pyproject.toml 2>/dev/null || echo "no test config found"
+
+# What is the default/target branch for PRs?
+gh repo view --json defaultBranchRef --jq '.defaultBranchRef.name' 2>/dev/null || echo "unknown"
+```
+
+**Classify the environment and write it to the progress file:**
+
+```bash
+python3 << 'EOF'
+with open('plans/{issue}-progress.md') as f:
+    body = f.read()
+
+if '## Environment' not in body:
+    env_block = """
+## Environment
+- **Branch type:** [feature | integration] — [branch name]
+- **Integration branch:** [develop | main | master]
+- **Has develop branch:** [yes | no]
+- **CI workflows:** [list workflow names, or "none"]
+- **Required CI checks:** [list check names from workflow, or "none"]
+- **Test runner:** [vitest | jest | pytest | none detected]
+- **PR needed:** [yes — commits on feature branch | no — commits directly on integration branch]
+"""
+    body = body + env_block
+
+with open('plans/{issue}-progress.md', 'w') as f:
+    f.write(body)
+EOF
+```
+
+Fill in the values from the probe commands above before continuing.
+
+---
+
 ## Step 1: Deep Code Analysis
 
 The executor can write code and run tests. It lacks the ability to see **broad patterns across the codebase**. Find what it missed:
@@ -121,41 +184,53 @@ Update directly if needed — small doc corrections don't need separate tasks.
 
 ## Step 4: Blast-Radius Tests
 
-Run ONLY tests for changed files — **never the full test suite**.
+**First check the detected test runner from `## Environment`.** Skip this step entirely if no test runner was detected.
 
 ```bash
 # Step 1: Find changed files
-CHANGED=$(git diff --name-only HEAD~5 | grep -E "\.(ts|tsx)$" | grep -v node_modules)
+CHANGED=$(git diff --name-only HEAD~5 | grep -E "\.(ts|tsx|js|jsx|py)$" | grep -v node_modules)
 
 # Step 2: Find their test files
 for f in $CHANGED; do
-  base=$(basename "$f" | sed 's/\.[tj]sx\?$//')
+  base=$(basename "$f" | sed 's/\.[tj]sx\?$//;s/\.py$//')
   find "$(dirname "$f")" -maxdepth 3 \
-    \( -name "${base}.test.*" -o -name "${base}.spec.*" \) 2>/dev/null
+    \( -name "${base}.test.*" -o -name "${base}.spec.*" -o -name "test_${base}.py" \) 2>/dev/null
 done | sort -u > /tmp/blast-radius-tests.txt
 
-# Step 3: Run only those tests
+# Step 3: Run only those tests — adapt command to detected test runner
 if [ -s /tmp/blast-radius-tests.txt ]; then
   TEST_FILES=$(cat /tmp/blast-radius-tests.txt | tr '\n' ' ')
-  # Replace with your test runner:
+  # vitest:
   npx vitest run --bail 1 $TEST_FILES
-  # or: jest $TEST_FILES
+  # jest:   jest $TEST_FILES
+  # pytest: python -m pytest $TEST_FILES -x
 fi
 ```
 
+If no test files exist for changed code, note it as an observation (not necessarily a finding unless the change introduces new behaviour).
+
 ---
 
-## Step 5: PR Management
+## Step 5: PR Status
 
-Check if PR exists:
+**Read `## Environment` from the progress file first.**
+
+- If `PR needed: no` (commits directly on integration branch) → skip PR creation, note "no PR — committed directly to [branch]"
+- If `PR needed: yes` (feature branch) → check if PR exists:
+
 ```bash
+BRANCH=$(git branch --show-current)
 gh pr list --state all --json number,title,headRefName \
-  --jq "[.[] | select(.headRefName == \"$(git branch --show-current)\")][0]"
+  --jq "[.[] | select(.headRefName == \"$BRANCH\")][0]"
 ```
 
-Create if missing:
+Create if missing, targeting the detected integration branch:
+
 ```bash
-gh pr create --base develop \
+# Use integration branch from ## Environment (develop or main)
+INTEGRATION_BRANCH="develop"  # or "main" if no develop branch
+
+gh pr create --base "$INTEGRATION_BRANCH" \
   --title "feat(#{issue}): <description>" \
   --body "Part of #{issue}"
 ```
@@ -181,6 +256,7 @@ Choose ONE:
 
 All tasks verified, tests pass, issue requirements met.
 
+If a PR exists:
 ```bash
 gh pr review $PR_NUM --approve --body "$(cat <<'EOF'
 ## Review
@@ -206,6 +282,7 @@ APPROVED
 
 Issues found. DO NOT write APPROVED.
 
+If a PR exists:
 ```bash
 gh pr review $PR_NUM --request-changes --body "$(cat <<'EOF'
 ## Review
@@ -239,6 +316,7 @@ IN_PROGRESS
 
 ## Rules
 
+- **Probe first** — never assume branch strategy or CI setup
 - **Be specific** — "test fails" is not enough. Which test? What error?
 - **Be fair** — don't nitpick style if the work is correct
 - **Every new task needs File + Verify** — no vague tasks
