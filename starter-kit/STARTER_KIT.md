@@ -18,8 +18,15 @@ Se oversigten over tredjeparts-værktøjer i [README.md](../README.md) for en sa
 ```bash
 git clone --depth 1 --filter=blob:none --sparse \
   https://github.com/Simple-Bookings/claude-starter-kit.git
-cd claude-starter-kit && git sparse-checkout set starter-kit
-cp -R starter-kit/. /path/to/dit-repo/
+cd claude-starter-kit
+git sparse-checkout set CLAUDE.md .claude/agents .claude/skills .claude/rules docs starter-kit
+
+# Kopiér til dit repo (erstat /path/to/dit-repo)
+REPO=/path/to/dit-repo
+mkdir -p "$REPO/.claude"
+cp CLAUDE.md "$REPO/"
+cp -R .claude/agents .claude/skills .claude/rules "$REPO/.claude/"
+cp -R docs "$REPO/"
 ```
 
 ### 2. Udfyld `CLAUDE.md` — gør dette FØR du starter Claude Code
@@ -48,12 +55,18 @@ claude
 
 ### 4. Første session
 
+Start med `/onboarding` — det scanner repo-tilstanden, husker din fremgang på tværs af sessioner og guider dig til næste trin:
+
+```text
+/onboarding
+```
+
+Derefter, når onboarding er grøn:
+
 ```text
 /feature-branch
 Opret en feature-branch fra develop til issue #<nr>
 ```
-
-Derefter:
 
 ```text
 /planning

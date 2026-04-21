@@ -28,11 +28,18 @@ Brug "Hurtigste vej" hvis du allerede har `gh` og Claude Code. Brug "Fuld opsæt
 Har du `gh` og Claude Code installeret? Så er du i gang på 5 minutter:
 
 ```bash
-# Hent starter-kittet
+# Hent starter-kittet (kun de nødvendige filer)
 git clone --depth 1 --filter=blob:none --sparse \
   https://github.com/Simple-Bookings/claude-starter-kit.git
-cd claude-starter-kit && git sparse-checkout set starter-kit
-cp -R starter-kit/. /path/to/dit-repo/
+cd claude-starter-kit
+git sparse-checkout set CLAUDE.md .claude/agents .claude/skills .claude/rules docs starter-kit
+
+# Kopiér til dit repo (erstat /path/to/dit-repo)
+REPO=/path/to/dit-repo
+mkdir -p "$REPO/.claude"
+cp CLAUDE.md "$REPO/"
+cp -R .claude/agents .claude/skills .claude/rules "$REPO/.claude/"
+cp -R docs "$REPO/"
 ```
 
 > **Vigtigt:** Åbn `CLAUDE.md` og udfyld alle `[Skriv ...]`-felter **inden** du starter Claude Code. Projektnavn, tech stack og key commands skal være på plads for at skills og agents kan arbejde korrekt.
@@ -73,14 +80,25 @@ Kopiér starter-kittet og konfigurér teamet:
 
 ## Indhold
 
+Dette kopieres til dit repo:
+
 ```
-starter-kit/
+dit-repo/
 ├── CLAUDE.md             ← tilpas til dit projekt
 ├── .claude/
 │   ├── agents/           ← 7 AI-coworkers
-│   ├── skills/           ← 16 aktiverbare skills
+│   ├── skills/           ← 17 aktiverbare skills
 │   └── rules/            ← auto-indlæst kontekst
 └── docs/                 ← dokumentations-templates
+```
+
+Setup-guides (til reference, kopieres ikke):
+
+```
+starter-kit/
+├── DEV_SETUP.md          ← lokal devcontainer-opsætning
+├── CLAUDE_SETUP.md       ← CLI-værktøjer og Heimsense
+└── STARTER_KIT.md        ← første-session-flow
 ```
 
 ---
