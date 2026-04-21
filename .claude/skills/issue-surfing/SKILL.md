@@ -1,8 +1,13 @@
+---
+name: issue-surfing
+description: Kør op til 5 agenter parallelt via git worktrees — én per GitHub issue.
+---
+
 # 🏄 Surfing — Parallel Agent Orchestration
 
 Kører op til 5 agenter parallelt via TeamCreate + git worktrees.
 
-**Aktivering:** `/surf` eller `/surfing`
+**Aktivering:** `/issue-surfing`
 
 ---
 

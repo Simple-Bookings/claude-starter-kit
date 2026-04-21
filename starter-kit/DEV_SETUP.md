@@ -1,21 +1,6 @@
 # Lokal VSCode Devcontainer-opsætning
 
-Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en devcontainer — samme `.devcontainer/`-konfiguration som GitHub Codespaces, men kørende på din egen maskine.
-
----
-
-## Codespace (cloud) vs. lokal devcontainer
-
-| | GitHub Codespace | Lokal devcontainer |
-|---|---|---|
-| **Kræver internet** | Ja — altid | Kun til første download |
-| **Latency** | Afhænger af forbindelsen | Ingen — kører lokalt |
-| **Pris** | Betalt eller kvotebegrænset GitHub-tjeneste | Gratis (bortset fra din egen hardware og strøm) |
-| **Hardware** | GitHub's servere | Din egen maskine |
-| **Opsætning** | Nul — start med det samme | Engangsinstallation |
-| **Data** | I skyen | Lokal — bedre kontrol |
-
-Begge miljøer bruger den samme `.devcontainer/`-konfiguration i repo'ets rod. Adfærd, afhængigheder og extensions er i praksis de samme, men der kan være mindre forskelle i hardware-specifik adfærd.
+Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en devcontainer.
 
 ---
 
@@ -35,7 +20,7 @@ Begge miljøer bruger den samme `.devcontainer/`-konfiguration i repo'ets rod. A
 
 - **macOS 11 Big Sur+** (Intel eller Apple Silicon)
 - **Docker Desktop for Mac** (Apple Silicon: brug ARM-versionen)
-- **VSCode** med extensionen **Dev Containers** (`ms-vscode-remote.remote-containers`)
+- **VSCode** med extensionen **Dev Containers** (`ms-vsc5edode-remote.remote-containers`)
 
 ---
 

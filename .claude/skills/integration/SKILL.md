@@ -1,10 +1,10 @@
 ---
-name: integrate
-description: Integration phase — manage the PR through CI, handle review comments, rebase if needed, merge, and close the issue. Run in a loop, one task per iteration. Use after /review APPROVED.
+name: integration
+description: Integration phase — manage the PR through CI, handle review comments, rebase if needed, merge, and close the issue. Run in a loop, one task per iteration. Use after /reviewing APPROVED.
 allowed-tools: Bash, Read, Grep, Glob, Edit
 ---
 
-# /integrate — Integration Phase
+# /integration — Integration Phase
 
 Your role: **Integration Engineer**. Execute exactly ONE integration task, mark it `[x]`, and stop. The loop calls you again for the next task.
 
@@ -290,7 +290,7 @@ Schedule the next integration iteration using CronCreate:
 ```
 CronCreate(
   cron: "*/1 * * * *",
-  prompt: "/integrate — continue issue #{issue}. Plan: plans/{issue}-plan.md, Progress: plans/{issue}-progress.md",
+  prompt: "/integration — continue issue #{issue}. Plan: plans/{issue}-plan.md, Progress: plans/{issue}-progress.md",
   recurring: false
 )
 ```

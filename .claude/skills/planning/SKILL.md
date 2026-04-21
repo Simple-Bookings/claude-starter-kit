@@ -1,10 +1,10 @@
 ---
-name: plan
-description: Planning phase — groom a GitHub issue, analyse the codebase, and produce a concrete task list that a fast executor can follow without ambiguity. Use before /build.
+name: planning
+description: Planning phase — groom a GitHub issue, analyse the codebase, and produce a concrete task list that a fast executor can follow without ambiguity. Use before /execution.
 allowed-tools: Bash, Read, Grep, Glob, Agent
 ---
 
-# /plan — Planning Phase
+# /planning — Planning Phase
 
 Your role: **Scrum Master / Planning Lead**. Analyse the issue, understand the codebase, and write a task list so precise that the executor never needs to make a design decision.
 

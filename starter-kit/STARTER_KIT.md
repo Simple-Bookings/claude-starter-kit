@@ -54,14 +54,14 @@ Opret en feature-branch fra develop til issue #<nr>
 Derefter:
 
 ```text
-/plan
+/planning
 Lav en konkret task-liste for issue #<nr> med fil-paths og verify-kommandoer
 ```
 
 Når planen er godkendt:
 
 ```text
-/build
+/execution
 Implementér den første task fra planen
 ```
 
@@ -104,10 +104,10 @@ Aktiveres ved at skrive `/skill-navn` i Claude Code.
 
 | Skill | Hvad |
 |-------|------|
-| `/plan` | Groomer et GitHub issue og producerer en konkret task-liste |
-| `/build` | Implementerer én task ad gangen og committer med bevis |
-| `/review` | Deep code review — outputter APPROVED eller NEEDS_FIXES |
-| `/integrate` | Håndterer PR-livscyklus: CI, rebase, merge og luk issue |
+| `/planning` | Groomer et GitHub issue og producerer en konkret task-liste |
+| `/execution` | Implementerer én task ad gangen og committer med bevis |
+| `/reviewing` | Deep code review — outputter APPROVED eller NEEDS_FIXES |
+| `/integration` | Håndterer PR-livscyklus: CI, rebase, merge og luk issue |
 
 #### Git workflow
 
@@ -137,7 +137,7 @@ Aktiveres ved at skrive `/skill-navn` i Claude Code.
 
 | Skill | Hvad |
 |-------|------|
-| `/surfing` | Kører op til 5 agenter parallelt via git worktrees |
+| `/issue-surfing` | Kører op til 5 agenter parallelt via git worktrees |
 | `/git-worktree` | Isolerede arbejdsmapper til parallelle agenter |
 
 #### Terminal

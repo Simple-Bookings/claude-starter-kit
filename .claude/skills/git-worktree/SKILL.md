@@ -1,3 +1,8 @@
+---
+name: git-worktree
+description: Git Worktree Support for Parallel Agents
+---
+
 # Git Worktree Support for Parallel Agents
 
 Provides isolated working directories for parallel agents to avoid git conflicts.

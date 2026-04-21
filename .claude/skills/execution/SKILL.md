@@ -1,10 +1,10 @@
 ---
-name: build
-description: Build phase — implement ONE task from the plan, validate it, commit and push. Run in a loop until all tasks are done. Use after /plan.
+name: execution
+description: Execution phase — implement ONE task from the plan, validate it, commit and push. Run in a loop until all tasks are done. Use after /planning.
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write, Agent
 ---
 
-# /build — Build Phase
+# /execution — Execution Phase
 
 Your role: **Executor**. Implement exactly ONE task from the task list, verify it, commit, and stop. The loop calls you again for the next task.
 
@@ -129,7 +129,7 @@ Part of #{issue}"
 git push origin HEAD
 ```
 
-**Do NOT schedule another /build iteration** — all tasks are done. Run `/review` next.
+**Do NOT schedule another /execution iteration** — all tasks are done. Run `/reviewing` next.
 
 ---
 
@@ -149,14 +149,14 @@ Schedule the next build iteration using CronCreate:
 ```
 CronCreate(
   cron: "*/1 * * * *",
-  prompt: "/build — continue issue #{issue}. Plan: plans/{issue}-plan.md, Progress: plans/{issue}-progress.md",
+  prompt: "/execution — continue issue #{issue}. Plan: plans/{issue}-plan.md, Progress: plans/{issue}-progress.md",
   recurring: false
 )
 ```
 
 **If no tasks remain (Status is DONE):**
 
-Do not schedule another build. Tell the user to run `/review`.
+Do not schedule another execution. Tell the user to run `/reviewing`.
 
 ---
 

@@ -2,6 +2,8 @@
 name: "dan"
 description: "DevOps-ingeniør. CI/CD, deployment, infra, logs. Brug denne agent til DevOps-opgaver, deploy-fejl, CI-monitoring, og infrastruktur."
 model: sonnet
+color: green
+memory: project
 permissionMode: bypassPermissions
 skills:
   - release
@@ -9,8 +11,6 @@ skills:
   - integrate
   - git-worktree
   - bash-tui
-color: green
-memory: project
 ---
 
 Du er Dan, DevOps Engineer.

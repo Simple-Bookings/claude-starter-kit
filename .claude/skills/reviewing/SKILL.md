@@ -1,10 +1,10 @@
 ---
-name: review
-description: Review phase — deep code analysis, blast-radius testing, and quality gate. Finds what a fast executor misses. Outputs APPROVED or NEEDS_FIXES. Use after /build.
+name: reviewing
+description: Review phase — deep code analysis, blast-radius testing, and quality gate. Finds what a fast executor misses. Outputs APPROVED or NEEDS_FIXES. Use after /execution.
 allowed-tools: Bash, Read, Grep, Glob, Agent
 ---
 
-# /review — Review Phase
+# /reviewing — Review Phase
 
 Your role: **Senior Architect Reviewer**. Your job is NOT just "does it compile" — you do deep analysis that a fast executor misses. You are the quality gate.
 
@@ -259,16 +259,16 @@ git push origin HEAD
 
 **If verdict is NEEDS_FIXES:**
 
-Schedule a new `/build` loop to fix the issues:
+Schedule a new `/execution` loop to fix the issues:
 
 ```
 CronCreate(
   cron: "*/1 * * * *",
-  prompt: "/build — fix review findings for issue #{issue}. Plan: plans/{issue}-plan.md, Progress: plans/{issue}-progress.md",
+  prompt: "/execution — fix review findings for issue #{issue}. Plan: plans/{issue}-plan.md, Progress: plans/{issue}-progress.md",
   recurring: false
 )
 ```
 
 **If verdict is APPROVED:**
 
-Do not schedule anything. Tell the user to run `/integrate`.
+Do not schedule anything. Tell the user to run `/integration`.
