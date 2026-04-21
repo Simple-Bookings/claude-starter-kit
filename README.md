@@ -72,19 +72,19 @@ Har du ikke gh og Claude Code endnu, følg disse trin i rækkefølge:
 
 Installer Docker og VSCode devcontainer:
 
-→ **[DEV_SETUP.md](DEV_SETUP.md)**
+→ **[DEV_SETUP.md](docs/DEV_SETUP.md)**
 
 ### Trin 2 — CLI-værktøjer
 
 Installer gh, Copilot CLI, Claude Code og Heimsense:
 
-→ **[CLAUDE_SETUP.md](CLAUDE_SETUP.md)**
+→ **[CLAUDE_SETUP.md](docs/CLAUDE_SETUP.md)**
 
 ### Trin 3 — AI-teamet
 
 Kopiér starter-kittet og konfigurér teamet:
 
-→ **[STARTER_KIT.md](STARTER_KIT.md)**
+→ **[STARTER_KIT.md](docs/STARTER_KIT.md)**
 
 ---
 

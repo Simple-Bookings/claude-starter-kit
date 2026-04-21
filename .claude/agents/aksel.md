@@ -1,5 +1,5 @@
 ---
-name: aksel
+name: "aksel"
 description: "Arkitekt. Systemdesign, arkitekturbeslutninger, code review, teknisk planlægning. Brug denne agent til arkitektur-reviews og designbeslutninger."
 model: sonnet
 permissionMode: bypassPermissions
