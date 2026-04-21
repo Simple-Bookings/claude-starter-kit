@@ -6,6 +6,32 @@ Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en
 
 ## Krav
 
+### ANTHROPIC_API_KEY — påkrævet
+
+Claude Code kræver en Anthropic API-nøgle. Sæt den op **inden** du åbner containeren.
+
+**GitHub Codespaces (anbefalet):**
+
+1. Gå til [github.com/settings/codespaces](https://github.com/settings/codespaces)
+2. Klik **New secret**
+3. Navn: `ANTHROPIC_API_KEY`, Værdi: din nøgle fra [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+4. Vælg de repos nøglen må tilgå
+5. Codespaces injicerer nøglen automatisk som env-variabel ved container-start
+
+**Lokalt (VSCode devcontainer):**
+
+Sæt variablen i din shell-profil (`~/.bashrc`, `~/.zshrc` eller `~/.profile`):
+
+```bash
+export ANTHROPIC_API_KEY="sk-ant-..."
+```
+
+Genstart terminalen og åbn derefter containeren — VSCode arver env-variabler fra din shell.
+
+> **Aldrig:** Skriv nøglen direkte i `devcontainer.json` eller en `.env`-fil og commit den. Begge er dækket af `.gitignore`, men risikoen for fejl er for stor.
+
+---
+
 ### Windows
 
 - **Windows 10 version 2004+** eller **Windows 11**

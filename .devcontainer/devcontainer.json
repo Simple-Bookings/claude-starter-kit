@@ -11,5 +11,11 @@
       "installTools": true
     }
   },
-  "remoteUser": "node"
+  "remoteUser": "node",
+  "secrets": {
+    "ANTHROPIC_API_KEY": {
+      "description": "API-nøgle til Anthropic / Claude. Opret den under GitHub → Settings → Codespaces → Secrets.",
+      "documentationUrl": "https://console.anthropic.com/settings/keys"
+    }
+  }
 }
