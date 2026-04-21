@@ -145,14 +145,48 @@ Brug disse skabeloner tilpasset situationen:
 
 ---
 
-## Step 7: Arbejd med ét punkt ad gangen
+## Step 7: Udfyld CLAUDE.md-placeholders (hvis CLAUDE.md er umarkeret)
 
-Find det **første umarkerede punkt** og hjælp brugeren med det nu.
+Hvis punkt 3 (CLAUDE.md) ikke er markeret `[x]`, skal du gennemgå alle placeholder-felter ét ad gangen og skrive svarene direkte ind i filen.
+
+**Scan for uudfyldte felter:**
+
+```bash
+grep -n "\[Skriv\|fx React\|fx Express\|fx PostgreSQL\|fx Vitest\|fx GitHub" CLAUDE.md
+```
+
+For hvert felt der stadig indeholder placeholder-tekst, stil ét spørgsmål ad gangen og vent på svar. Skriv svaret ind med Edit-værktøjet:
+
+| Felt | Placeholder-mønster | Spørgsmål til brugeren |
+|------|--------------------|-----------------------|
+| Projektnavn | `[Skriv projektnavn]` | "Hvad hedder projektet?" |
+| Formål | `[Beskriv kort hvad produktet eller systemet gør]` | "Beskriv kort hvad produktet gør — én sætning." |
+| Primære brugere | `[Hvem bruger løsningen?]` | "Hvem er de primære brugere?" |
+| Frontend | `[fx React, Vue eller Next.js]` | "Hvilken frontend-teknologi bruger I? (eller 'ingen')" |
+| Backend | `[fx Express, FastAPI eller Rails]` | "Hvilken backend? (eller 'ingen')" |
+| Database | `[fx PostgreSQL eller SQLite]` | "Hvilken database? (eller 'ingen')" |
+| Test | `[fx Vitest, Playwright, pytest]` | "Hvilken test-runner? (eller 'ingen endnu')" |
+| Deployment | `[fx GitHub Actions, Docker, VPS]` | "Hvordan deployer I? (eller 'ikke afklaret endnu')" |
+
+**Workflow per felt:**
+1. Stil spørgsmålet
+2. Vent på brugerens svar
+3. Brug Edit-værktøjet til at erstatte placeholder-teksten med svaret
+4. Bekræft ændringen med: "Skrevet. Næste felt..."
+5. Gå til næste uudfyldte felt
+
+Når alle felter er udfyldt:
+- Kør `grep "\[Skriv\|fx React\|fx Express\|fx PostgreSQL\|fx Vitest\|fx GitHub" CLAUDE.md` — skal returnere nul hits
+- Markér punkt 3 som `[x]` i progress-filen
+- Commit ændringerne: `git add CLAUDE.md && git commit -m "feat: udfyld CLAUDE.md med projektinfo"`
+
+---
+
+## Step 8: Arbejd med ét punkt ad gangen
+
+Find det **første umarkerede punkt** (udover punkt 3 som håndteres i Step 7) og hjælp brugeren med det nu.
 
 Eksempler:
-
-**Punkt 3 — CLAUDE.md mangler projektnavn:**
-> "CLAUDE.md ser ud til at have placeholder-tekst i projektnavn og tech stack. Hvad hedder projektet, og hvilken tech stack bruger I? Jeg udfylder det for dig."
 
 **Punkt 4 — VISION.md mangler:**
 > "docs/VISION.md eksisterer ikke endnu. Vil du have mig til at oprette den og stille dig tre hurtige spørgsmål: hvad er problemet I løser, hvem er brugerne, og hvad er jeres 90-dages mål?"
