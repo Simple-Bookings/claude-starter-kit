@@ -22,7 +22,9 @@ cd claude-starter-kit && git sparse-checkout set starter-kit
 cp -R starter-kit/. /path/to/dit-repo/
 ```
 
-### 2. Udfyld `CLAUDE.md`
+### 2. Udfyld `CLAUDE.md` — gør dette FØR du starter Claude Code
+
+> **Dette trin er ikke valgfrit.** Alle `[Skriv ...]`-felter i `CLAUDE.md` skal udfyldes inden Claude Code startes. Skills og agents læser filen ved sessionstart — udfyldte placeholders giver forvirrede svar og forkerte antagelser om projektet.
 
 Åbn `CLAUDE.md` og udfyld de fem felter:
 

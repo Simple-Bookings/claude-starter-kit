@@ -35,26 +35,9 @@ cd claude-starter-kit && git sparse-checkout set starter-kit
 cp -R starter-kit/. /path/to/dit-repo/
 ```
 
-Starter-kittet kopierer `CLAUDE.md`, agents, skills, rules og docs-templates ind i dit repo, så Claude Code kan arbejde efter et fast workflow.
+> **Vigtigt:** Åbn `CLAUDE.md` og udfyld alle `[Skriv ...]`-felter **inden** du starter Claude Code. Projektnavn, tech stack og key commands skal være på plads for at skills og agents kan arbejde korrekt.
 
-Udfyld `CLAUDE.md` med projekt-navn, tech stack og key commands. Start derefter Claude Code:
-
-```bash
-cd /path/to/dit-repo
-claude
-```
-
-Første session:
-
-```text
-/feature-branch
-Opret en feature-branch fra develop til issue #<nr>
-```
-
-```text
-/planning
-Lav en konkret task-liste for issue #<nr> med fil-paths og verify-kommandoer
-```
+Se **[STARTER_KIT.md](starter-kit/STARTER_KIT.md)** for det komplette første-session-flow: kopiering, tilpasning og de første `/planning`- og `/execution`-kommandoer.
 
 ---
 
