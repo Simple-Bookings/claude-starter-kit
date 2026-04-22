@@ -1,6 +1,6 @@
 # Claude Starter Kit Devcontainer
 
-FROM mcr.microsoft.com/devcontainers/typescript-node:22
+FROM mcr.microsoft.com/devcontainers/typescript-node:24
 
 # Install system dependencies (cached layer)
 RUN apt-get update && apt-get install -y \
