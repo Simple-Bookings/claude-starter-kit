@@ -12,7 +12,7 @@ Starter-kittet bygger på disse eksterne værktøjer og tjenester:
 |---------|-------|-------------|
 | [Claude Code](https://claude.ai/code) | Kører skills og workflowet i repoet | Ja |
 | [GitHub CLI (`gh`)](https://cli.github.com) | Issues, PR'er og GitHub-automation fra terminalen | Ja |
-| [Heimsense](https://github.com/strowk/heimsense) | Proxy der lader Claude Code bruge Copilot API i stedet for direkte Anthropic API | Ja (hvis Copilot-licens) |
+| [Heimsense](https://github.com/fajarhide/heimsense) | Proxy der lader Claude Code bruge Copilot API i stedet for direkte Anthropic API | Ja (hvis Copilot-licens) |
 | [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli) | Copilot i terminalen — bruges til auth-flow med Heimsense | Ja (hvis Copilot-licens) |
 | [Docker Desktop](https://www.docker.com/products/docker-desktop) | Kører lokal devcontainer | Nej (kun lokal dev) |
 | [VSCode + Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) | Lokal udvikling i reproducerbart container-miljø | Nej (kun lokal dev) |
@@ -28,23 +28,17 @@ Brug "Hurtigste vej" hvis du allerede har `gh` og Claude Code. Brug "Fuld opsæt
 Har du `gh` og Claude Code installeret? Så er du i gang på 5 minutter:
 
 ```bash
-# Hent starter-kittet (kun de nødvendige filer)
-git clone --depth 1 --filter=blob:none --sparse \
-  https://github.com/Simple-Bookings/claude-starter-kit.git
+# Klon starter-kittet
+git clone --depth 1 https://github.com/Simple-Bookings/claude-starter-kit.git
 cd claude-starter-kit
-git sparse-checkout set CLAUDE.md .claude/agents .claude/skills .claude/rules docs starter-kit
 
-# Kopiér til dit repo (erstat /path/to/dit-repo)
-REPO=/path/to/dit-repo
-mkdir -p "$REPO/.claude"
-cp CLAUDE.md "$REPO/"
-cp -R .claude/agents .claude/skills .claude/rules "$REPO/.claude/"
-cp -R docs "$REPO/"
+# Kopiér alt til dit repo (erstat /path/to/dit-repo)
+bash scripts/import-to-repo.sh /path/to/dit-repo
 ```
 
-> **Vigtigt:** Åbn `CLAUDE.md` og udfyld alle `[Skriv ...]`-felter **inden** du starter Claude Code. Projektnavn, tech stack og key commands skal være på plads for at skills og agents kan arbejde korrekt.
+Scriptet håndterer konflikter, tager backup af eksisterende filer og merger `.gitignore` automatisk. Kør derefter `/adopt` i Claude Code for at udfylde `CLAUDE.md` interaktivt.
 
-Se **[STARTER_KIT.md](starter-kit/STARTER_KIT.md)** for det komplette første-session-flow: kopiering, tilpasning og de første `/planning`- og `/execution`-kommandoer.
+> Se **[STARTER_KIT.md](starter-kit/STARTER_KIT.md)** for det komplette første-session-flow.
 
 ---
 
@@ -80,25 +74,32 @@ Kopiér starter-kittet og konfigurér teamet:
 
 ## Indhold
 
-Dette kopieres til dit repo:
+Dette kopieres til dit repo via `import-to-repo.sh`:
 
 ```
 dit-repo/
-├── CLAUDE.md             ← tilpas til dit projekt
+├── CLAUDE.md                  ← tilpas til dit projekt
 ├── .claude/
-│   ├── agents/           ← 7 AI-coworkers
-│   ├── skills/           ← 17 aktiverbare skills
-│   └── rules/            ← auto-indlæst kontekst
-└── docs/                 ← dokumentations-templates
+│   ├── agents/                ← 7 AI-coworkers
+│   ├── skills/                ← 18 aktiverbare skills
+│   ├── rules/                 ← auto-indlæst kontekst
+│   └── settings.json          ← kopieres kun hvis den mangler
+├── .devcontainer/             ← Dockerfile og devcontainer.json
+├── scripts/                   ← heimsense og devcontainer-scripts
+├── docs/                      ← dokumentations-templates
+├── .github/
+│   ├── dependabot.yml
+│   └── workflows/shellcheck.yml
+└── .gitignore                 ← manglende linjer tilføjes
 ```
 
-Setup-guides (til reference, kopieres ikke):
+Setup-guides (kopieres til `starter-kit/` til reference):
 
 ```
 starter-kit/
-├── DEV_SETUP.md          ← lokal devcontainer-opsætning
-├── CLAUDE_SETUP.md       ← CLI-værktøjer og Heimsense
-└── STARTER_KIT.md        ← første-session-flow
+├── DEV_SETUP.md               ← lokal devcontainer-opsætning
+├── CLAUDE_SETUP.md            ← CLI-værktøjer og Heimsense
+└── STARTER_KIT.md             ← første-session-flow
 ```
 
 ---
