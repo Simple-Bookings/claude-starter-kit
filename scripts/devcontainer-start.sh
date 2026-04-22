@@ -10,3 +10,5 @@ pm2 start scripts/heimsense-start.sh \
   --name heimsense \
   --interpreter bash \
   --restart-delay 5000
+
+pm2 save

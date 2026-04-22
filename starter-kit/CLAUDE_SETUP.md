@@ -341,11 +341,27 @@ pm2 restart heimsense
 ### 401 Unauthorized fra Heimsense
 
 ```bash
-# Token er udløbet — forny og opdater .env
-gh auth refresh
-NEW_TOKEN=$(gh auth token)
-sed -i.bak "s/ANTHROPIC_API_KEY=.*/ANTHROPIC_API_KEY=${NEW_TOKEN}/" ~/.heimsense/.env
-pm2 restart heimsense
+# Token roterer automatisk — genstart heimsense for at hente frisk token
+bash scripts/devcontainer-start.sh
+```
+
+> I devcontaineren genstarter PM2 heimsense automatisk hver 8. time med et frisk token. Manuel genstart er kun nødvendig hvis du får 401 inden for de 8 timer.
+
+### Deaktivér Heimsense midlertidigt
+
+### Deaktivér Heimsense midlertidigt
+
+```bash
+# Fjerner heimsense fra PM2 og rydder Claude Code settings
+bash scripts/heimsense-uninstall.sh
+```
+
+Genstart Claude Code bagefter. Claude bruger herefter den normale Anthropic API direkte.
+
+**Genaktivér:**
+
+```bash
+bash scripts/devcontainer-start.sh
 ```
 
 ### 502 Bad Gateway
