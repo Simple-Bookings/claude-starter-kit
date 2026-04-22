@@ -28,6 +28,7 @@ if os.path.exists(path):
     with open(path) as f:
         settings = json.load(f)
 settings["permissionMode"] = "bypassPermissions"
+settings["allowDangerouslySkipPermissions"] = True
 with open(path, "w") as f:
     json.dump(settings, f, indent=2)
 print("Claude settings opdateret: permissionMode=bypassPermissions")
