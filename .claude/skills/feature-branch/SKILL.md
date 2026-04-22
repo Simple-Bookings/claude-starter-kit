@@ -1,26 +1,39 @@
 ---
 name: feature-branch
-description: Start nyt arbejde i en feature-branch fra develop og hold git-flowet simpelt.
+description: Start nyt arbejde i en feature-branch og hold git-flowet simpelt.
 allowed-tools: Bash, Read
 ---
 
 # Feature Branch
 
+## Bestem integration-branch
+
+Læs git workflow-sektionen i `CLAUDE.md` for at finde den korrekte integration-branch (`develop` eller `main`):
+
+```bash
+grep -A5 "Git workflow" CLAUDE.md 2>/dev/null | head -10
+```
+
+Brug `develop` hvis det er beskrevet. Brug `main` hvis `develop` ikke nævnes eller ikke eksisterer:
+
+```bash
+git branch -a | grep -q "develop" && echo "develop" || echo "main"
+```
+
 ## Standard-flow
 
 ```bash
-git checkout develop
-git pull origin develop
+BASE=$(git branch -a | grep -q "develop" && echo "develop" || echo "main")
+git checkout "$BASE"
+git pull origin "$BASE"
 git checkout -b feature/kort-beskrivelse
 ```
 
 ## Regler
 
-- Branch altid fra `develop`
+- Branch altid fra integration-branch (`develop` eller `main` — hvad projektet bruger)
 - Lav små commits der efterlader repoet i en fungerende tilstand
-- Opret PR til `develop`, ikke `main`
-
-> Bruger dit repo ikke `develop`? Tilpas git workflow-sektionen i `CLAUDE.md` først — resten af kittet læser branch-konventionen derfra.
+- Opret PR til integration-branch, ikke direkte til `main` (medmindre main-only flow)
 
 ## Før PR
 
@@ -31,9 +44,10 @@ npm test
 npm run build
 ```
 
-Sync derefter med develop:
+Sync derefter med integration-branch:
 
 ```bash
-git fetch origin develop
-git merge origin/develop --no-edit
+BASE=$(git branch -a | grep -q "develop" && echo "develop" || echo "main")
+git fetch origin "$BASE"
+git merge "origin/$BASE" --no-edit
 ```

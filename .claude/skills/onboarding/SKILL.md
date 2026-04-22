@@ -88,7 +88,7 @@ Nedenstående er **fallback** hvis starter-kit docs mangler:
 | 3 | CLAUDE.md udfyldt | Projektnavn, tech stack og key commands er ikke placeholders |
 | 4 | docs/VISION.md eksisterer og er udfyldt | Ikke tom eller template-tekst |
 | 5 | Agents konfigureret | `.claude/agents/` indeholder .md-filer |
-| 6 | `develop`-branch eksisterer | `git branch -a` viser `develop` |
+| 6 | Git workflow afklaret | CLAUDE.md git workflow-sektion er tilpasset (develop eller main-only) |
 | 7 | Første feature-branch oprettet | Der er branches udover `main`/`develop` |
 | 8 | Første issue oprettet på GitHub | `gh issue list` returnerer mindst ét issue |
 | 9 | Første PR merged | `git log` viser merge-commits eller `gh pr list --state merged` |
@@ -116,7 +116,7 @@ DONE: N/9 punkter
 - [ ] 3. CLAUDE.md — projektnavn mangler stadig
 - [x] 4. docs/VISION.md — udfyldt
 - [ ] 5. Agents — ikke konfigureret endnu
-- [ ] 6. develop-branch — mangler
+- [x/~] 6. Git workflow — develop-flow ELLER main-only
 - [ ] 7. Første feature-branch — mangler
 - [ ] 8. Første issue — mangler
 - [ ] 9. Første PR merged — mangler
@@ -191,8 +191,13 @@ Eksempler:
 **Punkt 4 — VISION.md mangler:**
 > "docs/VISION.md eksisterer ikke endnu. Vil du have mig til at oprette den og stille dig tre hurtige spørgsmål: hvad er problemet I løser, hvem er brugerne, og hvad er jeres 90-dages mål?"
 
-**Punkt 6 — develop-branch mangler:**
-> "Der er ingen `develop`-branch endnu — det er den branch al feature-arbejde skal gå igennem. Vil du have mig til at oprette den nu?"
+**Punkt 6 — Git workflow ikke afklaret:**
+> "Starter-kittet bruger som standard `develop`-branchen som integrationsgren. Vil du bruge det flow (`main ← develop ← feature/*`), eller foretrækker du at arbejde direkte fra `main` (`main ← feature/*`)?"
+>
+> - Svarer brugeren **develop-flow**: opret branchen med `git checkout -b develop && git push -u origin develop`, og opdatér git workflow-sektionen i CLAUDE.md til at afspejle det.
+> - Svarer brugeren **main-only**: opdatér git workflow-sektionen i CLAUDE.md til `main ← feature/*` og notér valget i progress-filen.
+>
+> Gem valget i `## Noter` så det ikke spørges igen.
 
 Stil ét spørgsmål. Vent på svar. Udfør. Markér punktet `[x]` i progress-filen. Præsenter opdateret fremgangslinje. Tilbyd at gå til næste punkt.
 
