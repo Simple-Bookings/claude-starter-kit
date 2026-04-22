@@ -351,8 +351,6 @@ bash scripts/devcontainer-start.sh
 
 ### Deaktivér Heimsense midlertidigt
 
-### Deaktivér Heimsense midlertidigt
-
 ```bash
 # Fjerner heimsense fra PM2 og rydder Claude Code settings
 bash scripts/heimsense-uninstall.sh

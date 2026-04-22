@@ -36,7 +36,6 @@ else
   }
 
   chmod +x "${HEIMSENSE_BIN}"
-  echo "Heimsense ${HEIMSENSE_VERSION} installeret."
 fi
 
 if ! grep -q '\.local/bin' "${HOME}/.bashrc" 2>/dev/null; then
