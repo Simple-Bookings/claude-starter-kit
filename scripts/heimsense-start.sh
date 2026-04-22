@@ -5,13 +5,13 @@ HEIMSENSE_BIN="${HOME}/.local/bin/heimsense"
 ENV_FILE="${HOME}/.config/heimsense/.env"
 
 if [ ! -x "${HEIMSENSE_BIN}" ]; then
-  echo "Fejl: heimsense ikke fundet på ${HEIMSENSE_BIN}. Kør devcontainer-setup.sh først."
+  echo "heimsense ikke installeret på ${HEIMSENSE_BIN} — afventer devcontainer-setup.sh"
   exit 1
 fi
 
 GH_TOKEN=$(gh auth token 2>/dev/null || true)
 if [ -z "${GH_TOKEN}" ]; then
-  echo "Fejl: ikke logget ind på GitHub. Kør: gh auth login"
+  echo "gh ikke authenticated — prøver igen om 60s. Kør: gh auth login"
   exit 1
 fi
 
@@ -28,16 +28,13 @@ MAX_RETRIES=3
 EOF
 chmod 600 "${ENV_FILE}"
 
-# Eksporter alle vars så pm2 arver dem (inkl. ved autorestart)
 set -a
 # shellcheck source=/dev/null
 source "${ENV_FILE}"
 set +a
 
-pm2 delete heimsense 2>/dev/null || true
-pm2 start "${HEIMSENSE_BIN}" \
-  --name heimsense \
-  --interpreter none \
-  -- run
+echo "Kører heimsense sync..."
+"${HEIMSENSE_BIN}" sync
 
-echo "Heimsense startet via pm2. Se status med: pm2 status"
+echo "Starter heimsense run..."
+exec "${HEIMSENSE_BIN}" run
