@@ -1,80 +1,118 @@
 # Starter-Kit — standardiseret Claude Code-flow i dit repo
 
-Denne guide viser, hvordan du kopierer starter-kittet ind i et repo, tilpasser det til projektet og kører det første Claude Code-flow fra issue til implementering.
+Denne guide viser, hvordan du sætter starter-kittet op — enten i et **nyt tomt repo** eller i et **eksisterende repo med kode**.
 
 ## Forudsætninger
 
 - `gh` (GitHub CLI) og Claude Code installeret — se [CLAUDE_SETUP.md](CLAUDE_SETUP.md)
-- `git` og `jq`
+- `git` og `bash`
 
 Se oversigten over tredjeparts-værktøjer i [README.md](../README.md) for en samlet liste over hvad starter-kittet bygger på.
 
 ---
 
-## Første succes
+## Scenarie A — Nyt tomt repo
 
-### 1. Kopiér starter-kittet
+Du starter fra bunden og vil bruge dette repo som udgangspunkt.
+
+### 1. Fork eller klon
+
+**Fork** (anbefalet — du får dit eget repo på GitHub):
+
+Gå til [github.com/Simple-Bookings/claude-starter-kit](https://github.com/Simple-Bookings/claude-starter-kit) og klik **Fork**. Klon derefter dit fork:
 
 ```bash
-git clone --depth 1 --filter=blob:none --sparse \
-  https://github.com/Simple-Bookings/claude-starter-kit.git
-cd claude-starter-kit
-git sparse-checkout set CLAUDE.md .claude/agents .claude/skills .claude/rules docs starter-kit
-
-# Kopiér til dit repo (erstat /path/to/dit-repo)
-REPO=/path/to/dit-repo
-mkdir -p "$REPO/.claude"
-cp CLAUDE.md "$REPO/"
-cp -R .claude/agents .claude/skills .claude/rules "$REPO/.claude/"
-cp -R docs "$REPO/"
+gh repo clone DIT-BRUGERNAVN/claude-starter-kit mit-projekt
+cd mit-projekt
 ```
 
-### 2. Udfyld `CLAUDE.md` — gør dette FØR du starter Claude Code
+**Eller klon direkte** (uden fork):
 
-> **Dette trin er ikke valgfrit.** Alle `[Skriv ...]`-felter i `CLAUDE.md` skal udfyldes inden Claude Code startes. Skills og agents læser filen ved sessionstart — udfyldte placeholders giver forvirrede svar og forkerte antagelser om projektet.
+```bash
+git clone https://github.com/Simple-Bookings/claude-starter-kit.git mit-projekt
+cd mit-projekt
+# Skift remote til dit eget repo
+git remote set-url origin https://github.com/DIT-BRUGERNAVN/mit-projekt.git
+```
 
-Åbn `CLAUDE.md` og udfyld de fem felter:
+### 2. Udfyld `CLAUDE.md`
 
-- **Projekt-overview** — hvad bygger I?
+> **Dette trin er ikke valgfrit.** Alle `[Skriv ...]`-felter skal udfyldes inden Claude Code startes.
+
+Åbn `CLAUDE.md` og udfyld:
+- **Projektnavn og formål**
 - **Tech stack** — frontend, backend, database, test
-- **Sprog** — dansk eller engelsk i kode og docs?
-- **Git workflow** — branch-navne, merge-regler
 - **Key commands** — `npm install`, `npm test`, `npm run build`
 
-Hold det kort. En ny udvikler skal kunne læse det på to minutter.
+### 3. Åbn i devcontainer og start Claude Code
 
-> **Git workflow:** Starter-kittet bruger `develop` som integrationsgren. Bruger dit repo `main` + feature-branches direkte, tilpas git workflow-sektionen i `CLAUDE.md`.
-
-### 3. Commit og start Claude Code
+Åbn mappen i VSCode og vælg **"Reopen in Container"**. Devcontaineren installerer heimsense og starter PM2 automatisk.
 
 ```bash
-cd /path/to/dit-repo
-git add . && git commit -m "feat: tilføj Claude Code starter-kit"
 claude
-```
-
-### 4. Første session
-
-Start med `/onboarding` — det scanner repo-tilstanden, husker din fremgang på tværs af sessioner og guider dig til næste trin:
-
-```text
 /onboarding
 ```
 
-Derefter, når onboarding er grøn:
+---
 
-```text
-/planning
-Jeg vil gerne bygge <beskriv hvad du vil implementere>
+## Scenarie B — Eksisterende repo med kode
+
+Du har allerede et repo med kode og vil tilføje starter-kittet til det.
+
+### 1. Klon starter-kittet lokalt
+
+```bash
+git clone https://github.com/Simple-Bookings/claude-starter-kit.git
+cd claude-starter-kit
 ```
 
-`/planning` opretter automatisk et GitHub issue hvis du ikke har et, udfylder acceptkriterier og producerer en konkret task-liste. Derefter:
+### 2. Kør import-scriptet
 
-```text
-/execution
+```bash
+bash scripts/import-to-repo.sh /sti/til/dit-eksisterende-repo
 ```
 
-`/execution` opretter automatisk en feature-branch hvis du er på `main` eller `develop`, og implementerer én task ad gangen indtil alt er done.
+Scriptet kopierer følgende ind i dit repo:
+
+| Hvad | Håndtering ved konflikt |
+|------|------------------------|
+| `.claude/` (agents, skills, rules) | Overskrives |
+| `.devcontainer/` | Backup tages (`.bak`) |
+| `scripts/` (heimsense + devcontainer) | Backup tages pr. fil |
+| `docs/` templates | Springer over filer med reelt indhold |
+| `.github/` (dependabot, shellcheck) | Overskrives |
+| `CLAUDE.md` | Backup tages |
+| `.gitignore` | Merger — tilføjer kun manglende linjer |
+| `starter-kit/` (setup-guides) | Overskrives |
+
+**Alternativt: brug `/adopt`-skillsen** inde fra Claude Code — den guider dig interaktivt og udfylder CLAUDE.md automatisk:
+
+```bash
+cd dit-eksisterende-repo
+claude
+/adopt
+```
+
+### 3. Udfyld `CLAUDE.md`
+
+Åbn den kopierede `CLAUDE.md` og tilpas til dit projekt. Er du i Claude Code, kan `/adopt`-skillsen hjælpe med at scanne dit repo og foreslå de rigtige værdier.
+
+### 4. Commit og åbn devcontainer
+
+```bash
+cd dit-eksisterende-repo
+git add .
+git commit -m "feat: tilføj Claude Code starter-kit"
+```
+
+Åbn i VSCode → **"Reopen in Container"**.
+
+### 5. Start Claude Code
+
+```bash
+claude
+/onboarding
+```
 
 ---
 
@@ -83,9 +121,34 @@ Jeg vil gerne bygge <beskriv hvad du vil implementere>
 - [ ] `gh auth status` — logger ind som dig
 - [ ] `claude --version` — viser en version
 - [ ] `CLAUDE.md` er udfyldt med projekt, stack og commands
-- [ ] Starter-kittet er kopieret ind i dit repo
-- [ ] Første branch kan oprettes
-- [ ] Første PR kan laves mod `develop`
+- [ ] Starter-kittet er i dit repo
+- [ ] Devcontaineren kører (heimsense starter automatisk)
+- [ ] `/onboarding` viser grøn status
+
+---
+
+## Første session
+
+Start med `/onboarding` — det scanner repo-tilstanden, husker din fremgang på tværs af sessioner og guider dig til næste trin:
+
+```
+/onboarding
+```
+
+Derefter, når onboarding er grøn:
+
+```
+/planning
+Jeg vil gerne bygge <beskriv hvad du vil implementere>
+```
+
+`/planning` opretter automatisk et GitHub issue, udfylder acceptkriterier og producerer en konkret task-liste. Derefter:
+
+```
+/execution
+```
+
+`/execution` opretter automatisk en feature-branch og implementerer én task ad gangen indtil alt er done.
 
 ---
 
@@ -110,6 +173,13 @@ Start med én eller to agenter. Tilføj flere efterhånden som behovet opstår.
 ## Reference: Skills
 
 Aktiveres ved at skrive `/skill-navn` i Claude Code.
+
+#### Opsætning
+
+| Skill | Hvad |
+|-------|------|
+| `/adopt` | Importér starter-kit til eksisterende repo — interaktiv guide |
+| `/onboarding` | Repo-coach — scanner status og guider til næste trin |
 
 #### Udviklingsflow
 
