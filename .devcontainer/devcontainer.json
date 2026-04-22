@@ -13,7 +13,12 @@
   },
   "customizations": {
     "vscode": {
-      "settings": {}
+      "settings": {},
+      "extensions": [
+        "eamodio.gitlens",
+        "editorconfig.editorconfig",
+        "github.vscode-github-actions"
+      ]
     }
   },
   "mounts": [
@@ -24,7 +29,7 @@
   "remoteUser": "node",
   "secrets": {
     "ANTHROPIC_API_KEY": {
-      "description": "API-nøgle til Anthropic / Claude. Opret den under GitHub → Settings → Codespaces → Secrets.",
+      "description": "Valgfri: Anthropic API-nøgle til direkte Claude-adgang uden Heimsense. Hvis du bruger GitHub Copilot-flow via Heimsense, er denne ikke nødvendig. Se starter-kit/CLAUDE_SETUP.md.",
       "documentationUrl": "https://console.anthropic.com/settings/keys"
     }
   }

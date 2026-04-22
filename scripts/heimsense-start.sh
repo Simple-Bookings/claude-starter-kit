@@ -36,6 +36,8 @@ done < "${ENV_FILE}"
 echo "Kører heimsense sync..."
 "${HEIMSENSE_BIN}" sync
 
+# Kør maks 8 timer — PM2 genstarter derefter med frisk GH token
+# (GitHub OAuth-tokens roterer typisk inden for 8 timer)
 echo "Starter heimsense run (max 8 timer, derefter genstart for frisk token)..."
 timeout 28800 "${HEIMSENSE_BIN}" run || true
 echo "Heimsense stoppet — PM2 genstarter med frisk token."

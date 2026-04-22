@@ -6,6 +6,7 @@ FROM mcr.microsoft.com/devcontainers/typescript-node:22
 RUN apt-get update && apt-get install -y \
     xvfb \
     tmux \
+    psmisc \
     && rm -rf /var/lib/apt/lists/*
 
 # Install global npm packages (pinned versions for reproducibility)
@@ -27,4 +28,4 @@ WORKDIR /workspaces/claude-starter-kit
 # Labels for tracking
 LABEL org.opencontainers.image.source="https://github.com/Simple-Bookings/claude-starter-kit"
 LABEL org.opencontainers.image.description="Claude Starter Kit devcontainer with optimized caching"
-LABEL org.opencontainers.image.version="phase1"
+LABEL org.opencontainers.image.version="0.1.3"

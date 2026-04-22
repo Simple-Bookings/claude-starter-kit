@@ -21,7 +21,6 @@ with open(path) as f:
     cfg = json.load(f)
 
 heimsense_env_keys = {
-    "ANTHROPIC_AUTH_TOKEN",
     "ANTHROPIC_BASE_URL",
     "ANTHROPIC_CUSTOM_MODEL_OPTION",
     "ANTHROPIC_CUSTOM_MODEL_OPTION_NAME",
