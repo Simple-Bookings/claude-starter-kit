@@ -14,6 +14,10 @@ RUN npm install -g \
     @anthropic-ai/claude-code@2.1.116 \
     @github/copilot
 
+# Ensure claude config mount point is owned by node user so the named
+# volume initializes with correct permissions on first use
+RUN mkdir -p /home/node/.claude && chown -R node:node /home/node/.claude
+
 # Kør som node-bruger
 USER node
 

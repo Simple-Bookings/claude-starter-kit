@@ -14,7 +14,8 @@
   "customizations": {
     "vscode": {
       "settings": {
-        "claudeCode.allowDangerouslySkipPermissions": true
+        // Aktiver dette lokalt i .claude/settings.local.json hvis ønsket:
+        // "claudeCode.allowDangerouslySkipPermissions": true
       }
     }
   },

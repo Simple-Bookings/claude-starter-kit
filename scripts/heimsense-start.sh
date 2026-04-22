@@ -2,7 +2,7 @@
 set -euo pipefail
 
 HEIMSENSE_BIN="${HOME}/.local/bin/heimsense"
-ENV_FILE="${HOME}/.config/heimsense/.env"
+ENV_FILE="${HOME}/.heimsense/.env"
 
 if [ ! -x "${HEIMSENSE_BIN}" ]; then
   echo "heimsense ikke installeret på ${HEIMSENSE_BIN} — afventer devcontainer-setup.sh"
@@ -17,9 +17,9 @@ fi
 
 mkdir -p "$(dirname "${ENV_FILE}")"
 cat > "${ENV_FILE}" <<EOF
-ANTHROPIC_BASE_URL=https://api.copilot.com/v1
+ANTHROPIC_BASE_URL=https://api.githubcopilot.com
 ANTHROPIC_API_KEY=${GH_TOKEN}
-ANTHROPIC_CUSTOM_MODEL_OPTION=sonnet
+ANTHROPIC_CUSTOM_MODEL_OPTION=claude-sonnet-4.6
 ANTHROPIC_CUSTOM_MODEL_OPTION_NAME=Sonnet via HeimSense
 ANTHROPIC_CUSTOM_MODEL_OPTION_DESCRIPTION=CoPilot via HeimSense adapter
 LISTEN_ADDR=:18081
@@ -28,13 +28,14 @@ MAX_RETRIES=3
 EOF
 chmod 600 "${ENV_FILE}"
 
-set -a
-# shellcheck source=/dev/null
-source "${ENV_FILE}"
-set +a
+while IFS='=' read -r key value; do
+  [[ -z "$key" || "$key" == \#* ]] && continue
+  export "$key=$value"
+done < "${ENV_FILE}"
 
 echo "Kører heimsense sync..."
 "${HEIMSENSE_BIN}" sync
 
-echo "Starter heimsense run..."
-exec "${HEIMSENSE_BIN}" run
+echo "Starter heimsense run (max 8 timer, derefter genstart for frisk token)..."
+timeout 28800 "${HEIMSENSE_BIN}" run || true
+echo "Heimsense stoppet — PM2 genstarter med frisk token."

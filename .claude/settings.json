@@ -1,5 +1,16 @@
 {
   "includeCoAuthoredBy": false,
+  "permissions": {
+    "defaultMode": "auto",
+    "allow": [
+      "Write(.claude/agents/**)"
+    ]
+  },
+  "attribution": {
+    "commit": "This has been developed by Starter Kit AI Team",
+    "pr": "This has been developed by Starter Kit AI Team"
+  },
+  "cleanupPeriodDays": 30,
   "env": {
     "BASH_DEFAULT_TIMEOUT_MS": "86400000",
     "BASH_MAX_TIMEOUT_MS": "86400000",
