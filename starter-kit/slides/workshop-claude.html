@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code-dag · Konsolidator · 23. april 2026</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/theme/night.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/monokai.css">
+<style>
+  :root {
+    --navy: #0f172a;
+    --cyan: #06b6d4;
+    --amber: #f59e0b;
+    --white: #f8fafc;
+    --grey: #94a3b8;
+    --red: #ef4444;
+    --green: #22c55e;
+    --light-navy: #1e293b;
+  }
+  .reveal {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    font-size: 32px; color: var(--white);
+  }
+  .reveal .slides { text-align: left; }
+  .reveal .slides section { background: var(--navy); padding: 50px 70px; box-sizing: border-box; }
+  .reveal .slides section:not(.center-slide):not(.pause-slide) { padding-bottom: 50px !important; }
+
+  /* Højre margin: begræns al indhold til 88% bredde — matcher DRK-skabelon */
+  html body .reveal .slides section > h1,
+  html body .reveal .slides section > h2,
+  html body .reveal .slides section > h3,
+  html body .reveal .slides section > p,
+  html body .reveal .slides section > div:not(.phase-bar),
+  html body .reveal .slides section > table,
+  html body .reveal .slides section > ul {
+    max-width: 88%;
+  }
+  .reveal h1, .reveal h2, .reveal h3 {
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    color: var(--white); text-transform: none;
+    letter-spacing: -0.02em; font-weight: 700;
+  }
+  .reveal h1 { font-size: 2.4em; line-height: 1.1; }
+  .reveal h2 { font-size: 1.8em; line-height: 1.15; }
+  .reveal h3 { font-size: 1.15em; margin: 0 0 10px 0; }
+  .reveal p  { font-size: 0.92em; line-height: 1.6; }
+  .reveal li { font-size: 0.88em; line-height: 1.75; margin-bottom: 4px; }
+  .reveal ul  { padding-left: 24px; margin: 12px 0; }
+  .reveal .accent { color: var(--cyan); }
+  .reveal .amber  { color: var(--amber); }
+  .reveal .grey   { color: var(--grey); }
+  .reveal .red    { color: var(--red); }
+  .reveal .green  { color: var(--green); }
+  .reveal .dim    { opacity: 0.4; }
+
+  .center-slide {
+    text-align: center !important; display: flex !important;
+    flex-direction: column; align-items: center; justify-content: center;
+  }
+  .pause-slide {
+    background: var(--light-navy) !important; text-align: center !important;
+    display: flex !important; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+
+  /* Cards */
+  .cols   { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; margin-top: 20px; }
+  .cols-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
+  .card {
+    background: var(--light-navy);
+    border: 1px solid rgba(6,182,212,0.25); border-radius: 12px; padding: 22px 26px;
+  }
+  .card.amber-card { border-color: rgba(245,158,11,0.4); }
+  .card.green-card { border-color: rgba(34,197,94,0.4); }
+  .card.grey-card  { border-color: rgba(100,116,139,0.3); }
+  .card .tag { font-size: 0.48em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--amber); margin-bottom: 8px; display: block; }
+  .card .tag.cyan  { color: var(--cyan); }
+  .card .tag.grey  { color: var(--grey); }
+  .card .tag.green { color: var(--green); }
+  .card h3 { font-size: 0.95em; margin: 4px 0 8px 0; }
+  .card p  { font-size: 0.68em; color: var(--grey); line-height: 1.6; margin: 0; }
+  .card ul { margin: 6px 0 0 0; padding-left: 18px; }
+  .card li { font-size: 0.66em; color: var(--grey); line-height: 1.55; margin-bottom: 3px; }
+
+  /* Terminal */
+  .terminal {
+    background: #000; border-radius: 10px; padding: 22px 26px;
+    font-family: 'JetBrains Mono','Fira Code','Consolas',monospace;
+    font-size: 0.72em; border: 1px solid rgba(100,116,139,0.3); line-height: 1.8;
+  }
+  .terminal .p { color: var(--green); }
+  .terminal .c { color: var(--white); }
+  .terminal .o { color: var(--grey); }
+  .terminal .h { color: var(--cyan); }
+  .terminal .a { color: var(--amber); }
+  .terminal .comment { color: #475569; }
+
+  /* Step list */
+  .steps { margin-top: 20px; }
+  .step  { display: flex; align-items: flex-start; gap: 20px; margin-bottom: 16px; }
+  .step .num {
+    min-width: 52px; height: 36px; border-radius: 8px;
+    background: var(--cyan); color: #000; font-weight: 800;
+    font-size: 0.62em; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    padding: 0 6px;
+  }
+  .step .num.done { background: var(--green); }
+  .step .num.amber { background: var(--amber); }
+  .step .body h4 { margin: 0 0 2px 0; font-size: 0.82em; color: var(--white); }
+  .step .body p  { margin: 0; font-size: 0.65em; color: var(--grey); line-height: 1.4; }
+
+  /* Chain */
+  .chain { display: flex; align-items: center; gap: 10px; margin-top: 24px; }
+  .chain .box { border: 2px solid var(--cyan); border-radius: 10px; padding: 14px 16px; text-align: center; flex: 1; }
+  .chain .box.amber-box { border-color: var(--amber); }
+  .chain .box h4 { margin: 0 0 4px 0; font-size: 0.75em; }
+  .chain .box p  { font-size: 0.52em; color: var(--grey); margin: 0; line-height: 1.3; }
+  .chain .arr    { color: var(--cyan); font-size: 1.5em; flex-shrink: 0; }
+
+  /* Stats */
+  .stats { display: flex; gap: 24px; margin-top: 24px; }
+  .stat  { text-align: center; flex: 1; background: var(--light-navy); border-radius: 12px; padding: 24px 12px; }
+  .stat .n { font-size: 3.2em; font-weight: 800; color: var(--cyan); line-height: 1; }
+  .stat .l { font-size: 0.55em; color: var(--grey); margin-top: 6px; line-height: 1.3; }
+
+  /* Phase bar */
+  .phase-bar { display: flex; gap: 8px; margin-bottom: 22px; }
+  .phase-pill {
+    border-radius: 6px; padding: 5px 16px;
+    font-size: 0.48em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  .phase-pill.active  { background: var(--cyan); color: #000; }
+  .phase-pill.done    { background: rgba(34,197,94,0.15); color: var(--green); border: 1px solid rgba(34,197,94,0.55); }
+  .phase-pill.pending { background: rgba(100,116,139,0.12); color: var(--grey); border: 1px solid rgba(100,116,139,0.2); }
+
+  /* Checklist */
+  .checklist { list-style: none; padding: 0; margin: 16px 0; }
+  .checklist li { font-size: 0.78em; line-height: 1.7; padding: 4px 0; display: flex; align-items: flex-start; gap: 10px; }
+  .checklist li::before { content: '☐'; color: var(--grey); font-size: 1.1em; flex-shrink: 0; }
+  .checklist li.done::before { content: '✓'; color: var(--green); }
+
+  .reveal .slide-number { font-size: 13px; color: var(--grey); background: transparent; }
+  .big-text { font-size: 2em; font-weight: 700; line-height: 1.3; }
+  .sub { font-size: 0.7em; color: var(--grey); margin-top: 6px; display: block; }
+  .badge {
+    display: inline-block; border-radius: 6px; padding: 3px 12px;
+    font-size: 0.5em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em;
+    vertical-align: middle; margin-left: 8px;
+  }
+  .badge.cyan  { background: rgba(6,182,212,0.15); color: var(--cyan); border: 1px solid rgba(6,182,212,0.3); }
+  .badge.amber { background: rgba(245,158,11,0.15); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+
+  /* Callout-bokse — citater og highlights */
+  .callout {
+    margin-top: 20px; padding: 14px 22px;
+    border-radius: 6px; border-left-width: 3px; border-left-style: solid;
+  }
+  .callout.cyan  { background: rgba(6,182,212,0.07);  border-left-color: var(--cyan); }
+  .callout.amber { background: rgba(245,158,11,0.07); border-left-color: var(--amber); }
+  .callout p { margin: 0; font-size: 0.7em; }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+
+<!-- ═══════════════════════════════════════════════════
+     BLOK 1 — PITCH (9:30–10:00)
+═══════════════════════════════════════════════════ -->
+
+<!-- 1: Titel -->
+<section class="center-slide" data-background-color="#0f172a">
+  <div style="margin-bottom: 10px;">
+    <span style="font-size:0.5em; color:var(--grey); letter-spacing:0.15em; text-transform:uppercase;">Konsolidator · 23. april 2026</span>
+  </div>
+  <h1 style="font-size:2.6em; margin-bottom: 16px;">
+    Claude Code-dag
+  </h1>
+  <p style="color:var(--cyan); font-size:0.9em; margin-bottom: 40px;">
+    Fra terminal til merged PR — uden manuel opfølgning
+  </p>
+  <div style="font-size:0.52em; color:var(--grey);">
+    Troels Wittrup · Beaconware ApS · Cura Simple AI · Simple Bookings
+  </div>
+  <aside class="notes">
+    Godmorgen og velkommen. I dag bruger vi dagen på at få Claude Code til at køre på jeres maskiner og løse en reel opgave fra jeres codebase.
+    Jeg starter med at forklare hvad Claude Code er og hvordan det adskiller sig fra Copilot. Derefter sætter vi det op trin for trin, og så er resten af dagen hands-on.
+    Lad os komme i gang.
+  </aside>
+</section>
+
+
+<!-- 2: Dagens program -->
+<section data-background-color="#0f172a">
+  <h2>Dagens program</h2>
+  <div class="steps" style="margin-top: 28px;">
+    <div class="step">
+      <div class="num">9:30</div>
+      <div class="body">
+        <h4>Pitch <span class="grey">— 30 min</span></h4>
+        <p>Hvad er Claude Code? Hvordan adskiller det sig fra Copilot?</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">10:00</div>
+      <div class="body">
+        <h4>Setup <span class="grey">— ~2 timer</span></h4>
+        <p>Docker · VSCode devcontainer · gh · Copilot CLI · Claude Code · Heimsense</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">12:00</div>
+      <div class="body">
+        <h4 class="grey">Frokost</h4>
+        <p></p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">13:00</div>
+      <div class="body">
+        <h4>Hands-on <span class="grey">— ~2,5 timer</span></h4>
+        <p>Find en reel opgave i jeres codebase og lad Claude løse den</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num amber">15:30</div>
+      <div class="body">
+        <h4>Refleksion og spørgsmål <span class="grey">— 30 min</span></h4>
+        <p>Hvad virkede? Hvad virkede ikke? Næste skridt</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Planen for dagen. Vi starter med pitch, derefter setup, og så bruger vi eftermiddagen på jeres egne opgaver.
+    Jeg er tilgængelig hele dagen — både til setup-problemer og til at hjælpe med de opgaver I vælger.
+    Mens I arbejder selv, kan jeg se på jeres codebase og arkitektur og give feedback.
+  </aside>
+</section>
+
+
+<!-- 3: Software 1.0 / 2.0 / 3.0 — Karpathy -->
+<section data-background-color="#0f172a">
+  <h2>Software 1.0 → 2.0 → 3.0</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 24px;">Andrej Karpathy — AI-forsker, tidligere OpenAI og Tesla</p>
+  <div class="cols-3">
+    <div class="card grey-card">
+      <span class="tag grey">Software 1.0</span>
+      <h3>Traditionel kode</h3>
+      <p>Udviklere skriver eksplicitte instruktioner. Computeren følger dem præcist.</p>
+      <p style="margin-top: 10px; font-size: 0.58em; color: var(--grey);">if/else · loops · funktioner</p>
+    </div>
+    <div class="card grey-card">
+      <span class="tag grey">Software 2.0</span>
+      <h3>Neurale netværk</h3>
+      <p>Adfærd læres fra data. "Koden" er vægte — ingen har skrevet reglerne eksplicit.</p>
+      <p style="margin-top: 10px; font-size: 0.58em; color: var(--grey);">GPT · billedgenkendelse · anbefalingssystemer</p>
+    </div>
+    <div class="card">
+      <span class="tag cyan">Software 3.0</span>
+      <h3>LLMs — programmeret på engelsk</h3>
+      <p>Du beskriver hvad du vil have. Modellen planlægger og udfører. Sproget <em>er</em> koden.</p>
+      <p style="margin-top: 10px; font-size: 0.58em; color: var(--cyan);">Claude Code · agenter · workflows</p>
+    </div>
+  </div>
+  <div class="callout cyan">
+    <p style="margin: 0; font-size: 0.7em;">
+      <span style="color: var(--white); font-style: italic;">"The hottest new programming language is English."</span>
+      <span style="color: var(--grey); margin-left: 10px;">— Andrej Karpathy, 2023</span>
+    </p>
+  </div>
+  <aside class="notes">
+    Karpathy er en af de mest citerede stemmer inden for AI. Han var med til at bygge GPT-1 hos OpenAI og ledede AI-teamet hos Tesla i 6 år.
+    Det vigtige ved Software 3.0: sproget er blevet et programmeringssprog. Når I skriver "refaktorér dette modul" i terminalen, programmerer I.
+    Det er ikke en metafor — det er bogstavelig talt hvad der sker.
+  </aside>
+</section>
+
+
+<!-- 4: Tre niveauer -->
+<section data-background-color="#0f172a">
+  <h2>Tre niveauer — vi er nået til niveau 3</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 24px;">Fra autocomplete til autonom agent på under tre år</p>
+  <div class="cols-3">
+    <div class="card grey-card">
+      <span class="tag grey">Niveau 1 · 2022</span>
+      <h3>Autocomplete</h3>
+      <p>AI foreslår næste linje. Du accepterer eller afviser. Kontekst: én fil.</p>
+      <p style="margin-top: 10px; font-size: 0.58em; color: var(--grey);">GitHub Copilot (klassisk)</p>
+    </div>
+    <div class="card grey-card">
+      <span class="tag grey">Niveau 2 · 2023</span>
+      <h3>Chat</h3>
+      <p>Du spørger, AI svarer. Du kopierer svaret ind. Kontekst: det du eksplicit deler.</p>
+      <p style="margin-top: 10px; font-size: 0.58em; color: var(--grey);">ChatGPT · GitHub Copilot Chat</p>
+    </div>
+    <div class="card">
+      <span class="tag cyan">Niveau 3 · 2024–</span>
+      <h3>Agent</h3>
+      <p>Du beskriver <em>hvad</em>. Agenten planlægger, udfører og verificerer — løkke efter løkke.</p>
+      <p style="margin-top: 10px; font-size: 0.58em; color: var(--cyan);">Claude Code · Copilot Agent Mode</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p style="margin: 0; font-size: 0.7em;">
+      <span style="color: var(--white); font-style: italic;">"In December, something flipped — 80-20 of writing code myself versus delegating became 20-80."</span>
+      <span style="color: var(--grey); margin-left: 10px;">— Andrej Karpathy, 2025</span>
+    </p>
+  </div>
+  <aside class="notes">
+    Karpathy beskriver et vendepunkt i december 2025 — fra 80% selv-kode til 80% delegeret.
+    Boris Cherny (skaberen af Claude Code): sendte 49 PRs på to dage uden at skrive én linje selv. Geoffrey Huntley leverede et $50.000-projekt for $297 USD med en simpel agent-løkke.
+    Spørgsmålet er ikke om det sker for jer — men hvornår.
+  </aside>
+</section>
+
+
+<!-- 4: Den agentiske løkke -->
+<section data-background-color="#0f172a">
+  <h2>Den agentiske løkke</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 28px;">Agenten gentager denne løkke — og stopper når opgaven er løst</p>
+  <div class="chain" style="margin-bottom: 32px;">
+    <div class="chain box">
+      <h4 style="color:var(--cyan);">Perception</h4>
+      <p>Læs codebase, filer, tests, fejlbeskeder</p>
+    </div>
+    <div class="chain arr">→</div>
+    <div class="chain box">
+      <h4 style="color:var(--cyan);">Plan</h4>
+      <p>Hvad skal der gøres? I hvilken rækkefølge?</p>
+    </div>
+    <div class="chain arr">→</div>
+    <div class="chain box">
+      <h4 style="color:var(--cyan);">Handling</h4>
+      <p>Skriv kode, kør tests, lav commit</p>
+    </div>
+    <div class="chain arr">→</div>
+    <div class="chain box amber-box">
+      <h4 style="color:var(--amber);">Observér</h4>
+      <p>Virkede det? Fejl? Juster og gentag.</p>
+    </div>
+  </div>
+  <div class="cols">
+    <div class="card" style="align-self: start;">
+      <span class="tag cyan">Agentens værktøjer</span>
+      <ul>
+        <li>Filsystem — læs og skriv alle filer</li>
+        <li>Terminal — kør bash, tests, builds</li>
+        <li>Git — branch, commit, push</li>
+        <li>GitHub API — issues, PRs, kommentarer</li>
+      </ul>
+    </div>
+    <div class="card amber-card" style="align-self: start;">
+      <span class="tag">Mennesket i løkken</span>
+      <ul>
+        <li>Du sætter retningen og godkender planen</li>
+        <li>Agenten udfører — du holder øje</li>
+        <li>Kritiske beslutninger: stadig hos dig</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    Det her er kernen i agentic engineering: den autonome løkke.
+    I modsætning til en chatbot der svarer én gang, kører en agent løkken mange gange — og stopper selv når opgaven er løst eller den løber ind i noget den ikke kan løse.
+    Menneskets rolle er ikke at styre hvert trin — det er at sætte den rigtige retning og reviewe resultatet.
+    Det kræver en ny form for samarbejde: du skal blive god til at beskrive mål, ikke fremgangsmåder.
+  </aside>
+</section>
+
+
+<!-- 5: Agentic engineering — din rolle -->
+<section data-background-color="#0f172a">
+  <h2>Din rolle som agentic engineer</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 20px;">Det er ikke "AI skriver kode, du sover" — det er et aktivt samarbejde</p>
+  <div class="cols">
+    <div class="card grey-card">
+      <span class="tag grey">Før</span>
+      <ul>
+        <li>Du planlægger implementeringen</li>
+        <li>Du skriver koden fil for fil</li>
+        <li>Du kører tests og retter fejl</li>
+        <li>Du laver PR og beskriver ændringerne</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag cyan">Nu — agentic engineering</span>
+      <ul>
+        <li>Du definerer mål og constraints</li>
+        <li>Agenten planlægger og udfører</li>
+        <li>Du reviewer og justerer kursen</li>
+        <li>Agenten verificerer med tests</li>
+        <li>Du godkender — agenten merger</li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout cyan">
+    <p style="margin: 0; font-size: 0.7em;">
+      <span style="color: var(--white); font-style: italic;">"Give Claude a way to verify its work. If Claude has that feedback loop, it will 2-3x the quality of the final result."</span>
+      <span style="color: var(--grey); margin-left: 10px;">— Boris Cherny, skaber af Claude Code</span>
+    </p>
+  </div>
+  <aside class="notes">
+    Boris Cherny er ingeniøren der byggede Claude Code. Hans vigtigste pointe: agenten skal have et feedback-loop — den skal kunne køre tests og se om det virker.
+    Det er præcis derfor Claude Code ikke bare "skriver kode og stopper" — den kører tests, ser fejlene, retter dem og kører igen.
+    Din rolle er at give den god kontekst og gode constraints. Jo mere præcist du definerer målet, jo bedre resultat.
+    "Her er et issue, løs det" er dårlig prompt. "Her er issue #42, vores convention er X, vi undgår Y fordi Z — løs det" er god prompt.
+  </aside>
+</section>
+
+
+<!-- 5b: Loopet er helten — Huntley -->
+<section data-background-color="#0f172a">
+  <h2>Loopet er helten — ikke modellen</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 20px;">Geoffrey Huntley — opfinderen af "Ralph Wiggum"-teknikken</p>
+  <div class="terminal" style="margin-bottom: 20px;">
+    <div><span class="comment"># Ralph Wiggum-teknikken — simpel men kraftfuld</span></div>
+    <div><span class="p">$</span> <span class="c">while true; do claude -p "tasks.md"; done</span></div>
+    <div style="margin-top: 8px;"><span class="o">→ Agenten kører opgave efter opgave — og fejler ikke permanent</span></div>
+    <div><span class="o">→ Den prøver igen. Og igen. Og retter sig selv.</span></div>
+  </div>
+  <div class="cols">
+    <div class="card amber-card">
+      <span class="tag">Huntley's indsigt</span>
+      <ul>
+        <li>Produktivitetsgevinsten kommer ikke fra bedre AI-svar</li>
+        <li>Den kommer fra <em>iteration og verifikation</em></li>
+        <li>"Software er nu ler på drejeskiven — det der ikke er rigtigt, smider jeg tilbage"</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag cyan">Hvad det betyder for dig</span>
+      <ul>
+        <li>Fejl er ikke blokkere — de er input til næste iteration</li>
+        <li>Din opgave: se mønstre i fejl og rette dem systematisk</li>
+        <li>Tænk i mål og verifikation — ikke i fremgangsmåde</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    Geoffrey Huntley er australsk udvikler der kom til berømmelse med en simpel indsigt: agentic AI virker ikke fordi modellen er klog — den virker fordi løkken gentager sig.
+    Hans eksempel: han leverede et $50.000-projekt for $297 USD ved at lade en simpel while-løkke køre i tre dage.
+    Det vigtige takeaway: når du sidder fast med Claude Code, er svaret ikke at give op — det er at give agenten mere kontekst og lade den prøve igen.
+  </aside>
+</section>
+
+
+<!-- 6: To AI-kodningsværktøjer -->
+<section data-background-color="#0f172a">
+  <h2>GitHub Copilot vs. Claude Code i 2026</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 20px;">Begge er kraftfulde — forskellene er reelle men nuancerede</p>
+  <div class="cols">
+    <div class="card grey-card">
+      <span class="tag grey">GitHub Copilot + Agent Mode</span>
+      <h3>Hurtig, editor-integreret</h3>
+      <ul>
+        <li>Tab-completion + autonom cloud agent</li>
+        <li>Tildel et issue → Copilot åbner PR i baggrunden</li>
+        <li>Faste roller: Explore · Task · Review · Plan</li>
+        <li>Kontekstvindue: 128k tokens</li>
+        <li class="grey" style="font-size:0.85em;">⚠ Svag på kontekst i store codebases — hallucinerer</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag cyan">Claude Code</span>
+      <h3>Planlæggende, rolle-baseret</h3>
+      <ul>
+        <li><strong>Frit definérbare roller</strong> via CLAUDE.md — QA · Security · Arkitekt · DevOps</li>
+        <li>Planlægger før den koder — færre re-prompts</li>
+        <li>Kontekstvindue: <strong>1M tokens</strong> — hele store codebases</li>
+        <li>Anthropic fine-tuner Claude og Claude Code sammen</li>
+        <li class="grey" style="font-size:0.85em;">⚠ Rate limits + pris — løses med Copilot-proxy (i dag)</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    Copilot i 2026 er rigtig godt og må ikke undervurderes. Det har autonome cloud agents og er hurtigere til autocomplete.
+    To reelle Claude Code-differentiators:
+    1. ROLLER: Du skriver i CLAUDE.md hvem agenten er — en QA-specialist der KUN tænker i tests, en security-agent der KUN tænker i trusler. Det er ikke prædefinerede faste roller. Det er hvad du vil have. Og de koordinerer med delt state.
+    2. PLANLÆGNING: Head-to-head test (jgandrews.com 2025): "Copilot favoured building directly towards a basic working MVP. Claude was more planning-oriented and favoured more robust final products. Claude's preference for verbose logging enabled it to produce working product with fewer re-prompts."
+    Rate limits: "Claude Code is the best coding tool I've ever used, for the 45 minutes a day I can actually use it." — Det er præcis det vi løser i dag med Heimsense-proxyen mod jeres Copilot-licens.
+  </aside>
+</section>
+
+
+<!-- 7: Hvad siger udviklere der har prøvet begge? -->
+<section data-background-color="#0f172a">
+  <h2>Hvad siger udviklere der har prøvet begge?</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 20px;">FreeCodeCamp · Hacker News · Reddit — 2025/2026</p>
+  <div class="cols">
+    <div>
+      <div class="card grey-card" style="margin-bottom:14px;">
+        <span class="tag grey">FreeCodeCamp — 2 ugers test</span>
+        <p style="margin-bottom:6px;"><em>"Claude Code's suggestions were immediately usable ~85% of the time. Copilot ~70%."</em></p>
+        <p><em>"Claude Code isn't a Copilot replacement. It's not worse. It's <strong>different</strong>."</em></p>
+      </div>
+      <div class="card grey-card">
+        <span class="tag grey">Hacker News</span>
+        <p><em>"Copilot is garbage compared to Claude agents — inferior tool use capabilities."</em></p>
+        <p style="margin-top:6px;"><em>"Using the same model, Copilot consistently fails to finish tasks or makes a mess."</em></p>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:14px;">
+        <span class="tag cyan">Hvad folk faktisk bruger dem til</span>
+        <ul>
+          <li>Copilot: daglig autocomplete, hurtige afgrænsede opgaver</li>
+          <li>Claude Code: planlægning, store refaktorer, debugging, roller</li>
+          <li><em>"It's less about writing code, more about building an engine that codes."</em></li>
+        </ul>
+      </div>
+      <div class="card amber-card">
+        <span class="tag">Praktisk tommelfingerregel</span>
+        <ul>
+          <li>Copilot til flow og IDE-skrivning</li>
+          <li>Claude Code til opgaver der kræver <em>forståelse</em></li>
+          <li>"Most loved" AI coding tool 2026: <strong>46%</strong> vs 9%</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Det vigtige budskab: dette er ikke en kamp mellem god og dårlig. Det er to forskellige tilgange.
+    Copilot er hurtigere og mere ergonomisk integreret i editoren. Claude Code er mere præcis og kontekst-bevidst på komplekse opgaver.
+    Den enkle tommelfingerregel erfarne AI-native devs bruger: Copilot til det du skriver selv (flow), Claude Code til det du vil have løst (forståelse og koordination).
+    "Most loved" 2026: Claude Code 46%, Cursor 19%, Copilot 9% — ikke fordi Copilot er dårligt, men fordi den tekniske community foretrækker Claude Code til de komplekse ting.
+  </aside>
+</section>
+
+
+<!-- 5: Hvad Claude Code konkret kan -->
+<section data-background-color="#0f172a">
+  <h2>Hvad Claude Code konkret kan</h2>
+  <div class="cols" style="margin-top: 24px;">
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <span class="tag cyan">Forstå</span>
+        <h3>Kodebase-navigation</h3>
+        <p>"Forklar mig arkitekturen i dette modul" — Claude læser alle relevante filer og forklarer.</p>
+      </div>
+      <div class="card">
+        <span class="tag cyan">Refaktorere</span>
+        <h3>Tværgående ændringer</h3>
+        <p>Omdøb en funktion brugt 80 steder. Flyt et modul. Opdater alle tests automatisk.</p>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom: 16px;">
+        <span class="tag cyan">Debugge</span>
+        <h3>Root cause analyse</h3>
+        <p>"Denne test fejler i CI men ikke lokalt" — Claude kigger på tests, fixtures og CI-config på én gang.</p>
+      </div>
+      <div class="card">
+        <span class="tag cyan">Levere</span>
+        <h3>Fra issue til PR</h3>
+        <p>Feature-branch → implementation → tests → commit → PR. Alt i ét flow.</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Disse fire ting er de scenarier hvor Claude Code virkelig skinner. Det fælles tema er: opgaver der kræver at man holder mange filer i hovedet på én gang.
+    Det er præcis det mennesker er dårlige til, og præcis det Claude Code er god til.
+  </aside>
+</section>
+
+
+<!-- 6: Terminaldemo-slide -->
+<section data-background-color="#0f172a">
+  <h2>Sådan ser det ud</h2>
+  <p class="grey" style="margin-top: -6px; margin-bottom: 20px;">En samtale i terminalen — Claude svarer med kode og handlinger</p>
+  <div class="terminal">
+    <div><span class="p">$</span> <span class="c">claude</span></div>
+    <div style="margin-top: 10px;"><span class="h">▶ Claude Code</span> <span class="o">claude-sonnet-4-6 · /workspaces/konsolidator</span></div>
+    <div style="margin-top: 14px;"><span class="a">Troels:</span> <span class="c">Refaktorér alle steder vi bruger raw SQL til at bruge vores ORM i stedet</span></div>
+    <div style="margin-top: 10px;"><span class="h">Claude:</span> <span class="o">Søger i codebase... fandt 14 steder med raw SQL</span></div>
+    <div><span class="o">         Analyserer ORM-patterns fra eksisterende kode...</span></div>
+    <div><span class="o">         Opdaterer UserRepository.ts (3 queries)</span></div>
+    <div><span class="o">         Opdaterer OrderService.ts (6 queries)</span></div>
+    <div><span class="o">         Opdaterer ReportController.ts (5 queries)</span></div>
+    <div><span class="o">         Kører tests...</span> <span class="p">✓ 47/47 pass</span></div>
+    <div style="margin-top: 10px;"><span class="h">Claude:</span> <span class="c">Færdig. 14 queries migreret, alle tests grønne.</span></div>
+    <div><span class="c">         Commit: "refactor: migrate raw SQL to ORM (14 queries)"</span></div>
+  </div>
+  <aside class="notes">
+    Det her er den virkelige oplevelse — en samtale i terminalen.
+    Bemærk at Claude ikke bare ændrer én fil. Den finder alle relevante steder, forstår mønstrene i eksisterende kode, og holder tests grønne undervejs.
+    Det tager typisk 2-5 minutter for en opgave som denne. Manuelt ville det tage en halv dag.
+  </aside>
+</section>
+
+
+<!-- 7: Mål for dagen -->
+<section class="center-slide" data-background-color="#0f172a">
+  <div class="big-text" style="max-width: 700px;">
+    Mål for i dag:
+  </div>
+  <div style="margin-top: 28px; font-size: 1.1em; color: var(--cyan); font-weight: 700; line-height: 1.6; text-align: center;">
+    Alle har Claude Code kørende<br>
+    og har løst én reel opgave<br>
+    fra jeres codebase
+  </div>
+  <div style="margin-top: 32px; font-size: 0.62em; color: var(--grey); max-width: 500px; text-align: center; line-height: 1.6;">
+    Ikke en tutorial-opgave. En rigtig opgave.<br>
+    Noget der skaber reel værdi.
+  </div>
+  <aside class="notes">
+    Det er det eneste mål vi har for i dag. Ikke at I forstår alt om Claude Code — det gør ingen. Men at I har en kørende installation og har prøvet det på noget der betyder noget.
+    Alle andre ting — skills, agents, workflow — er noget I kan lære hen ad vejen.
+  </aside>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     BLOK 2 — SETUP (10:00–12:00)
+═══════════════════════════════════════════════════ -->
+
+<!-- 8: Setup overblik -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill active">Setup</span>
+    <span class="phase-pill pending">Hands-on</span>
+  </div>
+  <h2>Hvad vi sætter op</h2>
+  <p class="grey" style="margin-top: -4px; margin-bottom: 24px;">5 trin — følg DEV_SETUP.md og CLAUDE_SETUP.md fra <a href="https://github.com/Simple-Bookings/claude-starter-kit" style="color:var(--cyan);">starter-kittet</a></p>
+  <div class="steps">
+    <div class="step">
+      <div class="num">1</div>
+      <div class="body"><h4>Docker + WSL2 + VSCode Dev Containers</h4><p>Lokal container — identisk miljø for alle</p></div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div class="body"><h4>GitHub CLI (<code>gh</code>)</h4><p>Issues, PRs og GitHub-automation fra terminalen</p></div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div class="body"><h4>GitHub Copilot CLI</h4><p>Autentificering mod Copilot API</p></div>
+    </div>
+    <div class="step">
+      <div class="num">4</div>
+      <div class="body"><h4>Claude Code CLI</h4><p><code>npm install -g @anthropic-ai/claude-code</code></p></div>
+    </div>
+    <div class="step">
+      <div class="num">5</div>
+      <div class="body"><h4>Heimsense</h4><p>Proxy der ruter Claude Code via jeres Copilot-licens — ingen ekstra regning</p></div>
+    </div>
+  </div>
+  <aside class="notes">
+    Vi følger dokumenterne fra starter-kittet. Åbn DEV_SETUP.md og CLAUDE_SETUP.md på github.com/Simple-Bookings/claude-starter-kit — eller print dem ud.
+    Vi starter med trin 1 nu. Gå i dit eget tempo. Rejs hånden hvis du sidder fast.
+  </aside>
+</section>
+
+
+<!-- 9: Trin 1 — DevContainer -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill active">Setup · Trin 1</span>
+    <span class="phase-pill pending">Trin 2-5</span>
+    <span class="phase-pill pending">Hands-on</span>
+  </div>
+  <h2>Trin 1 — DevContainer</h2>
+  <p class="grey" style="margin-top: -4px; margin-bottom: 20px;">Se <strong>DEV_SETUP.md</strong> for fuld vejledning</p>
+  <div class="cols">
+    <div>
+      <div class="card" style="margin-bottom: 14px;">
+        <span class="tag">Windows</span>
+        <ul>
+          <li>WSL2 + Ubuntu 22.04</li>
+          <li>Docker Desktop (aktivér WSL2-backend)</li>
+          <li>VSCode + Dev Containers extension</li>
+        </ul>
+      </div>
+      <div class="card grey-card">
+        <span class="tag grey">macOS</span>
+        <ul>
+          <li>Docker Desktop for Mac</li>
+          <li>VSCode + Dev Containers extension</li>
+          <li>Apple Silicon: brug ARM-versionen</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card" style="align-self: start;">
+      <span class="tag cyan">Åbn repo i container</span>
+      <div class="terminal" style="font-size:0.72em; margin-top: 10px;">
+        <div><span class="comment"># VSCode kommandopalet</span></div>
+        <div><span class="h">Ctrl+Shift+P</span></div>
+        <div><span class="c">Dev Containers: Open Folder in Container</span></div>
+        <div style="margin-top: 10px;"><span class="comment"># Verificér</span></div>
+        <div><span class="p">$</span> <span class="c">node --version</span>  <span class="o"># v22+</span></div>
+        <div><span class="p">$</span> <span class="c">docker --version</span></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    DEV_SETUP.md har screenshots og trin-for-trin for både Windows og macOS.
+    Windows-brugere: det kritiske er WSL2. Hvis Docker Desktop ikke kan se WSL2, er det typisk fordi WSL2-backend ikke er aktiveret under Docker Desktop → Settings → Resources → WSL Integration.
+    macOS: meget enklere. Docker Desktop + Dev Containers extension i VSCode, og du er i gang.
+  </aside>
+</section>
+
+
+<!-- 10: Trin 2+3 — gh + Copilot CLI -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Trin 1</span>
+    <span class="phase-pill active">Setup · Trin 2+3</span>
+    <span class="phase-pill pending">Trin 4+5</span>
+    <span class="phase-pill pending">Hands-on</span>
+  </div>
+  <h2>Trin 2+3 — gh og Copilot CLI</h2>
+  <p class="grey" style="margin-top: -4px; margin-bottom: 20px;">Se <strong>CLAUDE_SETUP.md</strong> afsnit 1+2</p>
+  <div class="cols">
+    <div class="card">
+      <span class="tag cyan">GitHub CLI (gh)</span>
+      <div class="terminal" style="margin-top: 10px; font-size:0.7em;">
+        <div><span class="comment"># Linux / WSL2</span></div>
+        <div><span class="c">sudo apt install gh</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Login</span></div>
+        <div><span class="c">gh auth login</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Verificér</span></div>
+        <div><span class="p">$</span> <span class="c">gh auth status</span></div>
+        <div><span class="o">✓ Logged in to github.com as ...</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <span class="tag amber">Copilot CLI</span>
+      <div class="terminal" style="margin-top: 10px; font-size:0.7em;">
+        <div><span class="comment"># Kræver Node.js 22+</span></div>
+        <div><span class="c">npm install -g @github/copilot</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Login</span></div>
+        <div><span class="c">copilot login</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Hent token til Heimsense</span></div>
+        <div><span class="p">$</span> <span class="c">gh auth token</span></div>
+        <div><span class="o">gho_xxxxxxxxxxxxxxxxxxxx  ← gem dette</span></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    GitHub CLI (gh) er nødvendig for Claude Code's workflow — issues, PRs, kommentarer osv.
+    Copilot CLI bruges til at autentificere mod GitHub's Copilot API. Tokenet du henter med `gh auth token` bruges i næste trin til Heimsense.
+    Vigtigt: Node.js 22+ er et krav for Copilot CLI. Tjek med `node --version`.
+  </aside>
+</section>
+
+
+<!-- 11: Trin 4+5 — Claude Code + Heimsense -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Trin 1-3</span>
+    <span class="phase-pill active">Setup · Trin 4+5</span>
+    <span class="phase-pill pending">Hands-on</span>
+  </div>
+  <h2>Trin 4+5 — Claude Code og Heimsense</h2>
+  <p class="grey" style="margin-top: -4px; margin-bottom: 20px;">Se <strong>CLAUDE_SETUP.md</strong> afsnit 3+4 — i devcontaineren er alt allerede installeret</p>
+  <div class="cols">
+    <div class="card">
+      <span class="tag cyan">Claude Code</span>
+      <div class="terminal" style="margin-top: 10px; font-size:0.68em;">
+        <div><span class="comment"># Lokal maskine</span></div>
+        <div><span class="c">npm install -g @anthropic-ai/claude-code</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># I devcontaineren: allerede installeret ✅</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Verificér</span></div>
+        <div><span class="p">$</span> <span class="c">claude --version</span></div>
+      </div>
+    </div>
+    <div class="card amber-card">
+      <span class="tag">Heimsense — Copilot-proxy</span>
+      <div class="terminal" style="margin-top: 10px; font-size:0.7em;">
+        <div><span class="comment"># Devcontaineren starter Heimsense automatisk via PM2</span></div>
+        <div><span class="comment"># Token roteres automatisk hver 8. time</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Status</span></div>
+        <div><span class="p">$</span> <span class="c">bash scripts/heimsense-status.sh</span></div>
+        <div style="margin-top: 8px;"><span class="comment"># Test at alt virker</span></div>
+        <div><span class="p">$</span> <span class="c">claude -p "reply with only the word OK"</span></div>
+        <div><span class="p green">OK</span></div>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Heimsense er en proxy der oversætter Anthropic API-kald til GitHub Copilot API-format. Det betyder at Claude Code bruger jeres eksisterende Copilot-licens og I ikke betaler ekstra til Anthropic.
+    Flowet er: claude → localhost:18081 (Heimsense) → api.githubcopilot.com → Claude Sonnet/Opus.
+    I devcontaineren kører PM2 Heimsense automatisk og roterer GitHub-token hver 8. time. I behøver ikke gøre noget manuelt.
+    Fuld vejledning med alle kommandoer er i CLAUDE_SETUP.md afsnit 4.
+  </aside>
+</section>
+
+
+<!-- 12: Verificér alt -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Trin 1-5</span>
+    <span class="phase-pill active">Verificér</span>
+    <span class="phase-pill pending">Hands-on</span>
+  </div>
+  <h2>Tjekliste — du er klar når</h2>
+  <div class="cols" style="margin-top: 20px;">
+    <div>
+      <ul class="checklist">
+        <li><code>docker --version</code> svarer</li>
+        <li>Repo åbner i devcontainer i VSCode</li>
+        <li><code>node --version</code> → v22+</li>
+        <li><code>gh auth status</code> → logget ind</li>
+      </ul>
+    </div>
+    <div>
+      <ul class="checklist">
+        <li><code>copilot version</code> svarer</li>
+        <li><code>claude --version</code> svarer</li>
+        <li><code>heimsense run</code> starter uden fejl</li>
+        <li><code>claude -p "reply with OK"</code> → <span class="green">OK</span></li>
+      </ul>
+    </div>
+  </div>
+  <div class="callout cyan">
+    <p style="margin: 0; font-size: 0.72em; color: var(--grey);">
+      <span style="color:var(--cyan); font-weight:700;">Første rigtige kørsel:</span>
+      Åbn jeres repo i terminalen og kør <code style="color:var(--white);">claude</code>.
+      Prøv: <em>"Forklar mig arkitekturen i dette projekt med 5 sætninger."</em>
+    </p>
+  </div>
+  <aside class="notes">
+    Lad alle gennemgå denne liste. Rejs hånden hvis noget fejler — de fleste problemer er enten WSL2-konfiguration eller et Heimsense-token der ikke er sat korrekt.
+    Den sidste test — `claude -p "reply with OK"` — er den afgørende. Hvis den svarer OK, er alt sat korrekt op og Claude bruger Copilot-licensen.
+  </aside>
+</section>
+
+
+<!-- PAUSE -->
+<section class="pause-slide" data-background-color="#1e293b">
+  <div style="width: 48px; height: 3px; background: var(--cyan); border-radius: 2px; margin: 0 auto 28px auto;"></div>
+  <h2 style="font-size:2em; margin-bottom: 12px;">Frokost</h2>
+  <p class="grey" style="font-size:0.85em; letter-spacing: 0.04em;">12:00 – 13:00</p>
+  <aside class="notes">
+    Frokostpause. Genoptager kl. 13:00 med hands-on sessionen.
+  </aside>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     BLOK 3 — HANDS-ON (13:00–15:30)
+═══════════════════════════════════════════════════ -->
+
+<!-- 13: Hands-on intro -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Setup</span>
+    <span class="phase-pill active">Hands-on</span>
+  </div>
+  <h2>Nu er det jeres tur</h2>
+  <p class="grey" style="margin-top: -4px; margin-bottom: 24px;">Find én reel opgave fra jeres backlog og lad Claude løse den</p>
+  <div class="cols-3">
+    <div class="card green-card">
+      <span class="tag green">God opgave</span>
+      <ul>
+        <li>Noget der kræver at forstå <em>eksisterende</em> kode</li>
+        <li>Refaktorering af et modul</li>
+        <li>En bug der kræver at man søger i mange filer</li>
+        <li>Tilføj tests til eksisterende kode</li>
+      </ul>
+    </div>
+    <div class="card grey-card">
+      <span class="tag grey">Undgå til start</span>
+      <ul>
+        <li>Ny feature fra bunden</li>
+        <li>Ting med eksterne integrationer</li>
+        <li>Database-migrationer</li>
+      </ul>
+    </div>
+    <div class="card amber-card">
+      <span class="tag">Tip</span>
+      <ul>
+        <li>Start med: <em>"Forklar dette modul"</em></li>
+        <li>Vær konkret i beskrivelsen</li>
+        <li>Lad Claude stille spørgsmål</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    Nøglen er at vælge en opgave der kræver at forstå eksisterende kode. Det er her Claude Code virkelig skinner.
+    Undgå helt nye features til start — det kræver at man specificerer alt fra bunden, og det er sværere.
+    Bed folk skrive deres opgave ned på 2-3 sætninger inden de starter. Det er den bedste prompt.
+  </aside>
+</section>
+
+
+<!-- 14: Workflow -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Setup</span>
+    <span class="phase-pill active">Hands-on · Workflow</span>
+  </div>
+  <h2>Workflow — fra opgave til kode</h2>
+  <div class="chain" style="margin-top: 28px;">
+    <div class="chain box">
+      <h4 style="color:var(--cyan);">/planning</h4>
+      <p>Beskriv opgaven. Claude groomer et GitHub issue og laver konkret task-liste.</p>
+    </div>
+    <div class="chain arr">→</div>
+    <div class="chain box">
+      <h4 style="color:var(--cyan);">/execution</h4>
+      <p>Claude implementerer én task ad gangen og committer med bevis.</p>
+    </div>
+    <div class="chain arr">→</div>
+    <div class="chain box">
+      <h4 style="color:var(--cyan);">/reviewing</h4>
+      <p>Deep code review — outputter APPROVED eller NEEDS_FIXES.</p>
+    </div>
+    <div class="chain arr">→</div>
+    <div class="chain box amber-box">
+      <h4 style="color:var(--amber);">/integration</h4>
+      <p>Claude håndterer CI, rebase, merge og lukker issue.</p>
+    </div>
+  </div>
+  <div class="callout amber">
+    <p style="margin: 0; font-size: 0.68em; color: var(--grey);">
+      <span style="color:var(--amber); font-weight:700;">I dag:</span>
+      Fokusér på <code>/planning</code> og <code>/execution</code>. Review og integration er næste skridt.
+    </p>
+  </div>
+  <aside class="notes">
+    Dette er det fulde workflow fra starter-kittet. Men i dag nøjes vi med de to første trin — planning og execution.
+    /planning: skriv opgaven som en beskrivelse eller GitHub issue. Claude stiller spørgsmål, opretter issue og producerer en task-liste. Godkend den.
+    /execution: Claude implementerer task for task på en feature-branch og committer undervejs. Du kan stoppe og justere kursen når som helst.
+  </aside>
+</section>
+
+
+<!-- 15: Nyttige kommandoer -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Setup</span>
+    <span class="phase-pill active">Hands-on · Reference</span>
+  </div>
+  <h2>Nyttige kommandoer</h2>
+  <div class="cols" style="margin-top: 20px;">
+    <div>
+      <div class="card" style="margin-bottom: 14px;">
+        <span class="tag cyan">Forstå codebasen</span>
+        <div class="terminal" style="font-size:0.65em; margin-top: 8px;">
+          <div><span class="c">Forklar arkitekturen i dette projekt</span></div>
+          <div><span class="c">Hvad gør [ModulNavn]?</span></div>
+          <div><span class="c">Find alle steder vi kalder [FunctionName]</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <span class="tag cyan">Debug</span>
+        <div class="terminal" style="font-size:0.65em; margin-top: 8px;">
+          <div><span class="c">Denne test fejler: [indsæt fejlbesked]</span></div>
+          <div><span class="c">Find root cause og forklar det</span></div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom: 14px;">
+        <span class="tag cyan">Skills</span>
+        <div class="terminal" style="font-size:0.65em; margin-top: 8px;">
+          <div><span class="p">/planning</span>   <span class="o">→ issue + task-liste fra beskrivelse</span></div>
+          <div><span class="p">/execution</span>  <span class="o">→ implementér task for task</span></div>
+          <div><span class="p">/reviewing</span> <span class="o">→ deep code review</span></div>
+          <div><span class="p">/tdd</span>        <span class="o">→ skriv fejlende test først</span></div>
+        </div>
+      </div>
+      <div class="card grey-card">
+        <span class="tag grey">Hvis Claude går i stå</span>
+        <ul>
+          <li>Fortæl præcis hvad der gik galt</li>
+          <li><code>/clear</code> og start forfra</li>
+          <li>Bræk opgaven i mindre dele</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    Det vigtigste at vide: jo mere kontekst du giver Claude, jo bedre resultat.
+    "Gør X" giver et gennemsnitligt resultat. "Gør X — vores convention er Y, undgå Z fordi vi har lært det giver problemer" giver et langt bedre resultat.
+    Og: Claude kan fejle. Det er normalt. Fortæl den hvad der gik galt og den retter det.
+  </aside>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     BLOK 4 — REFLEKSION (15:30–16:00)
+═══════════════════════════════════════════════════ -->
+
+<!-- 16: Refleksion -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Setup</span>
+    <span class="phase-pill done">Hands-on</span>
+    <span class="phase-pill active">Refleksion</span>
+  </div>
+  <h2>Refleksion</h2>
+  <p class="grey" style="margin-top: -4px; margin-bottom: 24px;">15:30 — hvad har vi lært i dag?</p>
+  <div class="cols">
+    <div>
+      <p style="font-size:0.78em; color:var(--cyan); font-weight:700; margin-bottom:8px;">Hvad virkede godt?</p>
+      <ul>
+        <li class="grey">Hvilken type opgave løste Claude bedst?</li>
+        <li class="grey">Hvornår sparede det mest tid?</li>
+        <li class="grey">Hvad overraskede dig positivt?</li>
+      </ul>
+    </div>
+    <div>
+      <p style="font-size:0.78em; color:var(--amber); font-weight:700; margin-bottom:8px;">Hvad virkede ikke?</p>
+      <ul>
+        <li class="grey">Hvor løb Claude ind i begrænsninger?</li>
+        <li class="grey">Hvornår blev du nødt til at overtage?</li>
+        <li class="grey">Hvad mangler I for at bruge det dagligt?</li>
+      </ul>
+    </div>
+  </div>
+  <aside class="notes">
+    Rund banen — lad alle sige ét ting der virkede og ét ting der ikke virkede. Det er den mest værdifulde del af dagen.
+    Typiske svar: "Jeg troede ikke det ville forstå vores codebase, men det gjorde det faktisk." / "Det gik galt da jeg bad den om at lave noget den ikke kendte konteksten til."
+  </aside>
+</section>
+
+
+<!-- 17: Næste skridt -->
+<section data-background-color="#0f172a">
+  <div class="phase-bar">
+    <span class="phase-pill done">Pitch</span>
+    <span class="phase-pill done">Setup</span>
+    <span class="phase-pill done">Hands-on</span>
+    <span class="phase-pill active">Næste skridt</span>
+  </div>
+  <h2>Næste skridt</h2>
+  <div class="steps" style="margin-top: 24px;">
+    <div class="step">
+      <div class="num done">1</div>
+      <div class="body">
+        <h4>Brug det dagligt i 2 uger</h4>
+        <p>Et nyt værktøj læres ved brug. Find én opgave om dagen til Claude.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <div class="body">
+        <h4>Få starter-kittet ind i jeres repo</h4>
+        <p><strong>Nyt repo:</strong> fork <a href="https://github.com/Simple-Bookings/claude-starter-kit" style="color:var(--cyan);">github.com/Simple-Bookings/claude-starter-kit</a> og brug det som udgangspunkt<br>
+        <strong>Eksisterende repo:</strong> kør <code>bash scripts/import-to-repo.sh /sti/til/repo</code> — eller <code>/adopt</code> i Claude Code</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <div class="body">
+        <h4>Udfyld CLAUDE.md og kør /onboarding</h4>
+        <p>Tech stack, key commands og konventioner — det er konteksten Claude bruger. <code>/onboarding</code> guider til næste trin.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="num amber">4</div>
+      <div class="body">
+        <h4>Prøv det fulde workflow</h4>
+        <p><code>/planning</code> → <code>/execution</code> → <code>/reviewing</code> → PR til develop</p>
+      </div>
+    </div>
+  </div>
+  <aside class="notes">
+    To scenarier: ny kode i et nyt repo → fork starter-kittet og brug det som udgangspunkt.
+    Eksisterende kode → kør import-scriptet eller /adopt i Claude Code. Det håndterer konflikter, tager backup og guider interaktivt.
+    CLAUDE.md er den fil Claude Code læser ved sessionstart — jo bedre den er udfyldt, jo bedre resultat.
+    /onboarding scanner repo-tilstanden og husker fremgangen på tværs af sessioner.
+  </aside>
+</section>
+
+
+<!-- 18: Afslutning -->
+<section class="center-slide" data-background-color="#0f172a">
+  <h1 style="font-size:2.2em; margin-bottom: 20px;">Tak for i dag</h1>
+  <div style="margin-bottom: 32px;">
+    <p style="color:var(--cyan); font-size:0.85em; margin-bottom: 6px;">Troels Wittrup</p>
+    <p style="color:var(--grey); font-size:0.72em; margin-bottom: 4px;">troels@simple-bookings.dk</p>
+  </div>
+  <div style="font-size:0.65em; color:var(--grey); max-width: 520px; line-height: 1.7; text-align: center;">
+    Starter-kit:<br>
+    <a href="https://github.com/Simple-Bookings/claude-starter-kit" style="color:var(--cyan);">github.com/Simple-Bookings/claude-starter-kit</a>
+  </div>
+  <aside class="notes">
+    Spørgsmål er velkomne nu og efterfølgende på mail.
+    Jeg sender en opfølgningsmail med links til alle ressourcer.
+  </aside>
+</section>
+
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5/plugin/highlight/highlight.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  transition: 'fade',
+  transitionSpeed: 'slow',
+  backgroundTransition: 'fade',
+  controls: true,
+  progress: true,
+  center: false,
+  plugins: [ RevealNotes, RevealHighlight ],
+  width: 1280,
+  height: 720,
+  margin: 0,
+});
+</script>
+</body>
+</html>
