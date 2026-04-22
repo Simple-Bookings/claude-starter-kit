@@ -11,6 +11,7 @@
       "installTools": true
     }
   },
+  "postCreateCommand": "bash scripts/devcontainer-setup.sh",
   "remoteUser": "node",
   "secrets": {
     "ANTHROPIC_API_KEY": {

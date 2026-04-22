@@ -14,9 +14,6 @@ RUN npm install -g \
     @anthropic-ai/claude-code@2.1.116 \
     @github/copilot
 
-# Install Heimsense (proxy for Copilot API)
-RUN curl -fsSL https://raw.githubusercontent.com/fajarhide/heimsense/main/scripts/install.sh | bash
-    
 # Kør som node-bruger
 USER node
 
