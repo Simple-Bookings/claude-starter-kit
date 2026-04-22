@@ -20,18 +20,24 @@ fi
 
 mkdir -p "${HOME}/.local/bin"
 
-echo "Installerer Heimsense ${HEIMSENSE_VERSION} (${PLATFORM})..."
-curl -fsSL \
-  "https://github.com/fajarhide/heimsense/releases/download/${HEIMSENSE_VERSION}/heimsense-${PLATFORM}" \
-  -o "${HEIMSENSE_BIN}"
+# Spring over hvis korrekt version allerede er installeret
+if [ -x "${HEIMSENSE_BIN}" ] && "${HEIMSENSE_BIN}" version 2>/dev/null | grep -q "${HEIMSENSE_VERSION}"; then
+  echo "Heimsense ${HEIMSENSE_VERSION} allerede installeret — springer over."
+else
+  echo "Installerer Heimsense ${HEIMSENSE_VERSION} (${PLATFORM})..."
+  curl -fsSL \
+    "https://github.com/fajarhide/heimsense/releases/download/${HEIMSENSE_VERSION}/heimsense-${PLATFORM}" \
+    -o "${HEIMSENSE_BIN}"
 
-echo "${HEIMSENSE_SHA256}  ${HEIMSENSE_BIN}" | sha256sum -c || {
-  echo "FEJL: Checksum-verifikation fejlede — binæren er muligvis kompromitteret"
-  rm -f "${HEIMSENSE_BIN}"
-  exit 1
-}
+  echo "${HEIMSENSE_SHA256}  ${HEIMSENSE_BIN}" | sha256sum -c || {
+    echo "FEJL: Checksum-verifikation fejlede — binæren er muligvis kompromitteret"
+    rm -f "${HEIMSENSE_BIN}"
+    exit 1
+  }
 
-chmod +x "${HEIMSENSE_BIN}"
+  chmod +x "${HEIMSENSE_BIN}"
+  echo "Heimsense ${HEIMSENSE_VERSION} installeret."
+fi
 
 if ! grep -q '\.local/bin' "${HOME}/.bashrc" 2>/dev/null; then
   echo 'export PATH="${HOME}/.local/bin:${PATH}"' >> "${HOME}/.bashrc"

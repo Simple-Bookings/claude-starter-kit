@@ -38,6 +38,14 @@ echo "Kører heimsense sync..."
 
 # Kør maks 8 timer — PM2 genstarter derefter med frisk GH token
 # (GitHub OAuth-tokens roterer typisk inden for 8 timer)
+# timeout returnerer 124 ved planlagt stop, heimsense's exit code ellers
 echo "Starter heimsense run (max 8 timer, derefter genstart for frisk token)..."
-timeout 28800 "${HEIMSENSE_BIN}" run || true
-echo "Heimsense stoppet — PM2 genstarter med frisk token."
+timeout 28800 "${HEIMSENSE_BIN}" run
+EXIT_CODE=$?
+if [ "${EXIT_CODE}" -eq 124 ]; then
+  echo "Heimsense stoppet efter 8 timer — PM2 genstarter med frisk token."
+  exit 0
+else
+  echo "Heimsense afsluttede med exit code ${EXIT_CODE}"
+  exit "${EXIT_CODE}"
+fi

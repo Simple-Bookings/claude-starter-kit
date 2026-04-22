@@ -6,6 +6,7 @@ SETTINGS="${HOME}/.claude/settings.json"
 
 echo "Stopper heimsense i PM2..."
 pm2 delete heimsense 2>/dev/null && echo "  ✓ PM2-process slettet" || echo "  – ingen PM2-process fundet"
+pm2 save --force 2>/dev/null || true
 
 if [ ! -f "${SETTINGS}" ]; then
   echo "Ingen settings.json fundet — intet at rydde op."

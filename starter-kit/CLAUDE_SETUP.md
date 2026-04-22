@@ -386,6 +386,25 @@ source ~/.zshrc
 
 ---
 
+## Opdatér Heimsense til ny version
+
+Når en ny heimsense-version er tilgængelig, opdatér disse **fire steder** i ét commit:
+
+1. `HEIMSENSE_VERSION` i `scripts/devcontainer-setup.sh`
+2. `HEIMSENSE_SHA256_AMD64` — hent med:
+   ```bash
+   curl -fsSL https://github.com/fajarhide/heimsense/releases/download/vX.Y.Z/heimsense-linux-amd64 | sha256sum
+   ```
+3. `HEIMSENSE_SHA256_ARM64` — hent med:
+   ```bash
+   curl -fsSL https://github.com/fajarhide/heimsense/releases/download/vX.Y.Z/heimsense-linux-arm64 | sha256sum
+   ```
+4. `LABEL org.opencontainers.image.version` i `.devcontainer/Dockerfile`
+
+Rebuild derefter devcontaineren for at installere den nye version.
+
+---
+
 ## Næste skridt
 
 - **Skills og agents:** Se [`STARTER_KIT.md`](./STARTER_KIT.md) for at kopiére starter-kittet ind i dit projekt og aktivere AI-teamet
