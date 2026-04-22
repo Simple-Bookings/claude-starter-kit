@@ -11,7 +11,7 @@
       "installTools": true
     }
   },
-  "postCreateCommand": "bash scripts/devcontainer-setup.sh",
+  "postCreateCommand": "bash scripts/devcontainer-setup.sh && echo 'Log ind på GitHub og start Heimsense: gh auth login && bash scripts/heimsense-start.sh'",
   "remoteUser": "node",
   "secrets": {
     "ANTHROPIC_API_KEY": {
