@@ -6,21 +6,13 @@ Denne vejledning viser, hvordan du sætter et projekt op lokalt med VSCode og en
 
 ## Krav
 
-### ANTHROPIC_API_KEY — påkrævet
+### API-adgang til Claude — to muligheder
 
-Claude Code kræver en Anthropic API-nøgle. Sæt den op **inden** du åbner containeren.
+Claude Code kræver adgang til Claude-modellen. Du har to muligheder:
 
-**GitHub Codespaces (anbefalet):**
+**Mulighed A — Anthropic API-nøgle (direkte):**
 
-1. Gå til [github.com/settings/codespaces](https://github.com/settings/codespaces)
-2. Klik **New secret**
-3. Navn: `ANTHROPIC_API_KEY`, Værdi: din nøgle fra [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
-4. Vælg de repos nøglen må tilgå
-5. Codespaces injicerer nøglen automatisk som env-variabel ved container-start
-
-**Lokalt (VSCode devcontainer):**
-
-Sæt variablen i din shell-profil (`~/.bashrc`, `~/.zshrc` eller `~/.profile`):
+Sæt nøglen i din shell-profil (`~/.bashrc`, `~/.zshrc` eller `~/.profile`) **inden** du åbner containeren:
 
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
@@ -28,7 +20,15 @@ export ANTHROPIC_API_KEY="sk-ant-..."
 
 Genstart terminalen og åbn derefter containeren — VSCode arver env-variabler fra din shell.
 
-> **Aldrig:** Skriv nøglen direkte i `devcontainer.json` eller en `.env`-fil og commit den. Begge er dækket af `.gitignore`, men risikoen for fejl er for stor.
+> Hent din nøgle fra [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys).
+
+**Mulighed B — GitHub Copilot-licens via Heimsense (ingen ekstra regning):**
+
+Hvis du har en aktiv GitHub Copilot-plan, kan du bruge den som backend for Claude Code via Heimsense-proxyen. Du behøver ingen Anthropic API-nøgle.
+
+Devcontaineren starter Heimsense automatisk — se [`CLAUDE_SETUP.md`](./CLAUDE_SETUP.md) for opsætning af `gh auth login` og `copilot login`.
+
+> **Aldrig:** Skriv en API-nøgle direkte i `devcontainer.json` eller en `.env`-fil og commit den. Begge er dækket af `.gitignore`, men risikoen for fejl er for stor.
 
 ---
 
@@ -46,7 +46,7 @@ Genstart terminalen og åbn derefter containeren — VSCode arver env-variabler 
 
 - **macOS 11 Big Sur+** (Intel eller Apple Silicon)
 - **Docker Desktop for Mac** (Apple Silicon: brug ARM-versionen)
-- **VSCode** med extensionen **Dev Containers** (`ms-vsc5edode-remote.remote-containers`)
+- **VSCode** med extensionen **Dev Containers** (`ms-vscode-remote.remote-containers`)
 
 ---
 
