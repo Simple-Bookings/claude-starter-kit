@@ -46,4 +46,7 @@ else:
     print("  – ingen heimsense env-keys fundet")
 EOF
 
+echo "Fjerner ~/.heimsense/.env..."
+rm -f "${HOME}/.heimsense/.env" && echo "  ✓ ~/.heimsense/.env slettet" || true
+
 echo "Færdig. Genstart Claude Code for at ændringerne træder i kraft."

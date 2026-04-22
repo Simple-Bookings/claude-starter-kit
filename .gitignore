@@ -27,3 +27,11 @@ Thumbs.db
 .claude/scheduled_tasks.lock
 plans/*-plan.md
 .claude/settings.local.json
+
+# Claude Code runtime-mapper
+.claude/worktrees/
+.claude/teams/
+.claude/tasks/
+
+# Logs
+*.log

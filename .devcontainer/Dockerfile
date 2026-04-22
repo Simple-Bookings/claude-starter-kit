@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 RUN npm install -g \
     pm2@6.0.14 \
     @anthropic-ai/claude-code@2.1.116 \
-    @github/copilot
+    @github/copilot@1.0.34
 
 # Ensure claude config mount point is owned by node user so the named
 # volume initializes with correct permissions on first use

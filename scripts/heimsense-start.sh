@@ -11,12 +11,12 @@ fi
 
 GH_TOKEN=$(gh auth token 2>/dev/null || true)
 if [ -z "${GH_TOKEN}" ]; then
-  echo "gh ikke authenticated — prøver igen om 60s. Kør: gh auth login"
+  echo "gh ikke authenticated — prøver igen om 30s. Kør: gh auth login"
   exit 1
 fi
 
 mkdir -p "$(dirname "${ENV_FILE}")"
-cat > "${ENV_FILE}" <<EOF
+(umask 077; cat > "${ENV_FILE}" <<EOF
 ANTHROPIC_BASE_URL=https://api.githubcopilot.com
 ANTHROPIC_API_KEY=${GH_TOKEN}
 ANTHROPIC_CUSTOM_MODEL_OPTION=claude-sonnet-4.6
@@ -26,7 +26,7 @@ LISTEN_ADDR=:18081
 REQUEST_TIMEOUT_MS=120000
 MAX_RETRIES=3
 EOF
-chmod 600 "${ENV_FILE}"
+)
 
 while IFS='=' read -r key value; do
   [[ -z "$key" || "$key" == \#* ]] && continue
