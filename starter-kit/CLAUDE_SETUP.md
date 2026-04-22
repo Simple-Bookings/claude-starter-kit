@@ -185,23 +185,25 @@ claude → localhost:18081 (Heimsense) → api.githubcopilot.com → Claude Sonn
 
 ### Installation
 
-**Download seneste release fra GitHub:**
+**Download fra GitHub (brug samme version som devcontaineren — se `HEIMSENSE_VERSION` i `scripts/devcontainer-setup.sh`):**
 
 ```bash
+HEIMSENSE_VERSION="v0.1.3"
+
 # Mac (Apple Silicon)
-curl -L https://github.com/strowk/heimsense/releases/latest/download/heimsense-darwin-arm64 \
+curl -L "https://github.com/fajarhide/heimsense/releases/download/${HEIMSENSE_VERSION}/heimsense-darwin-arm64" \
   -o /usr/local/bin/heimsense && chmod +x /usr/local/bin/heimsense
 
 # Mac (Intel)
-curl -L https://github.com/strowk/heimsense/releases/latest/download/heimsense-darwin-amd64 \
+curl -L "https://github.com/fajarhide/heimsense/releases/download/${HEIMSENSE_VERSION}/heimsense-darwin-amd64" \
   -o /usr/local/bin/heimsense && chmod +x /usr/local/bin/heimsense
 
 # Linux (amd64)
-curl -L https://github.com/strowk/heimsense/releases/latest/download/heimsense-linux-amd64 \
+curl -L "https://github.com/fajarhide/heimsense/releases/download/${HEIMSENSE_VERSION}/heimsense-linux-amd64" \
   -o /usr/local/bin/heimsense && chmod +x /usr/local/bin/heimsense
 ```
 
-**Windows:** Download `.exe` fra [releases-siden](https://github.com/strowk/heimsense/releases) og læg den i din PATH.
+**Windows:** Download `.exe` fra [releases-siden](https://github.com/fajarhide/heimsense/releases) og læg den i din PATH.
 
 ### Konfiguration
 

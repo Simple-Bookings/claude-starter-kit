@@ -43,10 +43,14 @@ echo ""
 # ─── Konfliktdetektering ───────────────────────────────────────────────────
 CONFLICTS=()
 
-[ -f "${TARGET}/CLAUDE.md" ]                  && CONFLICTS+=("CLAUDE.md (tages backup)")
-[ -d "${TARGET}/.devcontainer" ]              && CONFLICTS+=(".devcontainer/ (tages backup)")
+[ -f "${TARGET}/CLAUDE.md" ]                     && CONFLICTS+=("CLAUDE.md (tages backup)")
+[ -d "${TARGET}/.devcontainer" ]                 && CONFLICTS+=(".devcontainer/ (tages backup)")
 [ -f "${TARGET}/scripts/devcontainer-setup.sh" ] && CONFLICTS+=("scripts/devcontainer-setup.sh (tages backup)")
 [ -f "${TARGET}/scripts/devcontainer-start.sh" ] && CONFLICTS+=("scripts/devcontainer-start.sh (tages backup)")
+[ -f "${TARGET}/scripts/heimsense-start.sh" ]    && CONFLICTS+=("scripts/heimsense-start.sh (tages backup)")
+[ -f "${TARGET}/scripts/heimsense-uninstall.sh" ] && CONFLICTS+=("scripts/heimsense-uninstall.sh (tages backup)")
+[ -f "${TARGET}/scripts/heimsense-status.sh" ]   && CONFLICTS+=("scripts/heimsense-status.sh (tages backup)")
+[ -f "${TARGET}/scripts/import-to-repo.sh" ]     && CONFLICTS+=("scripts/import-to-repo.sh (tages backup)")
 
 if [ ${#CONFLICTS[@]} -gt 0 ]; then
   warn "Følgende filer/mapper eksisterer allerede og vil blive backed up (.bak):"
@@ -110,6 +114,7 @@ SCRIPT_FILES=(
   heimsense-start.sh
   heimsense-uninstall.sh
   heimsense-status.sh
+  import-to-repo.sh
 )
 for f in "${SCRIPT_FILES[@]}"; do
   backup "${TARGET}/scripts/${f}"
