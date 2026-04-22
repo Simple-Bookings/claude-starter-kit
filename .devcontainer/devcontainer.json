@@ -11,6 +11,13 @@
       "installTools": true
     }
   },
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "claudeCode.allowDangerouslySkipPermissions": true
+      }
+    }
+  },
   "postCreateCommand": "bash scripts/devcontainer-setup.sh",
   "postStartCommand": "bash scripts/devcontainer-start.sh",
   "remoteUser": "node",
