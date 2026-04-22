@@ -18,6 +18,9 @@
       }
     }
   },
+  "mounts": [
+    "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume"
+  ],
   "postCreateCommand": "bash scripts/devcontainer-setup.sh",
   "postStartCommand": "bash scripts/devcontainer-start.sh",
   "remoteUser": "node",
