@@ -11,9 +11,10 @@ from rich.table import Table
 
 console = Console()
 
-# Get templates from the installed package
-# Templates are at package root (../.. from commands/), not inside csk/
-TEMPLATE_DIR = Path(__file__).parent.parent.parent / "templates"
+from csk.resources import templates_dir
+
+# Works in both repo layout and pip-installed layout (csk/_data/templates)
+TEMPLATE_DIR = templates_dir() or Path(__file__).parent.parent.parent / "templates"
 
 
 def get_template_files() -> dict[str, Path]:
@@ -88,7 +89,18 @@ def upgrade_project(check: bool, force: bool, backup: bool, skill: tuple) -> Non
     console.print(Panel.fit("[bold cyan]CSK2 Project Upgrade[/]", border_style="cyan"))
     console.print()
 
+    if not TEMPLATE_DIR.is_dir():
+        console.print("[red]Error:[/red] Template directory not found.")
+        console.print(f"[dim]Looked in: {TEMPLATE_DIR}[/]")
+        console.print("[dim]Reinstall CSK: pip install --upgrade git+https://github.com/Simple-Bookings/claude-starter-kit.git[/]")
+        return
+
     template_files = get_template_files()
+
+    if not template_files:
+        console.print("[yellow]Warning:[/yellow] No template files found — nothing to compare.")
+        console.print(f"[dim]Template dir: {TEMPLATE_DIR}[/]")
+        return
 
     # Filter to specific skills if requested
     if skill:
