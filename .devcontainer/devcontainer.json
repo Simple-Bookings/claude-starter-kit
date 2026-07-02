@@ -1,0 +1,67 @@
+{
+  "name": "CSK2 Workshop",
+  "build": {
+    "dockerfile": "Dockerfile",
+    "context": ".."
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {
+      "installZsh": true,
+      "configureZshAsDefaultShell": true,
+      "installOhMyZsh": true,
+      "upgradePackages": true
+    },
+    "ghcr.io/devcontainers/features/git:1": {
+      "version": "latest",
+      "ppa": true
+    },
+    "ghcr.io/devcontainers/features/python:1": {
+      "version": "3.12",
+      "installTools": true
+    },
+    "ghcr.io/devcontainers/features/azure-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "Anthropic.claude-code",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.black-formatter",
+        "eamodio.gitlens",
+        "usernamehw.errorlens",
+        "editorconfig.editorconfig"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "editor.formatOnSave": true,
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
+        }
+      }
+    }
+  },
+  "mounts": [
+    "source=claude-code-config-${devcontainerId},target=/home/node/.claude,type=volume"
+  ],
+  "postCreateCommand": "bash scripts/devcontainer-setup.sh",
+  "remoteUser": "node",
+  "forwardPorts": [8000, 9123],
+  "portsAttributes": {
+    "8000": {
+      "label": "CSK Exercises",
+      "onAutoForward": "notify"
+    },
+    "9123": {
+      "label": "CSK Workshop",
+      "onAutoForward": "notify"
+    }
+  },
+  "secrets": {
+    "ANTHROPIC_API_KEY": {
+      "description": "Anthropic API key for Claude Code. Get yours at console.anthropic.com",
+      "documentationUrl": "https://console.anthropic.com/settings/keys"
+    }
+  }
+}

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Workshop</title>
+    <script>
+    "use strict";
+    try {
+        var t = localStorage.getItem("csk2-theme");
+        if (t === "light") document.documentElement.classList.add("light");
+    } catch (e) {}
+    </script>
+    <style>
+    :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --border: #334155;
+        --text: #e2e8f0;
+        --muted: #94a3b8;
+        --accent: #06b6d4;
+        --green: #10b981;
+    }
+    :root.light {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --border: #cbd5e1;
+        --text: #0f172a;
+        --muted: #475569;
+        --accent: #0369a1;
+        --green: #059669;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        padding: 2rem;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+        color: var(--text);
+        background: var(--bg);
+    }
+    .wrap { width: 100%; max-width: 900px; }
+    h1 {
+        margin: 0 0 0.3rem;
+        font-size: 2.4rem;
+        font-weight: 800;
+        color: var(--accent);
+        letter-spacing: -0.02em;
+    }
+    .sub {
+        margin-bottom: 2.5rem;
+        font-size: 1rem;
+        color: var(--muted);
+    }
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 1.2rem;
+    }
+    a.card {
+        display: block;
+        padding: 1.5rem 1.6rem;
+        color: var(--text);
+        text-decoration: none;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        transition: transform 0.15s, border-color 0.15s, box-shadow 0.15s;
+    }
+    a.card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        transform: translateY(-3px);
+    }
+    .label {
+        margin-bottom: 0.5rem;
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: var(--accent);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+    .title {
+        margin: 0 0 0.4rem;
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+    .desc {
+        margin: 0;
+        font-size: 0.9rem;
+        line-height: 1.5;
+        color: var(--muted);
+    }
+    .kbd-hint {
+        margin-top: 0.8rem;
+        font-size: 0.75rem;
+        color: var(--muted);
+    }
+    kbd {
+        display: inline-block;
+        padding: 1px 5px;
+        margin: 0 2px;
+        font-family: monospace;
+        font-size: 0.7rem;
+        color: var(--text);
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 3px;
+    }
+    code {
+        padding: 2px 6px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85em;
+        background: var(--bg);
+        border-radius: 4px;
+    }
+    #theme-toggle {
+        position: fixed;
+        top: 1rem;
+        right: 1rem;
+        padding: 4px 10px;
+        font-size: 0.9rem;
+        color: var(--muted);
+        cursor: pointer;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 6px;
+    }
+    #theme-toggle:hover { border-color: var(--accent); }
+    .presenter-box {
+        margin-top: 2rem;
+        padding: 1.4rem 1.6rem;
+        background: var(--surface);
+        border: 1px solid var(--accent);
+        border-radius: 12px;
+    }
+    .presenter-header {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        margin-bottom: 0.6rem;
+    }
+    .presenter-header h3 {
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--accent);
+    }
+    .presenter-buttons {
+        display: flex;
+        gap: 0.7rem;
+        flex-wrap: wrap;
+        margin-top: 1rem;
+    }
+    .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+    .btn-primary:hover { filter: brightness(1.1); }
+    .btn-secondary {
+        background: var(--bg);
+        color: var(--text);
+        padding: 0.55rem 1.1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.9rem;
+        border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .footer {
+        padding-top: 1.2rem;
+        margin-top: 2.5rem;
+        font-size: 0.8rem;
+        color: var(--muted);
+        border-top: 1px solid var(--border);
+    }
+    </style>
+  <!-- Bygget/opdateret: 2026-06-29 — CSK2 v2.0 — korrektur: ok -->
+</head>
+<body>
+    <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme (T)">☀︎</button>
+
+    <div class="wrap">
+        <h1>Claude Code Workshop</h1>
+        <p class="sub">Workshop Materials</p>
+
+        <div class="grid">
+            <a class="card" href="kompendium.html">
+                <div class="label">Reference</div>
+                <h2 class="title">📚 Kompendium</h2>
+                <p class="desc">
+                    Complete reference — 41 sections covering all 15 skills,
+                    the 4-phase work-loop, MCP, hooks, and best practices.
+                </p>
+                <div class="kbd-hint">
+                    41 sections · sidebar nav · tooltips · dark mode
+                </div>
+            </a>
+
+            <a class="card" href="slides.html">
+                <div class="label">Presentation</div>
+                <h2 class="title">📊 Slides</h2>
+                <p class="desc">
+                    41 slides with keyboard navigation. Workshop agenda, work-loop
+                    walkthrough, Mermaid diagrams, presenter notes.
+                </p>
+                <div class="kbd-hint">
+                    <kbd>←</kbd><kbd>→</kbd> navigate · <kbd>G</kbd> grid · <kbd>?</kbd> help
+                </div>
+            </a>
+
+            <a class="card" href="handout.html" style="border-color: var(--green);">
+                <div class="label" style="color: var(--green);">Print / PDF</div>
+                <h2 class="title">📄 Handout</h2>
+                <p class="desc">
+                    Print-friendly quick reference. Skills, commands, checklists,
+                    and keyboard shortcuts on A4 pages.
+                </p>
+                <div class="kbd-hint">
+                    Cmd+P → Save as PDF → distribute before workshop
+                </div>
+            </a>
+
+            <a class="card" href="exercises/">
+                <div class="label">Hands-on</div>
+                <h2 class="title">🎯 Exercises</h2>
+                <p class="desc">
+                    10 hands-on exercises from setup to full feature cycle.
+                    Track progress interactively.
+                </p>
+                <div class="kbd-hint">
+                    Click to start · progress saved locally
+                </div>
+            </a>
+
+            <a class="card" href="quick-reference.html" target="_blank">
+                <div class="label">Cheat Sheet</div>
+                <h2 class="title">📋 Quick Reference</h2>
+                <p class="desc">
+                    One-page reference with work-loop, TDD, skills, commands.
+                    Print and keep next to your terminal.
+                </p>
+                <div class="kbd-hint">
+                    Printable A4 · all key concepts
+                </div>
+            </a>
+        </div>
+
+        <div class="presenter-box">
+            <div class="presenter-header">
+                <span style="font-size: 1.4rem;">🎬</span>
+                <h3>Presenter Mode</h3>
+            </div>
+            <p class="desc">
+                Open slides in a popup window (move to screen 2 → <kbd>F</kbd> for fullscreen).
+                The kompendium acts as speaker notes with live slide position and
+                <kbd>📽</kbd> buttons that jump to relevant slides.
+            </p>
+            <div class="presenter-buttons">
+                <a href="kompendium.html"
+                   onclick="window.open('slides.html','csk2-slides','width=1280,height=720,menubar=no,toolbar=no'); return true;"
+                   class="btn-primary">
+                    Start Presenter Mode
+                </a>
+                <a href="slides.html" target="_blank" class="btn-secondary">
+                    Slides Only
+                </a>
+            </div>
+            <div style="margin-top: 0.9rem; font-size: 0.78rem; color: var(--muted);">
+                <kbd>←</kbd>/<kbd>→</kbd> control slides from kompendium ·
+                <kbd>K</kbd> open kompendium · <kbd>M</kbd> open slides
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>
+                <kbd>T</kbd> toggles dark/light theme
+            </p>
+        </div>
+    </div>
+
+    <script>
+    "use strict";
+    function applyTheme(light) {
+        document.documentElement.classList.toggle("light", light);
+        var btn = document.getElementById("theme-toggle");
+        if (btn) btn.textContent = light ? "☽" : "☀︎";
+        try { localStorage.setItem("csk2-theme", light ? "light" : "dark"); } catch (e) {}
+    }
+    function toggleTheme() {
+        applyTheme(!document.documentElement.classList.contains("light"));
+    }
+    document.addEventListener("DOMContentLoaded", function() {
+        var light = document.documentElement.classList.contains("light");
+        var btn = document.getElementById("theme-toggle");
+        if (btn) btn.textContent = light ? "☽" : "☀︎";
+    });
+    document.addEventListener("keydown", function(e) {
+        if (e.ctrlKey || e.metaKey || e.altKey) return;
+        if (e.key === "t" || e.key === "T") toggleTheme();
+    });
+    </script>
+</body>
+</html>

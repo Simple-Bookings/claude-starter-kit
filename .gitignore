@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# VS Code — keep settings, ignore personal extensions state
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local
+.env
+.env.local
+
+# Claude Code
+.claude/state/
+.claude/archive/
+.claude/*.lock
+.claude/worktrees/
+
+# Playwright MCP artifacts
+.playwright-mcp/
+/*.png
+
+# Git worktrees
+.worktrees/
+
+# Exercise progress
+exercises/.progress/
+
+# Tool-guard local overrides
+.tool-guard/*.local.json
+.devcontainer/devcontainer-lock.json
+# test

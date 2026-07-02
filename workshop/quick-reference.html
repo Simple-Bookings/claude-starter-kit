@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claude Code — Quick Reference</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 11px;
+      line-height: 1.4;
+      padding: 12px;
+      max-width: 210mm;
+      margin: 0 auto;
+    }
+    h1 { font-size: 18px; margin-bottom: 8px; text-align: center; }
+    h2 { font-size: 12px; background: #1e293b; color: white; padding: 4px 8px; margin: 8px 0 4px; }
+    h3 { font-size: 11px; font-weight: 600; margin: 6px 0 2px; color: #334155; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .card { border: 1px solid #e2e8f0; border-radius: 4px; padding: 8px; }
+    code { background: #f1f5f9; padding: 1px 4px; border-radius: 2px; font-size: 10px; }
+    pre { background: #1e293b; color: #e2e8f0; padding: 6px; border-radius: 4px; font-size: 10px; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    th, td { text-align: left; padding: 3px 6px; border-bottom: 1px solid #e2e8f0; }
+    th { background: #f8fafc; font-weight: 600; }
+    .phase { display: inline-block; padding: 2px 6px; border-radius: 3px; font-weight: 600; font-size: 9px; }
+    .planning { background: #dbeafe; color: #1e40af; }
+    .execution { background: #dcfce7; color: #166534; }
+    .reviewing { background: #fef3c7; color: #92400e; }
+    .integration { background: #f3e8ff; color: #7c3aed; }
+    .tip { background: #fef9c3; padding: 4px 6px; border-radius: 3px; margin: 4px 0; font-size: 10px; }
+    .dont { background: #fee2e2; padding: 4px 6px; border-radius: 3px; margin: 4px 0; font-size: 10px; }
+    ul { padding-left: 16px; margin: 4px 0; }
+    li { margin: 2px 0; }
+    @media print {
+      body { font-size: 10px; }
+      .card { break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Claude Code — Quick Reference</h1>
+
+  <div class="grid">
+    <div class="card">
+      <h2>Work-Loop (4 phases)</h2>
+      <table>
+        <tr>
+          <td><span class="phase planning">/planning</span></td>
+          <td>Analyze, create plan — <strong>NO CODE</strong></td>
+        </tr>
+        <tr>
+          <td><span class="phase execution">/execution</span></td>
+          <td>TDD: RED → GREEN → REFACTOR</td>
+        </tr>
+        <tr>
+          <td><span class="phase reviewing">/reviewing</span></td>
+          <td>Claude reviews itself</td>
+        </tr>
+        <tr>
+          <td><span class="phase integration">/integration</span></td>
+          <td>Branch → PR → Merge</td>
+        </tr>
+      </table>
+      <div class="tip">💡 NEEDS_FIXES = normal! Loop back to execution.</div>
+    </div>
+
+    <div class="card">
+      <h2>TDD Cycle</h2>
+      <pre>
+┌─────────┐     ┌─────────┐     ┌──────────┐
+│   RED   │────▶│  GREEN  │────▶│ REFACTOR │
+│ (error) │     │ (pass)  │     │  (clean) │
+└─────────┘     └─────────┘     └──────────┘</pre>
+      <ul>
+        <li><strong>RED:</strong> Test MUST fail first</li>
+        <li><strong>GREEN:</strong> Minimum code to pass</li>
+        <li><strong>REFACTOR:</strong> Make it clean, tests green</li>
+      </ul>
+      <div class="dont">❌ NEVER skip RED! Tests that never failed can lie.</div>
+    </div>
+
+    <div class="card">
+      <h2>Key Skills</h2>
+      <table>
+        <tr><th>Skill</th><th>When</th></tr>
+        <tr><td><code>/planning</code></td><td>Start new feature</td></tr>
+        <tr><td><code>/execution</code></td><td>Implement with TDD</td></tr>
+        <tr><td><code>/reviewing</code></td><td>Before PR</td></tr>
+        <tr><td><code>/integration</code></td><td>Git + PR + merge</td></tr>
+        <tr><td><code>/grill-me</code></td><td>Brainstorm before code</td></tr>
+        <tr><td><code>/tdd</code></td><td>Test-driven development</td></tr>
+        <tr><td><code>/onboarding</code></td><td>New project setup</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Debugging Prompts</h2>
+      <h3>❌ Bad</h3>
+      <pre>Fix this test</pre>
+      <h3>✅ Good</h3>
+      <pre>Trace the execution path, identify
+where the assertion fails, explain
+why, then fix.</pre>
+      <div class="tip">💡 Three steps: TRACE → EXPLAIN → FIX</div>
+    </div>
+
+    <div class="card">
+      <h2>CLAUDE.md Structure</h2>
+      <pre>
+## Project Overview
+## Tech Stack
+## Commands
+## Conventions
+## Don't          ← IMPORTANT!</pre>
+      <div class="tip">💡 Claude reads CLAUDE.md FIRST. Set the rules there.</div>
+    </div>
+
+    <div class="card">
+      <h2>Progress Tracking</h2>
+      <p>Claude has NO memory between sessions!</p>
+      <pre>
+# docs/plans/{issue}-progress.md
+
+## Status
+IN_PROGRESS | BLOCKED | COMPLETE
+
+## Tasks
+- [x] Task 1 — done
+- [ ] Task 2 — next
+
+## Notes
+Decisions and findings</pre>
+      <div class="tip">💡 "Update progress.md before you stop" — EVERY time!</div>
+    </div>
+
+    <div class="card">
+      <h2>Model Selection</h2>
+      <table>
+        <tr><th>Model</th><th>When</th></tr>
+        <tr><td><strong>Sonnet</strong></td><td>Default. 80% of tasks.</td></tr>
+        <tr><td><strong>Opus</strong></td><td>Complex architecture, Sonnet fails 2x</td></tr>
+      </table>
+      <pre>/model sonnet
+/model opus</pre>
+    </div>
+
+    <div class="card">
+      <h2>Git Workflow</h2>
+      <pre>main ← develop ← feature/*</pre>
+      <ul>
+        <li>Branch from <code>develop</code></li>
+        <li>PR to <code>develop</code></li>
+        <li>NEVER directly to <code>main</code></li>
+      </ul>
+      <h3>Commit format</h3>
+      <pre>feat: add user login
+fix: resolve timeout bug
+docs: update API reference</pre>
+    </div>
+
+    <div class="card">
+      <h2>When Things Go Wrong</h2>
+      <table>
+        <tr><th>Problem</th><th>Solution</th></tr>
+        <tr><td>Context overflow</td><td><code>/clear</code> + read progress.md</td></tr>
+        <tr><td>Hallucination</td><td>"Read the file first"</td></tr>
+        <tr><td>CI fails</td><td>Check env vars</td></tr>
+        <tr><td>Bad plan</td><td>Stop → /planning again</td></tr>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>Don't (IMPORTANT!)</h2>
+      <ul>
+        <li>❌ Skip brainstorming</li>
+        <li>❌ Code before tests</li>
+        <li>❌ Vague prompts ("make it better")</li>
+        <li>❌ Ignore test failures</li>
+        <li>❌ Commit directly to main</li>
+      </ul>
+      <div class="tip">💡 TRUST BUT VERIFY — always review Claude's output!</div>
+    </div>
+
+    <div class="card">
+      <h2>Week 1 Roadmap</h2>
+      <table>
+        <tr><th>Day</th><th>Task</th></tr>
+        <tr><td>1-2</td><td>Small feature with /planning → /integration</td></tr>
+        <tr><td>3</td><td>Create 1 custom skill for your workflow</td></tr>
+        <tr><td>4</td><td>Add path-activated rule</td></tr>
+        <tr><td>5</td><td>Share with team, pair programming</td></tr>
+      </table>
+      <div class="tip">💡 Practice makes perfect. It feels natural after a week.</div>
+    </div>
+
+    <div class="card">
+      <h2>CLI Commands</h2>
+      <pre>
+claude              # Start Claude Code
+/clear              # Clear context
+/help               # Show help
+/model opus         # Switch model
+csk doctor          # Check environment
+csk progress        # See exercise status
+csk upgrade-project # Update skills</pre>
+    </div>
+  </div>
+
+  <p style="text-align: center; margin-top: 12px; color: #64748b; font-size: 10px;">
+    Claude Starter Kit 2.0 — Print this page and keep it next to your terminal
+  </p>
+</body>
+</html>

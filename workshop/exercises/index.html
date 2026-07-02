@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSK2 — Workshop Exercises</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script>
+  "use strict";
+  try {
+    if (localStorage.getItem("csk2-theme") === "light") {
+      document.documentElement.classList.add("light");
+    }
+  } catch (e) {}
+  </script>
+  <style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --border: #334155;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --accent: #06b6d4;
+    --green: #10b981;
+  }
+  :root.light {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #cbd5e1;
+    --text: #0f172a;
+    --muted: #475569;
+    --accent: #0891b2;
+    --green: #059669;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    color: var(--text);
+    background: var(--bg);
+    line-height: 1.6;
+  }
+  .container { max-width: 900px; margin: 0 auto; padding: 2rem; }
+  h1 { font-size: 2rem; font-weight: 800; color: var(--accent); margin-bottom: 0.5rem; }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent);
+    text-decoration: none;
+    margin-bottom: 1.5rem;
+  }
+  .back-link:hover { text-decoration: underline; }
+  .exercise-list { display: flex; flex-direction: column; gap: 1rem; }
+  .exercise-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .exercise-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .exercise-card.completed { border-left: 4px solid var(--green); }
+  .exercise-card.active { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 10%, var(--surface)); }
+  .exercise-header { display: flex; align-items: center; gap: 0.75rem; }
+  .exercise-num {
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg);
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--accent);
+  }
+  .exercise-card.completed .exercise-num { background: var(--green); color: white; }
+  .exercise-title { font-weight: 600; flex: 1; }
+  .exercise-meta { font-size: 0.8rem; color: var(--muted); margin-top: 0.5rem; }
+  .exercise-content {
+    display: none;
+    margin-top: 1.5rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+  }
+  .exercise-content.show { display: block; }
+  .exercise-content h2 { font-size: 1.25rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+  .exercise-content h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; }
+  .exercise-content p { margin: 0.75rem 0; }
+  .exercise-content ul, .exercise-content ol { margin: 0.75rem 0; padding-left: 1.5rem; }
+  .exercise-content li { margin: 0.25rem 0; }
+  .exercise-content pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+  }
+  .exercise-content code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9em;
+  }
+  .exercise-content :not(pre) > code {
+    background: var(--bg);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+  }
+  .progress-bar {
+    background: var(--border);
+    height: 8px;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    overflow: hidden;
+  }
+  .progress-fill {
+    background: var(--green);
+    height: 100%;
+    transition: width 0.3s;
+  }
+  .progress-text { font-size: 0.85rem; color: var(--muted); margin-bottom: 0.5rem; }
+  .complete-btn {
+    margin-top: 1.5rem;
+    padding: 0.75rem 1.5rem;
+    background: var(--green);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: filter 0.15s;
+  }
+  .complete-btn:hover { filter: brightness(1.1); }
+  .complete-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  #theme-toggle {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    color: var(--muted);
+  }
+  </style>
+</head>
+<body>
+  <button id="theme-toggle" onclick="toggleTheme()">☀︎</button>
+
+  <div class="container">
+    <a href="../" class="back-link">← Back to Workshop</a>
+
+    <h1>🎯 Workshop Exercises</h1>
+    <p class="subtitle">6 hands-on exercises from setup to full feature cycle</p>
+
+    <div class="progress-text">Progress: <span id="progress-count">0</span>/6 completed</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="exercise-list" id="exercise-list"></div>
+  </div>
+
+  <script>
+  // Exercise metadata (content loaded from markdown files)
+  const exercises = [
+    { id: 1, file: '01-setup.md', title: 'Setup', time: '10 min', desc: 'Verify your environment is ready for Claude Code' },
+    { id: 2, file: '02-git-workflow.md', title: 'Git Workflow', time: '15 min', desc: 'Learn branch, commit, merge with /feature-branch' },
+    { id: 3, file: '03-tdd.md', title: 'TDD', time: '30 min', desc: 'Red-Green-Refactor with /tdd' },
+    { id: 4, file: '04-code-review.md', title: 'Code Review', time: '20 min', desc: 'PR workflow with /reviewing' },
+    { id: 5, file: '05-debugging.md', title: 'Debugging', time: '20 min', desc: 'Systematic debugging with Claude' },
+    { id: 6, file: '06-full-cycle.md', title: 'Full Cycle', time: '45 min', desc: 'Complete work-loop from planning to integration' }
+  ];
+
+  function getCompleted() {
+    try { return JSON.parse(localStorage.getItem('csk2-exercises') || '[]'); } catch { return []; }
+  }
+  function setCompleted(ids) {
+    localStorage.setItem('csk2-exercises', JSON.stringify(ids));
+  }
+  function updateProgress() {
+    const completed = getCompleted();
+    document.getElementById('progress-count').textContent = completed.length;
+    document.getElementById('progress-fill').style.width = (completed.length / 6 * 100) + '%';
+  }
+
+  async function loadExercise(ex, card) {
+    // Close other open cards
+    document.querySelectorAll('.exercise-card.active').forEach(c => {
+      if (c !== card) {
+        c.classList.remove('active');
+        c.querySelector('.exercise-content').classList.remove('show');
+      }
+    });
+
+    card.classList.toggle('active');
+    const content = card.querySelector('.exercise-content');
+
+    if (card.classList.contains('active')) {
+      if (!content.dataset.loaded) {
+        try {
+          const res = await fetch('../../exercises/' + ex.file);
+          const md = await res.text();
+          // marked.parse returns sanitized HTML from our own markdown files
+          const parsed = marked.parse(md);
+          content.insertAdjacentHTML('beforeend', parsed);
+
+          // Add complete button
+          const completed = getCompleted();
+          const btn = document.createElement('button');
+          btn.className = 'complete-btn';
+          btn.textContent = completed.includes(ex.id) ? '✓ Completed' : 'Mark Complete';
+          btn.disabled = completed.includes(ex.id);
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const c = getCompleted();
+            if (!c.includes(ex.id)) {
+              c.push(ex.id);
+              setCompleted(c);
+              card.classList.add('completed');
+              btn.textContent = '✓ Completed';
+              btn.disabled = true;
+              updateProgress();
+            }
+          };
+          content.appendChild(btn);
+          content.dataset.loaded = 'true';
+        } catch (err) {
+          content.textContent = 'Failed to load exercise. Make sure the server is running.';
+        }
+      }
+      content.classList.add('show');
+    } else {
+      content.classList.remove('show');
+    }
+  }
+
+  function render() {
+    const list = document.getElementById('exercise-list');
+    const completed = getCompleted();
+
+    exercises.forEach(ex => {
+      const card = document.createElement('div');
+      card.className = 'exercise-card' + (completed.includes(ex.id) ? ' completed' : '');
+
+      const header = document.createElement('div');
+      header.className = 'exercise-header';
+
+      const num = document.createElement('span');
+      num.className = 'exercise-num';
+      num.textContent = completed.includes(ex.id) ? '✓' : ex.id;
+
+      const title = document.createElement('span');
+      title.className = 'exercise-title';
+      title.textContent = ex.title;
+
+      const time = document.createElement('span');
+      time.style.cssText = 'color: var(--muted); font-size: 0.85rem;';
+      time.textContent = ex.time;
+
+      header.appendChild(num);
+      header.appendChild(title);
+      header.appendChild(time);
+
+      const meta = document.createElement('div');
+      meta.className = 'exercise-meta';
+      meta.textContent = ex.desc;
+
+      const content = document.createElement('div');
+      content.className = 'exercise-content';
+
+      card.appendChild(header);
+      card.appendChild(meta);
+      card.appendChild(content);
+      card.onclick = () => loadExercise(ex, card);
+      list.appendChild(card);
+    });
+
+    updateProgress();
+  }
+
+  function toggleTheme() {
+    document.documentElement.classList.toggle('light');
+    const light = document.documentElement.classList.contains('light');
+    document.getElementById('theme-toggle').textContent = light ? '☽' : '☀︎';
+    localStorage.setItem('csk2-theme', light ? 'light' : 'dark');
+  }
+
+  // Init
+  document.addEventListener('DOMContentLoaded', () => {
+    render();
+    const light = document.documentElement.classList.contains('light');
+    document.getElementById('theme-toggle').textContent = light ? '☽' : '☀︎';
+  });
+  </script>
+</body>
+</html>

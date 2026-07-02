@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "_comment": "Git safety rules for Claude Code. Blocks dangerous operations, warns on risky ones.",
+
+  "defaultMode": "allow",
+
+  "deny": [
+    {
+      "pattern": "push * main",
+      "message": "Push to main is blocked. main = PROD. Use a feature branch → PR → merge."
+    },
+    {
+      "pattern": "push main",
+      "message": "Push to main is blocked. main = PROD. Use a feature branch → PR → merge."
+    },
+    {
+      "pattern": "push * master",
+      "message": "Push to master is blocked. master = PROD. Use a feature branch → PR → merge."
+    },
+    {
+      "pattern": "push master",
+      "message": "Push to master is blocked. master = PROD. Use a feature branch → PR → merge."
+    },
+    {
+      "pattern": "reset --hard*",
+      "claude_only": true,
+      "message": "git reset --hard is BLOCKED. It wipes ALL uncommitted changes. Use 'git revert <sha>' or 'git restore --source=<sha> -- <path>' instead."
+    }
+  ],
+
+  "warn": [
+    {
+      "pattern": "push --force *",
+      "claude_only": true,
+      "message": "Force push can overwrite others' commits. Prefer --force-with-lease."
+    },
+    {
+      "pattern": "commit --no-verify*",
+      "claude_only": true,
+      "message": "--no-verify bypasses pre-commit hooks. Fix the underlying issue instead."
+    },
+    {
+      "pattern": "checkout --theirs *",
+      "claude_only": true,
+      "message": "git checkout --theirs blindly accepts their version. Review conflicts manually."
+    },
+    {
+      "pattern": "checkout --ours *",
+      "claude_only": true,
+      "message": "git checkout --ours blindly accepts your version. Review conflicts manually."
+    },
+    {
+      "pattern": "checkout -- *",
+      "claude_only": true,
+      "message": "git checkout -- <files> discards uncommitted changes permanently. Commit or stash first."
+    },
+    {
+      "pattern": "clean -f*",
+      "claude_only": true,
+      "message": "git clean -f permanently deletes untracked files. Use -n (dry-run) first."
+    },
+    {
+      "pattern": "stash drop*",
+      "claude_only": true,
+      "message": "git stash drop permanently deletes stashed changes. Consider 'git stash list' first."
+    }
+  ]
+}

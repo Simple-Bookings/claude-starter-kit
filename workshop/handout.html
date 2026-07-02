@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code — Workshop Handout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
+    <style>
+    @page {
+      size: A4;
+      margin: 18mm 16mm;
+    }
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+      line-height: 1.55;
+      color: #0f172a;
+      background: #f8fafc;
+    }
+    /* ── Cover ── */
+    .cover {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 3rem;
+      page-break-after: always;
+    }
+    .cover h1 {
+      margin-bottom: 1rem;
+      font-size: 3rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: #0891b2;
+    }
+    .cover .sub {
+      margin-bottom: 2rem;
+      font-size: 1.4rem;
+      color: #475569;
+    }
+    .cover .meta {
+      font-size: 0.95rem;
+      color: #64748b;
+    }
+    .cover .agenda-card {
+      max-width: 680px;
+      padding: 1.5rem 2rem;
+      margin-top: 2.5rem;
+      text-align: left;
+      background: #ecfeff;
+      border-left: 6px solid #06b6d4;
+      border-radius: 10px;
+    }
+    .cover .agenda-card h2 {
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0891b2;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .cover .agenda-card .row {
+      display: flex;
+      gap: 1rem;
+      padding: 0.5rem 0;
+    }
+    .cover .agenda-card .row .when {
+      min-width: 7rem;
+      font-weight: 700;
+      color: #0891b2;
+    }
+    /* ── Table of Contents ── */
+    .toc {
+      background: #fff;
+      border-radius: 10px;
+      padding: 1.5rem 2rem;
+      margin: 2rem auto;
+      max-width: 900px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      page-break-after: always;
+    }
+    .toc h2 {
+      margin-bottom: 1.2rem;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #0891b2;
+    }
+    .toc-row {
+      display: flex;
+      gap: 1rem;
+      padding: 0.35rem 0;
+      font-size: 0.95rem;
+    }
+    .toc-row .num {
+      min-width: 2.5rem;
+      font-weight: 700;
+      color: #0891b2;
+    }
+    /* ── Slides ── */
+    .slide {
+      background: #fff;
+      border-radius: 10px;
+      padding: 2rem 2.5rem;
+      margin: 1.2rem auto;
+      max-width: 900px;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+      border-left: 4px solid #06b6d4;
+      page-break-inside: avoid;
+    }
+    .slide h2 {
+      padding-bottom: 0.4rem;
+      margin-bottom: 0.7rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #0f172a;
+      border-bottom: 2px solid #ecfeff;
+    }
+    .slide h3 {
+      padding-left: 0.6rem;
+      margin: 1.2rem 0 0.3rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #0891b2;
+      border-left: 3px solid #06b6d4;
+    }
+    .slide p, .slide li {
+      font-size: 0.9rem;
+      line-height: 1.65;
+      color: #1e293b;
+    }
+    .slide table {
+      width: 100%;
+      margin: 0.6rem 0;
+      font-size: 0.85rem;
+      border-collapse: collapse;
+    }
+    .slide th {
+      padding: 7px 9px;
+      font-weight: 600;
+      color: #0891b2;
+      text-align: left;
+      background: #ecfeff;
+    }
+    .slide td {
+      padding: 6px 9px;
+      vertical-align: top;
+      color: #1e293b;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .slide pre {
+      padding: 0.9rem 1.1rem;
+      overflow-x: auto;
+      font-size: 0.78rem;
+      color: #e2e8f0;
+      word-break: break-word;
+      white-space: pre-wrap;
+      background: #0f172a;
+      border-radius: 6px;
+    }
+    .slide code {
+      padding: 1px 5px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.85em;
+      color: #1e293b;
+      background: #f1f5f9;
+      border-radius: 4px;
+    }
+    .slide pre code {
+      padding: 0;
+      color: inherit;
+      background: transparent;
+    }
+    /* ── Mermaid ── */
+    pre.mermaid {
+      background: transparent !important;
+      color: #0f172a !important;
+    }
+    /* ── Callouts ── */
+    .callout {
+      padding: 0.9rem 1.2rem;
+      margin: 0.8rem 0;
+      border-left: 4px solid;
+      border-radius: 8px;
+    }
+    .callout-info {
+      color: #1e293b;
+      background: #ecfeff;
+      border-color: #06b6d4;
+    }
+    .callout-warn {
+      color: #1e293b;
+      background: #fef3c7;
+      border-color: #b45309;
+    }
+    .callout-success {
+      color: #1e293b;
+      background: #dcfce7;
+      border-color: #16a34a;
+    }
+    .callout-error {
+      color: #1e293b;
+      background: #fee2e2;
+      border-color: #dc2626;
+    }
+    /* ── Two-column grid ── */
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem;
+    }
+    .card {
+      padding: 1rem 1.2rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+    }
+    .card h4 {
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #0891b2;
+    }
+    /* ── Section divider ── */
+    .section-divider {
+      margin: 3rem auto;
+      padding: 1rem 2rem;
+      max-width: 900px;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #0891b2;
+      text-align: center;
+      background: linear-gradient(to right, #ecfeff, #fff, #ecfeff);
+      border-radius: 10px;
+      page-break-before: always;
+    }
+    /* ── Print ── */
+    @media print {
+      body {
+        background: #fff;
+      }
+      .slide, .toc {
+        box-shadow: none;
+        border: 1px solid #e2e8f0;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+    </style>
+    <!-- Bygget/opdateret: 2026-06-29 — CSK — korrektur: ok -->
+</head>
+  <body>
+    <!-- Back link (hidden in print) -->
+    <div style="padding: 1rem; text-align: center;" class="no-print">
+      <a href="./" style="color: #0891b2; text-decoration: none;">← Back to Workshop</a>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- COVER PAGE -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="cover">
+      <h1>Claude Code Workshop</h1>
+      <p class="meta">Full day (09:00–16:00) · Hands-on</p>
+      <div class="agenda-card">
+        <h2>Agenda</h2>
+        <div class="row">
+          <span class="when">09:00–11:30</span>
+          <span>Morning — Introduction, Foundation (CLAUDE.md, Skills), Work-Loop</span>
+        </div>
+        <div class="row">
+          <span class="when">11:30–12:00</span>
+          <span>Lunch</span>
+        </div>
+        <div class="row">
+          <span class="when">12:00–16:00</span>
+          <span>Afternoon — Hands-on exercises, Supporting Skills, Advanced Topics</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- TABLE OF CONTENTS -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="toc">
+      <h2>Table of Contents</h2>
+      <div style="columns: 2; column-gap: 2rem;">
+        <div class="toc-row"><span class="num">01</span> What is Claude Code?</div>
+        <div class="toc-row"><span class="num">02</span> Skills & CLAUDE.md</div>
+        <div class="toc-row"><span class="num">03</span> The Work-Loop</div>
+        <div class="toc-row"><span class="num">04</span> /planning Phase</div>
+        <div class="toc-row"><span class="num">05</span> /execution Phase</div>
+        <div class="toc-row"><span class="num">06</span> /reviewing Phase</div>
+        <div class="toc-row"><span class="num">07</span> /integration Phase</div>
+        <div class="toc-row"><span class="num">08</span> /grill-me Skill</div>
+        <div class="toc-row"><span class="num">09</span> /mockup-to-story</div>
+        <div class="toc-row"><span class="num">10</span> /tdd Skill</div>
+        <div class="toc-row"><span class="num">11</span> Git Workflow</div>
+        <div class="toc-row"><span class="num">12</span> Model Selection</div>
+        <div class="toc-row"><span class="num">13</span> CLAUDE.md</div>
+        <div class="toc-row"><span class="num">14</span> Skills System</div>
+        <div class="toc-row"><span class="num">15</span> MCP Plugins</div>
+        <div class="toc-row"><span class="num">16</span> Hooks</div>
+        <div class="toc-row"><span class="num">17</span> Cost Optimization</div>
+        <div class="toc-row"><span class="num">18</span> Git Worktrees</div>
+        <div class="toc-row"><span class="num">19</span> Debugging</div>
+        <div class="toc-row"><span class="num">20</span> Exercises</div>
+        <div class="toc-row"><span class="num">21</span> Common Gotchas</div>
+        <div class="toc-row"><span class="num">22</span> Non-Determinism Problem</div>
+        <div class="toc-row"><span class="num">23</span> Quick Reference</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- SLIDES SECTION -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section-divider">Part 1: Presentation Slides</div>
+
+    <!-- Slide 1: What is Claude Code? -->
+    <div class="slide">
+      <h2>01 · What is Claude Code?</h2>
+      <p>Anthropic's official CLI for AI-assisted software development — an intelligent pair programmer that reads, writes, and executes code.</p>
+      <div class="grid-2" style="margin-top: 1rem;">
+        <div class="card">
+          <h4>What it CAN do</h4>
+          <ul style="font-size: 0.85rem; padding-left: 1.2rem;">
+            <li>Read and understand your entire codebase</li>
+            <li>Write, edit, and refactor code across files</li>
+            <li>Run shell commands (git, npm, tests)</li>
+            <li>Search the web for documentation</li>
+            <li>Create and review pull requests</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>What it WON'T do</h4>
+          <ul style="font-size: 0.85rem; padding-left: 1.2rem;">
+            <li>Replace human judgment on design</li>
+            <li>Understand your domain magically</li>
+            <li>Execute destructive commands without asking</li>
+            <li>Remember context between sessions</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 2: Skills & CLAUDE.md -->
+    <div class="slide">
+      <h2>02 · Skills & CLAUDE.md</h2>
+      <p>Two things you need to know: Skills (slash commands) and CLAUDE.md (project context).</p>
+      <div class="grid-2" style="margin-top: 1rem;">
+        <div class="card">
+          <h4>Skills (.claude/skills/)</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem;">
+            <li><code>/planning</code> — create a plan</li>
+            <li><code>/execution</code> — implement with TDD</li>
+            <li><code>/reviewing</code> — code review</li>
+            <li><code>/integration</code> — PR and merge</li>
+            <li>+ more supporting skills</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>CLAUDE.md</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem;">
+            <li>Project overview</li>
+            <li>Tech stack</li>
+            <li>Key commands</li>
+            <li>Code conventions</li>
+          </ul>
+          <p style="font-size: 0.75rem; color: #64748b; margin-top: 0.5rem;">Claude reads this file FIRST.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 3: The Work-Loop -->
+    <div class="slide">
+      <h2>03 · The Work-Loop</h2>
+      <p>Four phases that take you from idea to merged code. Each phase has a dedicated skill.</p>
+      <pre class="mermaid" style="text-align:center;">
+flowchart LR
+    P["/planning"] --> E["/execution"]
+    E --> R["/reviewing"]
+    R --> I["/integration"]
+    R -->|NEEDS_FIXES| E
+    I --> Done["✅ Merged"]
+      </pre>
+      <div class="callout callout-info">
+        <strong>Key insight:</strong> Each phase produces artifacts that the next phase consumes. The loop is idempotent — you can restart from any point.
+      </div>
+    </div>
+
+    <!-- Slide 4: /planning -->
+    <div class="slide">
+      <h2>04 · /planning Phase</h2>
+      <p>Analyze the codebase, understand requirements, write a task list so precise that execution never needs to make a design decision.</p>
+      <pre class="mermaid" style="text-align:center;">
+sequenceDiagram
+    participant Dev
+    participant Claude
+    participant Files
+    Dev->>Claude: /planning "add dark mode"
+    Claude->>Files: Read CLAUDE.md, components
+    Claude->>Files: Write docs/plans/feature-plan.md
+    Claude->>Dev: Task list with file paths
+      </pre>
+      <div class="grid-2" style="margin-top: 0.8rem;">
+        <div class="callout callout-success" style="margin: 0;"><strong>Output:</strong> plan.md with concrete tasks, file paths, verify commands</div>
+        <div class="callout callout-warn" style="margin: 0;"><strong>Rule:</strong> No code written! Planning only.</div>
+      </div>
+    </div>
+
+    <!-- Slide 5: /execution -->
+    <div class="slide">
+      <h2>05 · /execution Phase</h2>
+      <p>Implement tasks one at a time from the plan. Test-Driven Development by default.</p>
+      <pre class="mermaid" style="text-align:center;">
+sequenceDiagram
+    participant Claude
+    participant Files
+    participant Tests
+    loop For each task
+        Claude->>Files: Write failing test
+        Tests->>Claude: ❌ Fails (expected)
+        Claude->>Files: Implement feature
+        Tests->>Claude: ✅ Passes
+        Claude->>Files: Update progress.md
+    end
+      </pre>
+      <div class="callout callout-info">
+        <strong>TDD cycle:</strong> Red (failing test) → Green (make it pass) → Refactor
+      </div>
+    </div>
+
+    <!-- Slide 6: /reviewing -->
+    <div class="slide">
+      <h2>06 · /reviewing Phase</h2>
+      <p>Self-review against acceptance criteria. Output is APPROVED or NEEDS_FIXES.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Review Checklist</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem;">
+            <li>All acceptance criteria met?</li>
+            <li>Tests exist and pass?</li>
+            <li>No debug code?</li>
+            <li>Follows conventions?</li>
+            <li>No security issues?</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Outcomes</h4>
+          <div class="callout callout-success" style="margin: 0.5rem 0; padding: 0.5rem 0.8rem;"><strong>APPROVED</strong> → /integration</div>
+          <div class="callout callout-warn" style="margin: 0.5rem 0; padding: 0.5rem 0.8rem;"><strong>NEEDS_FIXES</strong> → /execution</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 7: /integration -->
+    <div class="slide">
+      <h2>07 · /integration Phase</h2>
+      <p>Create PR, handle CI, get it merged.</p>
+      <pre>
+git add -p
+git commit -m "feat(timer): add start/stop functionality"
+git push -u origin feature/add-timer
+gh pr create --base develop
+      </pre>
+      <div class="callout callout-success">
+        <strong>Done:</strong> Feature merged to develop, branch cleaned up.
+      </div>
+    </div>
+
+    <!-- Slide 8: /grill-me -->
+    <div class="slide">
+      <h2>08 · /grill-me — Clarify Before You Build</h2>
+      <p>Socratic questioning until your concept is crystal clear. Run BEFORE /planning.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Questions You'll Face</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem;">
+            <li><strong>Problem:</strong> What are you solving?</li>
+            <li><strong>Users:</strong> Who will use this?</li>
+            <li><strong>Differentiator:</strong> Why not existing?</li>
+            <li><strong>Core:</strong> ONE thing it must do?</li>
+            <li><strong>Non-goals:</strong> NOT in v1?</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Output</h4>
+          <pre style="font-size: 0.75rem;">## Concept: TimeTracker
+**Problem:** Freelancers lose hours
+**Core:** One-click timer
+**Non-goals:** Invoicing (v2)</pre>
+        </div>
+      </div>
+      <div class="callout callout-warn">
+        <strong>Don't defend — refine.</strong> Each pushback finds holes before you code.
+      </div>
+    </div>
+
+    <!-- Slide 9: /mockup-to-story -->
+    <div class="slide">
+      <h2>09 · /mockup-to-story</h2>
+      <p>Paste ASCII mockup → get user stories with acceptance criteria.</p>
+      <div class="grid-2">
+        <div class="card" style="background: #0f172a; color: #e2e8f0;">
+          <h4 style="color: #22d3ee;">Input: ASCII Mockup</h4>
+          <pre style="background: transparent; padding: 0; font-size: 0.75rem;">┌─────────────────────────┐
+│  TimeTracker     [⚙️]  │
+├─────────────────────────┤
+│   Today: 4h 32m         │
+│   ████████░░░░  8h      │
+│   [  Start Tracking  ]  │
+└─────────────────────────┘</pre>
+        </div>
+        <div class="card">
+          <h4>Output: User Stories</h4>
+          <div style="font-size: 0.8rem;">
+            <strong>US001:</strong> View Daily Summary<br>
+            <strong>US002:</strong> See Progress Bar<br>
+            <strong>US003:</strong> Start Timer
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 10: /tdd -->
+    <div class="slide">
+      <h2>10 · /tdd — Test-Driven Development</h2>
+      <p>Write the test first. Make it fail. Then make it pass.</p>
+      <pre class="mermaid" style="text-align:center;">
+flowchart LR
+    R["🔴 RED<br>Failing test"] --> G["🟢 GREEN<br>Make it pass"]
+    G --> RF["🔵 REFACTOR<br>Clean up"]
+    RF --> R
+      </pre>
+      <div class="grid-2">
+        <div class="callout callout-error" style="margin: 0;"><strong>Never skip RED:</strong> A test that never failed might pass by accident.</div>
+        <div class="callout callout-success" style="margin: 0;"><strong>Minimal GREEN:</strong> Simplest code that passes. Refactor after.</div>
+      </div>
+    </div>
+
+    <!-- Slide 11: Git Workflow -->
+    <div class="slide">
+      <h2>11 · Git Workflow</h2>
+      <p>Feature branches, PRs required, never commit to main.</p>
+      <pre>
+git checkout -b feature/add-timer develop
+claude
+/planning "implement timer component"
+/execution
+/reviewing
+git add -p && git commit -m "feat(timer): add timer"
+git push -u origin feature/add-timer
+gh pr create --base develop
+      </pre>
+      <div class="callout callout-error">
+        <strong>Never push to main directly.</strong> Main is production.
+      </div>
+    </div>
+
+    <!-- Slide 12: Model Selection -->
+    <div class="slide">
+      <h2>12 · Model Selection</h2>
+      <table>
+        <thead><tr><th>Task</th><th>Model</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Pattern replication</td><td><code>sonnet</code></td><td>Fast, follows patterns</td></tr>
+          <tr><td>Writing tests</td><td><code>sonnet</code></td><td>Usually straightforward</td></tr>
+          <tr><td>Architecture decisions</td><td><code>opus</code></td><td>Trade-off analysis</td></tr>
+          <tr><td>Security-critical</td><td><code>opus</code></td><td>High consequence</td></tr>
+          <tr><td>Sonnet failed twice</td><td><code>opus</code></td><td>Problem harder</td></tr>
+        </tbody>
+      </table>
+      <pre>/model sonnet    # Fast, cheap (default)
+/model opus      # Slower, deeper reasoning</pre>
+    </div>
+
+    <!-- Slide 13: CLAUDE.md -->
+    <div class="slide">
+      <h2>13 · CLAUDE.md — Your Project's Bible</h2>
+      <p>The first file Claude reads. Without it, Claude has no context.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Required Sections</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem;">
+            <li><strong>Project Overview</strong></li>
+            <li><strong>Tech Stack</strong></li>
+            <li><strong>Key Commands</strong></li>
+            <li><strong>Conventions</strong></li>
+            <li><strong>Don't</strong></li>
+          </ul>
+        </div>
+        <pre style="font-size: 0.7rem;"># CLAUDE.md
+## Project Overview
+TimeTracker — time tracking
+
+## Tech Stack
+React 18, TypeScript, Tailwind
+
+## Key Commands
+npm run dev
+npm test
+
+## Don't
+- Don't use `any` type
+- Don't commit to main</pre>
+      </div>
+    </div>
+
+    <!-- Slide 14: Skills System -->
+    <div class="slide">
+      <h2>14 · Skills System</h2>
+      <p>Slash commands in <code>.claude/skills/</code> that teach Claude specific workflows.</p>
+      <table>
+        <thead><tr><th>Skill</th><th>Purpose</th><th>When</th></tr></thead>
+        <tbody>
+          <tr><td><code>/onboarding</code></td><td>Verify environment</td><td>First session</td></tr>
+          <tr><td><code>/grill-me</code></td><td>Clarify requirements</td><td>Before features</td></tr>
+          <tr><td><code>/planning</code></td><td>Create task list</td><td>Start impl</td></tr>
+          <tr><td><code>/execution</code></td><td>Implement tasks</td><td>Building</td></tr>
+          <tr><td><code>/reviewing</code></td><td>Self-review</td><td>After impl</td></tr>
+          <tr><td><code>/tdd</code></td><td>Test-driven cycle</td><td>Any new code</td></tr>
+          <tr><td><code>/release</code></td><td>Tag and release</td><td>Ready to ship</td></tr>
+          <tr><td><code>/security-audit</code></td><td>OWASP review</td><td>Before launch</td></tr>
+          <tr><td><code>/adopt</code></td><td>Add CSK to project</td><td>Importing</td></tr>
+          <tr><td><code>/git-worktree</code></td><td>Parallel agents</td><td>Multi-agent</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Slide 15: MCP Plugins -->
+    <div class="slide">
+      <h2>15 · MCP Plugins</h2>
+      <p>Model Context Protocol plugins add tools like database queries and browser automation.</p>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Common Plugins</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem;">
+            <li><strong>Playwright</strong> — browser</li>
+            <li><strong>PostgreSQL</strong> — database</li>
+            <li><strong>GitHub</strong> — issues, PRs</li>
+            <li><strong>WebSearch</strong> — search</li>
+          </ul>
+        </div>
+        <pre style="font-size: 0.7rem;">{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@anthropic/mcp-playwright"]
+    }
+  }
+}</pre>
+      </div>
+    </div>
+
+    <!-- Slide 16: Hooks -->
+    <div class="slide">
+      <h2>16 · Hooks</h2>
+      <p>Run custom code before/after Claude Code actions.</p>
+      <table>
+        <thead><tr><th>Hook</th><th>When</th><th>Use Case</th></tr></thead>
+        <tbody>
+          <tr><td><code>UserPromptSubmit</code></td><td>Before prompt</td><td>Add context</td></tr>
+          <tr><td><code>PreToolUse</code></td><td>Before tool</td><td>Block dangerous</td></tr>
+          <tr><td><code>PostToolUse</code></td><td>After tool</td><td>Log changes</td></tr>
+          <tr><td><code>PreCompact</code></td><td>Before compress</td><td>Save context</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Slide 17: Cost Optimization -->
+    <div class="slide">
+      <h2>17 · Cost Optimization</h2>
+      <table>
+        <thead><tr><th>Strategy</th><th>Savings</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td>Use Sonnet for simple</td><td>~80%</td><td><code>/model sonnet</code></td></tr>
+          <tr><td>Clear context regularly</td><td>~50%</td><td><code>/clear</code></td></tr>
+          <tr><td>Be specific upfront</td><td>~30%</td><td>Avoid back-and-forth</td></tr>
+          <tr><td>Use skills</td><td>~20%</td><td>Structured prompts</td></tr>
+        </tbody>
+      </table>
+      <div class="grid-2" style="margin-top: 0.8rem;">
+        <div class="card"><strong>Sonnet</strong> — $3/1M input (fast)</div>
+        <div class="card"><strong>Opus</strong> — $15/1M input (deep)</div>
+      </div>
+    </div>
+
+    <!-- Slide 18: Git Worktrees -->
+    <div class="slide">
+      <h2>18 · Git Worktrees</h2>
+      <p>Work on multiple features without stashing.</p>
+      <pre>
+# Terminal 1:
+claude --worktree feature-a
+
+# Terminal 2:
+claude --worktree feature-b
+
+# Claude creates .worktrees/ automatically
+      </pre>
+      <div class="callout callout-info">
+        <strong>CI Overlap:</strong> While CI runs on feature-a, plan feature-b.
+      </div>
+    </div>
+
+    <!-- Slide 19: Debugging -->
+    <div class="slide">
+      <h2>19 · Debugging with Claude</h2>
+      <p>Give context, ask for root cause.</p>
+      <div class="grid-2">
+        <div class="card" style="border-color: #dc2626;">
+          <h4 style="color: #dc2626;">❌ Bad</h4>
+          <pre style="font-size: 0.8rem; background: #fee2e2;">"Fix this test"</pre>
+        </div>
+        <div class="card" style="border-color: #16a34a;">
+          <h4 style="color: #16a34a;">✅ Good</h4>
+          <pre style="font-size: 0.7rem; background: #dcfce7;">I have a failing test.
+Test: "parse '2h 30m'"
+Expected: 9000
+Received: NaN
+
+Please:
+1. Read test file
+2. Read implementation
+3. Trace execution
+4. Find root cause</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- Slide 20: Exercises -->
+    <div class="slide">
+      <h2>20 · Workshop Exercises</h2>
+      <table>
+        <thead><tr><th>#</th><th>Exercise</th><th>Skill</th><th>Time</th><th>Goal</th></tr></thead>
+        <tbody>
+          <tr><td>01</td><td>Setup</td><td><code>/onboarding</code></td><td>10m</td><td>Verify env</td></tr>
+          <tr><td>02</td><td>Git Workflow</td><td><code>/feature-branch</code></td><td>15m</td><td>Branch, commit, merge</td></tr>
+          <tr><td>03</td><td>TDD</td><td><code>/tdd</code></td><td>30m</td><td>Red-green-refactor</td></tr>
+          <tr><td>04</td><td>Code Review</td><td><code>/reviewing</code></td><td>20m</td><td>PR workflow</td></tr>
+          <tr><td>05</td><td>Debugging</td><td><code>/execution</code></td><td>20m</td><td>Systematic debugging</td></tr>
+          <tr><td>06</td><td>Full Cycle</td><td>All 4 phases</td><td>45m</td><td>End-to-end feature</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Slide 21: Common Gotchas -->
+    <div class="slide">
+      <h2>21 · Common Gotchas</h2>
+      <table>
+        <thead><tr><th>Mistake</th><th>Consequence</th><th>Fix</th></tr></thead>
+        <tbody>
+          <tr><td>Skip /grill-me</td><td>Unclear requirements</td><td>Always define first</td></tr>
+          <tr><td>Code before tests</td><td>Bugs slip through</td><td>TDD strictly</td></tr>
+          <tr><td>Commit to main</td><td>No review</td><td>Feature branches</td></tr>
+          <tr><td>Vague prompts</td><td>Wrong features</td><td>Be specific</td></tr>
+          <tr><td>Ignore test failures</td><td>Broken prod</td><td>Fix immediately</td></tr>
+          <tr><td>Long sessions</td><td>Generic responses</td><td><code>/clear</code></td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout-warn">
+        <strong>Trust but verify.</strong> Always review Claude's output.
+      </div>
+    </div>
+
+    <!-- Slide 22: The Non-Determinism Problem -->
+    <div class="slide">
+      <h2>22 · The Non-Determinism Problem</h2>
+      <p style="font-size: 0.75rem; color: #b45309; margin-bottom: 0.5rem;">
+        <strong>Industry data:</strong> AI code has 1.7× more defects · <strong>Solution:</strong> Harness Engineering
+      </p>
+      <div class="grid-2" style="margin-bottom: 1rem;">
+        <div class="card" style="border-left: 4px solid #b45309;">
+          <h4 style="color: #b45309;">The Reality</h4>
+          <p style="font-size: 0.85rem; margin: 0;">Claude is an image generator for code, not a compiler. Output varies between runs.</p>
+        </div>
+        <div class="card" style="border-left: 4px solid #16a34a;">
+          <h4 style="color: #16a34a;">What to Expect</h4>
+          <ul style="font-size: 0.8rem; padding-left: 1rem; margin: 0;">
+            <li>Different output each run</li>
+            <li>Hallucinations happen</li>
+            <li>Instructions sometimes ignored</li>
+            <li>Model versions differ</li>
+          </ul>
+        </div>
+      </div>
+      <h3>The Solution: Guardrails</h3>
+      <table>
+        <thead><tr><th>Layer</th><th>Tool</th><th>Catches</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pre-commit</strong></td><td>Biome, TypeScript, hooks</td><td>Syntax, formatting, types</td></tr>
+          <tr><td><strong>CI</strong></td><td>Tests, E2E, linting</td><td>Logic errors, regressions</td></tr>
+          <tr><td><strong>Review</strong></td><td>Human code review</td><td>Architecture, security, edge cases</td></tr>
+        </tbody>
+      </table>
+      <div class="callout callout-error" style="margin: 1rem 0 0.5rem; padding: 0.8rem 1.2rem;">
+        <strong style="color: #dc2626;">The Rule:</strong> More Claude power = tighter leash
+      </div>
+      <div class="callout callout-success" style="margin: 0; padding: 0.8rem 1.2rem;">
+        <strong style="color: #16a34a;">Harden Over Time:</strong> Every Claude mistake → new automated check
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <!-- REFERENCE SECTION -->
+    <!-- ══════════════════════════════════════════════════════════════ -->
+    <div class="section-divider">Part 2: Quick Reference</div>
+
+    <!-- Quick Reference: Commands -->
+    <div class="slide">
+      <h2>23 · Quick Reference — Commands</h2>
+      <h3>Claude Code</h3>
+      <table>
+        <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>/help</code></td><td>Show commands</td></tr>
+          <tr><td><code>/clear</code></td><td>Clear conversation</td></tr>
+          <tr><td><code>/compact</code></td><td>Compress context</td></tr>
+          <tr><td><code>/cost</code></td><td>Show usage</td></tr>
+          <tr><td><code>/model sonnet|opus</code></td><td>Switch model</td></tr>
+        </tbody>
+      </table>
+      <h3>Git</h3>
+      <table>
+        <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td><code>git checkout -b feature/x</code></td><td>Create branch</td></tr>
+          <tr><td><code>git add -p</code></td><td>Stage interactively</td></tr>
+          <tr><td><code>git push -u origin branch</code></td><td>Push + set upstream</td></tr>
+          <tr><td><code>gh pr create --base develop</code></td><td>Create PR</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Quick Reference: Keyboard -->
+    <div class="slide">
+      <h2>Keyboard Shortcuts</h2>
+      <div class="grid-2">
+        <div class="card">
+          <h4>Claude Code</h4>
+          <table>
+            <tbody>
+              <tr><td><code>Ctrl+C</code></td><td>Cancel operation</td></tr>
+              <tr><td><code>↑</code> / <code>↓</code></td><td>History</td></tr>
+              <tr><td><code>Tab</code></td><td>Autocomplete</td></tr>
+              <tr><td><code>Ctrl+D</code></td><td>Exit</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card">
+          <h4>Slides/Kompendium</h4>
+          <table>
+            <tbody>
+              <tr><td><code>←</code> / <code>→</code></td><td>Navigate</td></tr>
+              <tr><td><code>K</code></td><td>Open kompendium</td></tr>
+              <tr><td><code>T</code></td><td>Toggle theme</td></tr>
+              <tr><td><code>?</code></td><td>Help</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Story Template -->
+    <div class="slide">
+      <h2>User Story Template</h2>
+      <pre>
+### US001: [Feature Name]
+
+**As a** [role]
+**I want to** [action]
+**So that** [benefit]
+
+#### Acceptance Criteria
+- [ ] AC1: [Specific, testable criterion]
+- [ ] AC2: [Another criterion]
+- [ ] AC3: [Yet another]
+      </pre>
+    </div>
+
+    <!-- CLAUDE.md Template -->
+    <div class="slide">
+      <h2>CLAUDE.md Template</h2>
+      <pre>
+# Project Name
+
+## Overview
+Brief project description.
+
+## Tech Stack
+- Language: TypeScript
+- Framework: React + Express
+- Database: PostgreSQL
+
+## Key Commands
+npm run dev    # Development
+npm test       # Run tests
+npm run build  # Production build
+
+## Conventions
+- TypeScript strict mode
+- Tests required for features
+- Feature branches + PRs
+
+## Don't
+- Don't use `any` type
+- Don't commit to main
+- Don't skip tests
+      </pre>
+    </div>
+
+    <!-- FAQ -->
+    <div class="slide">
+      <h2>FAQ</h2>
+      <table>
+        <thead><tr><th>Question</th><th>Answer</th></tr></thead>
+        <tbody>
+          <tr><td>Can Claude access internet?</td><td>Yes, via MCP plugins</td></tr>
+          <tr><td>Remember between sessions?</td><td>No. Use CLAUDE.md</td></tr>
+          <tr><td>Work offline?</td><td>No, requires API</td></tr>
+          <tr><td>Code sent to Anthropic?</td><td>Yes, for processing</td></tr>
+          <tr><td>Share API key?</td><td>Yes, share rate limits</td></tr>
+          <tr><td>Claude makes mistake?</td><td>Git tracks all. Review before commit.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Final: Let's Go! -->
+    <div class="slide" style="text-align: center; padding: 3rem;">
+      <h2 style="font-size: 2.5rem; border: none;">🚀 Let's Go!</h2>
+      <p style="font-size: 1.2rem; margin: 1.5rem 0;">Open your terminal and run:</p>
+      <pre style="display: inline-block; font-size: 1rem;">claude /onboarding</pre>
+      <p style="margin-top: 2rem; color: #64748b;">Raise your hand when you get stuck!</p>
+    </div>
+
+    <script>
+      mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+    </script>
+  </body>
+</html>

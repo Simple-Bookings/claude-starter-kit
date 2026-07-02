@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code — Workshop Kompendium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
+    <style>
+    /* ── CSS Variables — Dark Mode Default ── */
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --sidebar-bg: #0c1322;
+      --border: #334155;
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --cyan: #06b6d4;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --purple: #a78bfa;
+      --red: #ef4444;
+      --code-bg: #0d1117;
+      --accent: #06b6d4;
+    }
+    :root.light {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --sidebar-bg: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #1e293b;
+      --muted: #64748b;
+      --cyan: #0891b2;
+      --green: #16a34a;
+      --yellow: #ca8a04;
+      --purple: #7c3aed;
+      --red: #dc2626;
+      --code-bg: #f1f5f9;
+      --accent: #0891b2;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--border);
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      z-index: 100;
+    }
+    .main-content { max-width: 780px; }
+    .nav-link {
+      display: block;
+      padding: 6px 16px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.78rem;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .nav-link:hover {
+      color: var(--cyan);
+      background: rgba(6,182,212,0.08);
+    }
+    .nav-link.active {
+      color: var(--cyan);
+      border-left-color: var(--cyan);
+      font-weight: 600;
+      background: rgba(6,182,212,0.1);
+    }
+    .nav-part {
+      display: block;
+      padding: 10px 16px 6px;
+      color: var(--text);
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-top: 1px solid var(--border);
+      margin-top: 8px;
+    }
+    .nav-part:first-child { border-top: none; margin-top: 0; }
+
+    /* ── Section Cards ── */
+    .section-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem 2.5rem;
+      margin-bottom: 2.5rem;
+    }
+    h1 { color: var(--text); font-size: 2.2rem; margin-bottom: 0.5rem; }
+    h2 { color: var(--cyan); font-size: 1.5rem; margin: 0 0 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+    h3 { color: #93c5fd; font-size: 1.1rem; margin: 2rem 0 0.75rem; font-weight: 600; }
+    h4 { color: var(--muted); font-size: 0.95rem; margin: 1.5rem 0 0.5rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ── Part Headers ── */
+    .part-header {
+      background: linear-gradient(135deg, rgba(6,182,212,0.15), rgba(167,139,250,0.1));
+      border: 2px solid var(--cyan);
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      margin: 3rem 0 2rem;
+      text-align: center;
+    }
+    .part-header h2 {
+      color: var(--cyan);
+      font-size: 1.8rem;
+      margin: 0;
+      border: none;
+      padding: 0;
+    }
+    .part-header p {
+      color: var(--muted);
+      margin: 0.5rem 0 0;
+      font-size: 1rem;
+    }
+    .part-header .part-number {
+      display: inline-block;
+      background: var(--cyan);
+      color: var(--bg);
+      padding: 0.25rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.75rem;
+    }
+
+    /* ── Recap Cards ── */
+    .recap-card {
+      background: linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05));
+      border: 2px solid var(--green);
+      border-radius: 16px;
+      padding: 2rem 2.5rem;
+      margin: 2rem 0 3rem;
+    }
+    .recap-card h2 {
+      color: var(--green);
+      font-size: 1.3rem;
+      margin: 0 0 1rem;
+      border: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .recap-card h2::before {
+      content: "✓";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      background: var(--green);
+      color: var(--bg);
+      border-radius: 50%;
+      font-size: 0.9rem;
+      font-weight: 700;
+    }
+    .recap-card h3 {
+      color: var(--green);
+      font-size: 1rem;
+      margin: 1.5rem 0 0.5rem;
+    }
+    .recap-card ul {
+      margin: 0.5rem 0;
+      padding-left: 1.5rem;
+    }
+    .recap-card li {
+      margin: 0.4rem 0;
+    }
+    .qa-section {
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px dashed var(--green);
+    }
+    .qa-section h4 {
+      color: var(--green);
+      margin: 0 0 0.75rem;
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* ── Code ── */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.2rem 1.5rem;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", "Fira Code", "Consolas", monospace;
+      font-size: 0.85rem;
+      margin: 1rem 0 1.5rem;
+    }
+    code {
+      font-family: "JetBrains Mono", "Fira Code", monospace;
+      background: rgba(6,182,212,0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    pre code { background: none; padding: 0; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .badge-cyan { color: var(--cyan); background: rgba(6,182,212,0.15); }
+    .badge-green { color: var(--green); background: rgba(34,197,94,0.15); }
+    .badge-purple { color: var(--purple); background: rgba(167,139,250,0.15); }
+    .badge-yellow { color: var(--yellow); background: rgba(234,179,8,0.15); }
+
+    /* ── Tables ── */
+    table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; font-size: 0.9rem; }
+    th, td { padding: 0.75rem 1rem; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; }
+    tr:hover { background: rgba(6,182,212,0.03); }
+
+    /* ── Lists ── */
+    ul, ol { margin: 0.8rem 0 1.5rem; padding-left: 1.5rem; }
+    li { margin: 0.5rem 0; line-height: 1.7; }
+
+    /* ── Callouts ── */
+    .callout {
+      padding: 1.1rem 1.4rem;
+      margin: 1.5rem 0;
+      border-radius: 10px;
+      border-left: 4px solid;
+    }
+    .callout-info { background: rgba(6,182,212,0.08); border-color: var(--cyan); }
+    .callout-success { background: rgba(34,197,94,0.08); border-color: var(--green); }
+    .callout-warn { background: rgba(234,179,8,0.08); border-color: var(--yellow); }
+    .callout-danger { background: rgba(239,68,68,0.08); border-color: var(--red); }
+
+    /* ── Grid Layouts ── */
+    .grid { display: grid; gap: 2rem; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: repeat(3, 1fr); }
+    @media (max-width: 768px) {
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+    }
+
+    /* ── Mermaid ── */
+    .mermaid-wrap {
+      padding: 1.5rem;
+      margin: 1rem 0 2rem;
+      overflow-x: auto;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    /* ── Tooltips ── */
+    .tip {
+      color: var(--cyan);
+      border-bottom: 1px dashed var(--cyan);
+      cursor: help;
+      position: relative;
+    }
+    .tip-box {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--text);
+      width: 280px;
+      z-index: 1000;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    }
+    .tip:hover .tip-box { display: block; }
+
+    /* ── Navigation buttons ── */
+    .nav-btn {
+      position: fixed;
+      right: 16px;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      font-size: 1rem;
+      color: var(--cyan);
+      pointer-events: none;
+      cursor: pointer;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s, background 0.15s;
+    }
+    .nav-btn:hover { background: var(--bg); }
+    .nav-btn.show { pointer-events: auto; opacity: 1; }
+    #nav-up { top: calc(50% - 40px); }
+    #nav-dn { top: calc(50% + 4px); }
+
+    /* ── Presenter panel ── */
+    #presenter-panel {
+      position: fixed;
+      bottom: 1.25rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+      min-width: 260px;
+      transition: all 0.2s;
+    }
+    #presenter-panel.minimized #pp-body { display: none; }
+    #pp-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.75rem;
+    }
+    #pp-status {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--muted);
+      flex-shrink: 0;
+    }
+    #pp-status.connected { background: #10b981; }
+    #pp-counter {
+      color: var(--muted);
+      font-size: 0.75rem;
+      font-family: monospace;
+      flex: 1;
+      min-width: 3rem;
+    }
+    .pp-mini-btn {
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.125rem 0.25rem;
+      font-size: 0.9rem;
+      transition: color 0.15s;
+    }
+    .pp-mini-btn:hover { color: var(--text); }
+    #pp-minimize {
+      color: var(--muted);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0.125rem 0.25rem;
+      font-size: 0.7rem;
+      margin-left: 0.25rem;
+      transition: color 0.15s;
+    }
+    #pp-minimize:hover { color: var(--accent); }
+    #pp-body {
+      padding: 0 0.75rem 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    #pp-progress-wrap {
+      width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0.5rem 0;
+    }
+    #pp-progress {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.3s;
+      width: 0%;
+    }
+    #pp-title {
+      color: var(--muted);
+      font-size: 0.75rem;
+      line-height: 1.4;
+      margin-bottom: 0.5rem;
+      min-height: 1.25rem;
+    }
+    .pp-btn-row {
+      display: flex;
+      gap: 0.4rem;
+      margin-bottom: 0.4rem;
+    }
+    .pp-btn {
+      flex: 1;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.35rem 0.5rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.75rem;
+      transition: all 0.15s;
+    }
+    .pp-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .pp-btn-primary {
+      background: color-mix(in srgb, var(--accent) 15%, transparent);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* Slide buttons */
+    .slide-btn {
+      display: inline-block;
+      margin-left: 0.5rem;
+      padding: 0.15rem 0.5rem;
+      font-size: 0.75rem;
+      color: var(--accent);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      vertical-align: middle;
+      transition: all 0.2s;
+    }
+    .slide-btn:hover {
+      background: var(--accent);
+      color: var(--bg);
+      border-color: var(--accent);
+    }
+
+    /* Help modal */
+    .help-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+    .help-overlay.show { display: block; }
+    .help-modal {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      z-index: 1000;
+      min-width: 400px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+    .help-modal.show { display: block; }
+    .help-modal kbd {
+      display: inline-block;
+      padding: 2px 7px;
+      font-family: monospace;
+      font-size: 0.77rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+    }
+
+    /* Scrollbars */
+    ::-webkit-scrollbar { width: 7px; height: 7px; }
+    ::-webkit-scrollbar-track { background: var(--bg); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .sidebar { display: none; }
+      .main-content { margin-left: 0 !important; }
+    }
+    </style>
+    <!-- Built: 2026-06-30 — CSK — restructured for linear learning flow -->
+</head>
+<body class="min-h-screen">
+    <!-- Navigation buttons -->
+    <div class="nav-btn" id="nav-up" title="Previous section">↑</div>
+    <div class="nav-btn" id="nav-dn" title="Next section">↓</div>
+
+    <!-- Presenter panel -->
+    <div id="presenter-panel">
+      <div id="pp-header">
+        <span id="pp-status"></span>
+        <span id="pp-counter">1 / 25</span>
+        <button class="pp-mini-btn" onclick="prevSlide()" title="Previous (Alt+←)">←</button>
+        <button class="pp-mini-btn" onclick="nextSlide()" title="Next (Alt+→)">→</button>
+        <button id="pp-minimize" onclick="toggleMinimize()" title="Minimize (P)">⌄</button>
+      </div>
+      <div id="pp-body">
+        <div id="pp-progress-wrap"><div id="pp-progress"></div></div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.5rem;">
+          <div id="pp-title" style="flex:1;"></div>
+          <button id="pp-goto-section" onclick="gotoMatchingSection()" title="Go to section" style="display:none;padding:0.2rem 0.5rem;font-size:0.7rem;background:var(--bg);border:1px solid var(--border);border-radius:4px;color:var(--accent);cursor:pointer;">→</button>
+        </div>
+        <div class="pp-btn-row">
+          <button class="pp-btn" onclick="prevSlide()">← Prev</button>
+          <button class="pp-btn" onclick="nextSlide()">Next →</button>
+        </div>
+        <button class="pp-btn pp-btn-primary" onclick="window.open('slides.html', 'csk2-slides')" style="width:100%">↗ Open Slides</button>
+      </div>
+    </div>
+
+    <!-- Help Overlay -->
+    <div class="help-overlay" id="help-overlay" onclick="closeHelp()"></div>
+    <div class="help-modal" id="help-modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <span style="color: var(--cyan); font-weight: 700;">Keyboard Shortcuts</span>
+        <button onclick="closeHelp()" style="color: var(--muted); cursor: pointer; background: none; border: none; font-size: 1.2rem;">×</button>
+      </div>
+      <table style="margin: 0; font-size: 0.85rem;">
+        <tr><td style="width: 120px;"><kbd>H</kbd> / <kbd>?</kbd></td><td>Toggle help</td></tr>
+        <tr><td><kbd>T</kbd></td><td>Toggle light/dark theme</td></tr>
+        <tr><td><kbd>Alt</kbd>+<kbd>↑</kbd>/<kbd>↓</kbd></td><td>Navigate sections</td></tr>
+        <tr><td><kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd></td><td>Prev/next slide</td></tr>
+        <tr><td><kbd>S</kbd></td><td>Sync to slides</td></tr>
+        <tr><td><kbd>P</kbd></td><td>Minimize/expand panel</td></tr>
+        <tr><td><kbd>M</kbd></td><td>Open Slides</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Close overlays</td></tr>
+      </table>
+    </div>
+
+    <!-- Layout -->
+    <div class="flex min-h-screen">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div style="padding: 1.5rem;">
+          <div class="flex items-start justify-between">
+            <div>
+              <div style="color: var(--muted); font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px;">Workshop</div>
+              <div style="color: var(--cyan); font-weight: 700; font-size: 1rem;">Claude Code Workshop</div>
+              <div style="color: var(--muted); font-size: 0.75rem; margin-top: 2px;">Kompendium</div>
+            </div>
+            <button id="theme-toggle" onclick="toggleTheme()" title="Toggle theme (T)" style="background: var(--surface); border: 1px solid var(--border); color: var(--muted); border-radius: 6px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer;">☀︎</button>
+          </div>
+        </div>
+        <div style="padding: 0 1rem 1rem;">
+          <input type="text" id="search-input" placeholder="Search sections..."
+            style="width: 100%; padding: 8px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 0.85rem;"
+            oninput="filterSections(this.value)">
+        </div>
+        <nav id="sidebar-nav" style="padding: 0 0.5rem 2rem;">
+          <div style="padding: 0.5rem; margin-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+            <a href="./" style="color: var(--cyan); text-decoration: none; font-size: 0.8rem;">← Back to Workshop</a>
+          </div>
+
+          <!-- PART 1: INTRODUCTION -->
+          <span class="nav-part">Part 1: Introduction</span>
+          <a href="#s01" class="nav-link">01 · Introduktion</a>
+          <a href="#s02" class="nav-link">02 · Why it exists</a>
+          <a href="#s03" class="nav-link">03 · Setup & workspace</a>
+          <a href="#s04" class="nav-link">04 · Model selection</a>
+          <a href="#recap1" class="nav-link" style="color: var(--green);">↳ Recap 1</a>
+
+          <!-- PART 2: FOUNDATION -->
+          <span class="nav-part">Part 2: Foundation</span>
+          <a href="#s05" class="nav-link">05 · CLAUDE.md</a>
+          <a href="#s06" class="nav-link">06 · Rules & conventions</a>
+          <a href="#s07" class="nav-link">07 · Skills catalog</a>
+          <a href="#s08" class="nav-link">08 · Context management</a>
+          <a href="#recap2" class="nav-link" style="color: var(--green);">↳ Recap 2</a>
+
+          <!-- PART 3: THE WORK-LOOP -->
+          <span class="nav-part">Part 3: The Work-Loop</span>
+          <a href="#s09" class="nav-link">09 · The Work-Loop</a>
+          <a href="#s10" class="nav-link">10 · /planning</a>
+          <a href="#s11" class="nav-link">11 · /execution</a>
+          <a href="#s12" class="nav-link">12 · /reviewing</a>
+          <a href="#s13" class="nav-link">13 · /integration</a>
+          <a href="#s14" class="nav-link">14 · Progress tracking</a>
+          <a href="#recap3" class="nav-link" style="color: var(--green);">↳ Recap 3</a>
+
+          <!-- PART 4: HANDS-ON -->
+          <span class="nav-part">Part 4: Hands-On</span>
+          <a href="#s15" class="nav-link">15 · Exercises</a>
+
+          <!-- PART 5: SUPPORTING SKILLS -->
+          <span class="nav-part">Part 5: Supporting Skills</span>
+          <a href="#s16" class="nav-link">16 · /onboarding</a>
+          <a href="#s17" class="nav-link">17 · /tdd</a>
+          <a href="#s18" class="nav-link">18 · /grill-me</a>
+          <a href="#s19" class="nav-link">19 · /mockup-to-story</a>
+          <a href="#s20" class="nav-link">20 · /feature-branch</a>
+          <a href="#s21" class="nav-link">21 · /github-issues</a>
+          <a href="#s22" class="nav-link">22 · /release</a>
+          <a href="#s23" class="nav-link">23 · Code review</a>
+          <a href="#s24" class="nav-link">24 · Debugging</a>
+          <a href="#recap4" class="nav-link" style="color: var(--green);">↳ Recap 4</a>
+
+          <!-- PART 6: ADVANCED -->
+          <span class="nav-part">Part 6: Advanced</span>
+          <a href="#s25" class="nav-link">25 · Git worktrees</a>
+          <a href="#s26" class="nav-link">26 · MCP plugins</a>
+          <a href="#s27" class="nav-link">27 · Hooks</a>
+          <a href="#s28" class="nav-link">28 · Agent team</a>
+          <a href="#s29" class="nav-link">29 · Multi-file editing</a>
+          <a href="#s30" class="nav-link">30 · Prompt engineering</a>
+          <a href="#s31" class="nav-link">31 · Permissions</a>
+          <a href="#s32" class="nav-link">32 · Cost optimization</a>
+          <a href="#recap5" class="nav-link" style="color: var(--green);">↳ Recap 5</a>
+
+          <!-- PART 7: REFERENCE -->
+          <span class="nav-part">Part 7: Reference</span>
+          <a href="#s33" class="nav-link">33 · Keyboard shortcuts</a>
+          <a href="#s34" class="nav-link">34 · IDE integration</a>
+          <a href="#s35" class="nav-link">35 · CI overlap</a>
+          <a href="#s36" class="nav-link">36 · Failure modes</a>
+          <a href="#s37" class="nav-link">37 · The Non-Determinism Problem</a>
+          <a href="#s38" class="nav-link">38 · Gotchas</a>
+          <a href="#s39" class="nav-link">39 · Troubleshooting</a>
+          <a href="#s40" class="nav-link">40 · Adopting CSK</a>
+          <a href="#s41" class="nav-link">41 · CLI reference</a>
+          <a href="#s42" class="nav-link">42 · Further reading</a>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="flex-1 px-8 py-12 overflow-x-hidden" style="margin-left: 280px;">
+        <div class="main-content mx-auto">
+
+          <!-- Hero -->
+          <div class="mb-10">
+            <div style="color: var(--cyan); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.5rem;">Claude Starter Kit · Developer Workshop</div>
+            <h1>AI-Assisted Development Workshop</h1>
+            <p style="color: var(--muted); font-size: 1.1rem; max-width: 600px;">Learn to work effectively with Claude Code through hands-on exercises, skills, and proven workflows.</p>
+
+            <div class="callout callout-info" style="margin-top: 1.5rem;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+                <div>
+                  <div style="color: var(--cyan); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.5rem;">Workshop Structure</div>
+                  <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem;">
+                    <li><strong>Part 1-2:</strong> Introduction & Foundation (30 min)</li>
+                    <li><strong>Part 3:</strong> The Work-Loop (45 min)</li>
+                    <li><strong>Part 4:</strong> Hands-on Exercises (60 min)</li>
+                    <li><strong>Part 5-7:</strong> Skills & Reference (45 min)</li>
+                  </ul>
+                </div>
+                <div>
+                  <div style="color: var(--green); font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600; margin-bottom: 0.5rem;">Learning Outcomes</div>
+                  <ul style="margin: 0; padding-left: 1.2rem; font-size: 0.9rem;">
+                    <li>Understand the 4-phase work-loop</li>
+                    <li>Use skills for structured workflows</li>
+                    <li>Practice TDD with Claude Code</li>
+                    <li>Complete a full feature cycle</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap gap-2 mt-5">
+              <span class="badge badge-cyan">15 Skills</span>
+              <span class="badge badge-purple">6 Exercises</span>
+              <span class="badge badge-green">7 Parts</span>
+              <span class="badge badge-yellow">~3 Hours</span>
+            </div>
+          </div>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 1: INTRODUCTION -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part1" class="part-header">
+            <span class="part-number">Part 1</span>
+            <h2>Introduction</h2>
+            <p>What CSK is, why it exists, and how to set up your environment</p>
+          </div>
+
+          <!-- Section 01: What is CSK? -->
+          <section id="s01" class="section-card" data-slide="2">
+            <h2>01 · What is CSK? <button class="slide-btn" onclick="gotoSlide(2)" title="Go to slide 2">📽 2</button></h2>
+
+            <p>Claude Starter Kit is a <strong>learning framework</strong> that teaches developers how to work effectively with Claude Code. It provides:</p>
+
+            <ul>
+              <li><strong>Skills</strong> — Reusable workflow templates that guide Claude through specific tasks</li>
+              <li><strong>Exercises</strong> — 6 hands-on exercises with progress tracking (~2.5 hours)</li>
+              <li><strong>Tools</strong> — CLI commands for setup, verification, and testing</li>
+              <li><strong>Workshop materials</strong> — This kompendium, slides, and a printable handout</li>
+            </ul>
+
+            <h3>Key Components</h3>
+            <table>
+              <thead><tr><th>Component</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><code>.claude/skills/</code></td><td>15 skill files that guide Claude through workflows</td></tr>
+                <tr><td><code>.claude/agents/</code></td><td>Agent profiles for team collaboration patterns</td></tr>
+                <tr><td><code>exercises/</code></td><td>6 markdown exercise files with instructions</td></tr>
+                <tr><td><code>workshop/</code></td><td>Kompendium, slides, and handout HTML files</td></tr>
+                <tr><td><code>CLAUDE.md</code></td><td>Project instructions — the "bible" for Claude</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-success">
+              <strong>Stack-agnostic.</strong> CSK works with any tech stack — React, Python, Go, Rust, whatever. The workflows and skills are language-independent.
+            </div>
+          </section>
+
+          <!-- Section 02: Why it exists -->
+          <section id="s02" class="section-card" data-slide="3">
+            <h2>02 · Why it exists <button class="slide-btn" onclick="gotoSlide(3)" title="Go to slide 3">📽 3</button></h2>
+
+            <p>Developers new to AI-assisted coding often struggle with:</p>
+
+            <ul>
+              <li><strong>Unclear prompts</strong> — Vague instructions lead to vague results</li>
+              <li><strong>No workflow</strong> — Ad-hoc requests without structure</li>
+              <li><strong>Feature creep</strong> — Starting without clear requirements</li>
+              <li><strong>Testing gaps</strong> — Code without tests or broken tests</li>
+            </ul>
+
+            <h3>What CSK solves</h3>
+            <table>
+              <thead><tr><th>Problem</th><th>Solution</th></tr></thead>
+              <tbody>
+                <tr><td>"I don't know where to start"</td><td><code>/onboarding</code> checks environment and guides setup</td></tr>
+                <tr><td>"My requirements are unclear"</td><td><code>/grill-me</code> asks Socratic questions until concept is crystal clear</td></tr>
+                <tr><td>"Claude adds too many features"</td><td><code>/mockup-to-story</code> creates scoped user stories from wireframes</td></tr>
+                <tr><td>"Git workflow is messy"</td><td><code>/feature-branch</code> enforces clean branch discipline</td></tr>
+                <tr><td>"Tests are an afterthought"</td><td><code>/tdd</code> forces test-first development</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-info">
+              <strong>Workflow over tools.</strong> CSK isn't about learning Claude Code features — it's about learning <em>workflows</em> that produce quality software.
+            </div>
+          </section>
+
+          <!-- Section 03: Setup & workspace -->
+          <section id="s03" class="section-card" data-slide="3">
+            <h2>03 · Setup &amp; workspace <button class="slide-btn" onclick="gotoSlide(3)" title="Go to slide 3">📽 3</button></h2>
+
+            <h3>Cloning the repository</h3>
+            <p>CSK can be hosted on any Git provider. Choose your platform:</p>
+
+            <h4>GitHub</h4>
+            <pre><code># HTTPS (prompts for credentials)
+git clone https://github.com/your-org/claude-starter-kit.git
+
+# SSH (requires SSH key setup)
+git clone git@github.com:your-org/claude-starter-kit.git</code></pre>
+
+            <h4>HTTPS with Authentication</h4>
+            <pre><code># Clone with username (prompts for password/token)
+git clone https://github.com/YOUR-ORG/YOUR-REPO.git
+
+# When prompted for password, use your personal access token (not your login password)
+# Generate token at: GitHub → Settings → Developer Settings → Personal Access Tokens</code></pre>
+
+            <h4>GitLab / Bitbucket / Self-hosted</h4>
+            <pre><code># Same pattern — HTTPS or SSH
+git clone https://gitlab.com/your-org/repo.git
+git clone git@bitbucket.org:your-org/repo.git</code></pre>
+
+            <div class="callout callout-tip">
+              <strong>Credential caching:</strong> To avoid re-entering credentials:
+              <pre style="margin: 10px 0 0 0;"><code># Cache for 1 hour
+git config --global credential.helper 'cache --timeout=3600'
+
+# Or store permanently (macOS keychain / Windows credential manager)
+git config --global credential.helper store</code></pre>
+            </div>
+
+            <h3>Required tools</h3>
+            <table>
+              <thead><tr><th>Tool</th><th>Purpose</th><th>Installation</th></tr></thead>
+              <tbody>
+                <tr><td>Git</td><td>Version control</td><td><a href="https://git-scm.com" style="color: var(--cyan);">git-scm.com</a></td></tr>
+                <tr><td>Claude Code</td><td>AI assistant CLI</td><td><a href="https://claude.ai/code" style="color: var(--cyan);">claude.ai/code</a></td></tr>
+                <tr><td>Docker</td><td>Containers (for devcontainer)</td><td><a href="https://docker.com" style="color: var(--cyan);">docker.com</a></td></tr>
+                <tr><td>Python 3.10+</td><td>CSK CLI</td><td><a href="https://python.org" style="color: var(--cyan);">python.org</a></td></tr>
+              </tbody>
+            </table>
+
+            <h3>Environment verification</h3>
+            <pre><code># Check all required tools
+csk doctor
+
+# Expected output:
+# ✅ git: 2.43.0
+# ✅ claude: 2.1.x
+# ✅ docker: 24.0.x
+# ✅ python: 3.12.x</code></pre>
+
+            <h3>Project initialization</h3>
+            <pre><code># Create a new project with CSK structure
+csk init my-project
+
+# Navigate and start Claude
+cd my-project
+git init
+claude
+
+# Claude now has access to all skills</code></pre>
+
+            <div class="callout callout-warn">
+              <strong>Windows users:</strong> Use WSL2 or Docker devcontainer. Native Windows has path and shell issues.
+            </div>
+          </section>
+
+          <!-- Section 04: Model selection (moved up) -->
+          <section id="s04" class="section-card" data-slide="9">
+            <h2>04 · Model selection <button class="slide-btn" onclick="gotoSlide(9)" title="Go to slide 9">📽 9</button></h2>
+
+            <p>Claude Code supports multiple models. Choosing the right one saves time and money.</p>
+
+            <h3>When to use which</h3>
+            <table>
+              <thead><tr><th>Task</th><th>Model</th><th>Why</th></tr></thead>
+              <tbody>
+                <tr><td>Pattern replication</td><td>Sonnet</td><td>Fast, follows existing code patterns</td></tr>
+                <tr><td>Writing tests</td><td>Sonnet</td><td>Usually straightforward</td></tr>
+                <tr><td>Refactoring with clear scope</td><td>Sonnet</td><td>Mechanical, bounded task</td></tr>
+                <tr><td>Architecture decisions</td><td>Opus</td><td>Needs trade-off analysis</td></tr>
+                <tr><td>Security-critical code</td><td>Opus</td><td>High consequence of errors</td></tr>
+                <tr><td>Sonnet failed twice</td><td>Opus</td><td>Problem harder than expected</td></tr>
+              </tbody>
+            </table>
+
+            <div class="grid grid-2">
+              <div>
+                <h3>How to switch</h3>
+                <pre><code>/model sonnet    # Fast, routine work
+/model opus      # Deeper reasoning
+/model haiku     # Fastest, simplest
+/model           # Show options</code></pre>
+              </div>
+              <div>
+                <h3>Rule of thumb</h3>
+                <p>Start with <strong>Sonnet</strong>. Switch to <strong>Opus</strong> when:</p>
+                <ul style="margin-left: 1.2rem;">
+                  <li>High consequence of errors</li>
+                  <li>Trade-off analysis needed</li>
+                  <li>Sonnet already failed twice</li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="callout callout-info">
+              <strong>Switch mid-session.</strong> Context is preserved. No need to restart.
+            </div>
+          </section>
+
+          <!-- RECAP 1 -->
+          <section id="recap1" class="recap-card">
+            <h2>Recap: Introduction</h2>
+            <p>You've learned the foundation of CSK. Here's what to remember:</p>
+
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li><strong>CSK = Learning framework</strong> — Skills, exercises, and workflows for Claude Code</li>
+              <li><strong>Stack-agnostic</strong> — Works with any programming language or framework</li>
+              <li><strong>15 skills</strong> — Reusable workflow templates in <code>.claude/skills/</code></li>
+              <li><strong>Model choice matters</strong> — Sonnet for routine, Opus for complex reasoning</li>
+            </ul>
+
+            <h3>Commands to Remember</h3>
+            <ul>
+              <li><code>csk doctor</code> — Check your environment</li>
+              <li><code>csk init &lt;name&gt;</code> — Create new project</li>
+              <li><code>/model sonnet</code> or <code>/model opus</code> — Switch models</li>
+            </ul>
+
+            <div class="qa-section">
+              <h4>🙋 Q&A — Discussion Questions</h4>
+              <ul>
+                <li>Has anyone used AI coding assistants before? What was your experience?</li>
+                <li>What's your biggest challenge when working with AI-generated code?</li>
+                <li>When would you choose Opus over Sonnet?</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 2: FOUNDATION -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part2" class="part-header">
+            <span class="part-number">Part 2</span>
+            <h2>Foundation</h2>
+            <p>Configuration, rules, and context management</p>
+          </div>
+
+          <!-- Section 05: CLAUDE.md -->
+          <section id="s05" class="section-card" data-slide="7">
+            <h2>05 · CLAUDE.md <button class="slide-btn" onclick="gotoSlide(7)" title="Go to slide 7">📽 7</button></h2>
+
+            <p><code>CLAUDE.md</code> is the project's "bible" — the first file Claude reads when starting a session.</p>
+
+            <h3>Key sections</h3>
+            <table>
+              <thead><tr><th>Section</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Project Overview</td><td>What this project is</td></tr>
+                <tr><td>Tech Stack</td><td>Languages, frameworks, tools</td></tr>
+                <tr><td>Key Commands</td><td>How to build, test, run</td></tr>
+                <tr><td>Code Conventions</td><td>Style, patterns, practices</td></tr>
+                <tr><td>Don't</td><td>Things to avoid</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Example CLAUDE.md</h3>
+            <pre><code># CLAUDE.md
+
+## Project Overview
+TimeTracker — a time tracking app for freelancers.
+
+## Tech Stack
+- Frontend: React 18, TypeScript, Tailwind
+- Backend: Node.js, Express, PostgreSQL
+- Testing: Vitest, Playwright
+
+## Key Commands
+npm run dev      # Start dev server
+npm test         # Run tests
+npm run build    # Production build
+
+## Don't
+- Don't use `any` type
+- Don't commit to main directly
+- Don't add features beyond the issue scope</code></pre>
+
+            <div class="callout callout-info">
+              <strong>CLAUDE.md is not optional.</strong> Without it, Claude has no project context and will make assumptions.
+            </div>
+          </section>
+
+          <!-- Section 06: Rules & conventions -->
+          <section id="s06" class="section-card">
+            <h2>06 · Rules &amp; conventions</h2>
+
+            <p>Rules files in <code>.claude/rules/</code> define project conventions that Claude follows automatically.</p>
+
+            <h3>Two Types of Rules</h3>
+            <table>
+              <thead><tr><th>Type</th><th>When Loaded</th><th>Use For</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Global rules</strong></td><td>Always (session start)</td><td>Project-wide conventions</td></tr>
+                <tr><td><strong>Path-activated</strong></td><td>When working in matching paths</td><td>Domain-specific rules</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Path-Activated Rules (Frontmatter)</h3>
+            <p>Add frontmatter to activate rules only when working in specific directories:</p>
+            <pre><code># .claude/rules/e2e-testing.md
+---
+path: e2e-test/**
+---
+
+# E2E Testing Rules
+
+## Test Structure
+- Use `test.describe` for grouping
+- One assertion per test
+- Always clean up test data
+
+## Selectors
+- Prefer data-testid over CSS classes
+- Never use nth-child selectors
+
+## Timeouts
+- Max 10 seconds for any wait
+- Use explicit waits, not sleep</code></pre>
+
+            <div class="callout callout-info">
+              <strong>Path matching:</strong> Uses glob patterns. <code>src/api/**</code> matches all files in src/api and subdirectories. Rules without <code>path:</code> frontmatter load globally.
+            </div>
+
+            <h3>Common Rule Categories</h3>
+            <table>
+              <thead><tr><th>File</th><th>Path</th><th>Contents</th></tr></thead>
+              <tbody>
+                <tr><td><code>coding-patterns.md</code></td><td>(global)</td><td>Code style, naming conventions</td></tr>
+                <tr><td><code>testing.md</code></td><td><code>**/*.test.ts</code></td><td>Unit test patterns</td></tr>
+                <tr><td><code>e2e-testing.md</code></td><td><code>e2e-test/**</code></td><td>Playwright conventions</td></tr>
+                <tr><td><code>api-design.md</code></td><td><code>src/api/**</code></td><td>REST API patterns</td></tr>
+                <tr><td><code>security.md</code></td><td><code>**/auth/**</code></td><td>Security requirements</td></tr>
+                <tr><td><code>migrations.md</code></td><td><code>prisma/**</code></td><td>Database migration rules</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Example: Global Rule</h3>
+            <pre><code># .claude/rules/coding-patterns.md
+# (no frontmatter = always loaded)
+
+## Naming
+- camelCase for variables/functions
+- PascalCase for classes/components
+- SCREAMING_SNAKE_CASE for constants
+
+## Don't
+- Don't use `any` type
+- Don't commit console.log
+- Don't use magic numbers</code></pre>
+
+            <h3>How Rules are Loaded</h3>
+            <ul>
+              <li><strong>Session start:</strong> All rules without <code>path:</code> frontmatter</li>
+              <li><strong>On file access:</strong> Rules matching current file path</li>
+              <li><strong>Cumulative:</strong> Multiple rules can match simultaneously</li>
+              <li><strong>Context cost:</strong> Keep rules concise — they consume tokens</li>
+            </ul>
+
+            <h3>Best Practices</h3>
+            <table>
+              <thead><tr><th>Do</th><th>Don't</th></tr></thead>
+              <tbody>
+                <tr><td>Use path-activation for domain-specific rules</td><td>Put everything in global rules</td></tr>
+                <tr><td>Keep rules actionable and specific</td><td>Write vague guidelines</td></tr>
+                <tr><td>Include examples with rules</td><td>Only describe what not to do</td></tr>
+                <tr><td>Update rules when you find new issues</td><td>Let rules become stale</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-warning">
+              <strong>Rules vs Skills:</strong> Rules are passive (always-on context). Skills are active (triggered by /command). Use rules for "always do X", use skills for "how to do Y".
+            </div>
+          </section>
+
+          <!-- Section 07: Skills catalog -->
+          <section id="s07" class="section-card" data-slide="8">
+            <h2>07 · Skills catalog <button class="slide-btn" onclick="gotoSlide(8)" title="Go to slide 8">📽 8</button></h2>
+
+            <p>Skills are markdown files in <code>.claude/skills/</code> that teach Claude specific workflows. Trigger them with a slash command.</p>
+
+            <h3>Work-Loop Skills (Core 4)</h3>
+            <table>
+              <thead><tr><th>Skill</th><th>Trigger</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Planning</strong></td><td><code>/planning</code></td><td>Analyze issue, create task list</td></tr>
+                <tr><td><strong>Execution</strong></td><td><code>/execution</code></td><td>TDD implementation with evidence</td></tr>
+                <tr><td><strong>Reviewing</strong></td><td><code>/reviewing</code></td><td>Code review against ACs</td></tr>
+                <tr><td><strong>Integration</strong></td><td><code>/integration</code></td><td>PR, merge, close issue</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Supporting Skills (11)</h3>
+            <table>
+              <thead><tr><th>Skill</th><th>Trigger</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td>Onboarding</td><td><code>/onboarding</code></td><td>Check environment and guide setup</td></tr>
+                <tr><td>Grill-Me</td><td><code>/grill-me</code></td><td>Socratic questioning for clarity</td></tr>
+                <tr><td>Mockup to Story</td><td><code>/mockup-to-story</code></td><td>Wireframe to user stories</td></tr>
+                <tr><td>TDD</td><td><code>/tdd</code></td><td>Test-driven development guide</td></tr>
+                <tr><td>Feature Branch</td><td><code>/feature-branch</code></td><td>Git branch management</td></tr>
+                <tr><td>GitHub Issues</td><td><code>/github-issues</code></td><td>Create well-structured issues</td></tr>
+                <tr><td>Release</td><td><code>/release</code></td><td>Version, tag, and release</td></tr>
+                <tr><td>Git Worktree</td><td><code>/git-worktree</code></td><td>Parallel agent isolation</td></tr>
+                <tr><td>Security Audit</td><td><code>/security-audit</code></td><td>OWASP Top 10 review</td></tr>
+                <tr><td>Exercises</td><td><code>/exercises</code></td><td>Workshop exercise guide</td></tr>
+                <tr><td>Adopt</td><td><code>/adopt</code></td><td>Import CSK into existing project</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Skill file structure</h3>
+            <pre><code>.claude/skills/planning/SKILL.md
+
+# SKILL.md format:
+---
+name: planning
+description: Analyze issue and create task list
+---
+
+## Purpose
+[What this skill does]
+
+## Steps
+1. [First step]
+2. [Second step]
+
+## Output
+[Expected deliverable]</code></pre>
+          </section>
+
+          <!-- Section 08: Context management (moved up) -->
+          <section id="s08" class="section-card">
+            <h2>08 · Context management</h2>
+
+            <p>Claude's context window is finite. Managing it well improves quality and reduces cost.</p>
+
+            <h3>Context Window Basics</h3>
+            <table>
+              <thead><tr><th>Model</th><th>Context Window</th><th>Notes</th></tr></thead>
+              <tbody>
+                <tr><td>Claude Opus 4.x</td><td>200K tokens</td><td>~150K words</td></tr>
+                <tr><td>Claude Sonnet 4.x</td><td>200K tokens</td><td>Same size, faster</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Signs of Context Overflow</h3>
+            <ul>
+              <li>Claude forgets earlier instructions</li>
+              <li>Repeats the same suggestions</li>
+              <li>Loses track of file changes</li>
+              <li>Responses become generic</li>
+            </ul>
+
+            <h3>Context Commands</h3>
+            <table>
+              <thead><tr><th>Command</th><th>Effect</th><th>When to Use</th></tr></thead>
+              <tbody>
+                <tr><td><code>/clear</code></td><td>Wipe conversation history</td><td>Switching to unrelated task</td></tr>
+                <tr><td><code>/compact</code></td><td>Summarize and compress</td><td>Long session, keep working</td></tr>
+                <tr><td><code>/cost</code></td><td>Show token usage</td><td>Monitor context size</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-info">
+              <strong>CLAUDE.md is always in context.</strong> Put persistent instructions there, not in every prompt.
+            </div>
+          </section>
+
+          <!-- RECAP 2 -->
+          <section id="recap2" class="recap-card">
+            <h2>Recap: Foundation</h2>
+            <p>You've learned how to configure Claude for your project.</p>
+
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li><strong>CLAUDE.md</strong> — Project "bible" that Claude reads first</li>
+              <li><strong>Rules</strong> — <code>.claude/rules/*.md</code> define conventions</li>
+              <li><strong>Skills</strong> — 15 workflow templates, 4 core + 11 supporting</li>
+              <li><strong>Context</strong> — Use <code>/clear</code> and <code>/compact</code> to manage</li>
+            </ul>
+
+            <h3>File Locations</h3>
+            <ul>
+              <li><code>CLAUDE.md</code> — Project root</li>
+              <li><code>.claude/rules/</code> — Convention rules</li>
+              <li><code>.claude/skills/</code> — Workflow skills</li>
+            </ul>
+
+            <div class="qa-section">
+              <h4>🙋 Q&A — Discussion Questions</h4>
+              <ul>
+                <li>What would you put in your project's CLAUDE.md?</li>
+                <li>Which skills seem most useful for your workflow?</li>
+                <li>How do you currently document project conventions?</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 3: THE WORK-LOOP -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part3" class="part-header">
+            <span class="part-number">Part 3</span>
+            <h2>The Work-Loop</h2>
+            <p>Four phases that take you from idea to merged code</p>
+          </div>
+
+          <!-- Section 09: The Work-Loop -->
+          <section id="s09" class="section-card" data-slide="13">
+            <h2>09 · The Work-Loop <button class="slide-btn" onclick="gotoSlide(13)" title="Go to slide 13">📽 13</button></h2>
+
+            <p>Four phases that take you from idea to merged code. Each phase has a dedicated skill and produces artifacts that the next phase consumes.</p>
+
+            <div class="mermaid-wrap">
+              <pre class="mermaid">
+flowchart LR
+    P["/planning"] --> E["/execution"]
+    E --> R["/reviewing"]
+    R --> I["/integration"]
+    R -->|NEEDS_FIXES| E
+    I --> Done["✅ Merged"]
+    style P fill:#0e7490,stroke:#06b6d4,color:#fff
+    style E fill:#15803d,stroke:#22c55e,color:#fff
+    style R fill:#a16207,stroke:#eab308,color:#fff
+    style I fill:#7e22ce,stroke:#a855f7,color:#fff
+    style Done fill:#15803d,stroke:#22c55e,color:#fff
+              </pre>
+            </div>
+
+            <table>
+              <thead><tr><th>Phase</th><th>Skill</th><th>Purpose</th><th>Output</th></tr></thead>
+              <tbody>
+                <tr><td>1. Planning</td><td><code>/planning</code></td><td>Analyze, create task list</td><td><code>plan.md</code>, <code>progress.md</code></td></tr>
+                <tr><td>2. Execution</td><td><code>/execution</code></td><td>TDD implementation</td><td>Code + commits</td></tr>
+                <tr><td>3. Reviewing</td><td><code>/reviewing</code></td><td>Review against ACs</td><td>APPROVED / NEEDS_FIXES</td></tr>
+                <tr><td>4. Integration</td><td><code>/integration</code></td><td>PR, merge, close</td><td>Merged PR</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-info">
+              <strong>Idempotent.</strong> The loop can restart from any point. If review finds issues, execution resumes. Progress is tracked in <code>progress.md</code>.
+            </div>
+          </section>
+
+          <!-- Section 10: /planning -->
+          <section id="s10" class="section-card" data-slide="14">
+            <h2>10 · /planning <button class="slide-btn" onclick="gotoSlide(14)" title="Go to slide 14">📽 14</button></h2>
+
+            <p>Analyze the codebase, understand requirements, write a task list so precise that execution never needs to make a design decision. <strong>No code in this phase!</strong></p>
+
+            <h3>Steps</h3>
+            <table>
+              <thead><tr><th>Step</th><th>Action</th><th>Output</th></tr></thead>
+              <tbody>
+                <tr><td>1. Load context</td><td>Read issue, find ACs</td><td>Understanding of requirements</td></tr>
+                <tr><td>2. Analyze code</td><td>Find files to change</td><td>List of affected files</td></tr>
+                <tr><td>3. Write plan</td><td><code>/planning</code></td><td><code>docs/plans/{issue}-plan.md</code></td></tr>
+                <tr><td>4. Write progress</td><td>(same skill)</td><td><code>docs/plans/{issue}-progress.md</code></td></tr>
+              </tbody>
+            </table>
+
+            <h3>Output files</h3>
+            <pre><code>docs/plans/
+├── feature-dark-mode-plan.md     # Task list with verify commands
+└── feature-dark-mode-progress.md # Status: IN_PROGRESS</code></pre>
+
+            <div class="callout callout-warn">
+              <strong>Rule:</strong> No code written in this phase! Planning only.
+            </div>
+          </section>
+
+          <!-- Section 11: /execution -->
+          <section id="s11" class="section-card" data-slide="15">
+            <h2>11 · /execution <button class="slide-btn" onclick="gotoSlide(15)" title="Go to slide 15">📽 15</button></h2>
+
+            <p>Implement tasks one by one from the plan using TDD. Every task gets evidence.</p>
+
+            <div class="mermaid-wrap">
+              <pre class="mermaid">
+sequenceDiagram
+    participant Claude
+    participant Files
+    participant Tests
+    loop For each task
+        Claude->>Files: Write failing test
+        Tests->>Claude: ❌ Fails (expected)
+        Claude->>Files: Implement feature
+        Tests->>Claude: ✅ Passes
+        Claude->>Files: Update progress.md
+    end
+              </pre>
+            </div>
+
+            <h3>The TDD Cycle</h3>
+            <p><strong>🔴 RED</strong> (failing test) → <strong>🟢 GREEN</strong> (make it pass) → <strong>🔵 REFACTOR</strong> (clean up)</p>
+
+            <h3>Steps</h3>
+            <table>
+              <thead><tr><th>Step</th><th>Action</th><th>Output</th></tr></thead>
+              <tbody>
+                <tr><td>5. Create branch</td><td><code>git checkout -b feature/...</code></td><td>Feature branch</td></tr>
+                <tr><td>6. TDD loop</td><td><code>/execution</code> with <code>/tdd</code></td><td>RED → GREEN → REFACTOR</td></tr>
+                <tr><td>7. Record evidence</td><td>Update progress.md</td><td>Commit SHA + files per task</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Section 12: /reviewing -->
+          <section id="s12" class="section-card" data-slide="16">
+            <h2>12 · /reviewing <button class="slide-btn" onclick="gotoSlide(16)" title="Go to slide 16">📽 16</button></h2>
+
+            <p>Self-review against plan and acceptance criteria. Decision: <strong>APPROVED</strong> or <strong>NEEDS_FIXES</strong>.</p>
+
+            <h3>Review checklist</h3>
+            <table>
+              <thead><tr><th>Check</th><th>Question</th></tr></thead>
+              <tbody>
+                <tr><td>Acceptance criteria</td><td>All ACs met with test evidence?</td></tr>
+                <tr><td>Tests</td><td>Tests exist and pass?</td></tr>
+                <tr><td>Security</td><td>No secrets, injection, XSS?</td></tr>
+                <tr><td>Quality</td><td>Small functions, no duplication?</td></tr>
+                <tr><td>Debug code</td><td>No console.log or TODO left?</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Outcomes</h3>
+            <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+              <div class="callout callout-success" style="flex: 1; margin: 0;"><strong>APPROVED</strong> → proceed to /integration</div>
+              <div class="callout callout-warn" style="flex: 1; margin: 0;"><strong>NEEDS_FIXES</strong> → back to /execution</div>
+            </div>
+          </section>
+
+          <!-- Section 13: /integration -->
+          <section id="s13" class="section-card" data-slide="17">
+            <h2>13 · /integration <button class="slide-btn" onclick="gotoSlide(17)" title="Go to slide 17">📽 17</button></h2>
+
+            <p>Create PR, handle feedback, merge to develop.</p>
+
+            <h3>Steps</h3>
+            <table>
+              <thead><tr><th>Step</th><th>Action</th><th>Output</th></tr></thead>
+              <tbody>
+                <tr><td>Push branch</td><td><code>git push -u origin HEAD</code></td><td>Branch on remote</td></tr>
+                <tr><td>Create PR</td><td><code>/integration</code></td><td>PR with description</td></tr>
+                <tr><td>Handle CI</td><td>Fix issues, re-push</td><td>CI green</td></tr>
+                <tr><td>Merge</td><td><code>gh pr merge --squash</code></td><td>Merged to develop</td></tr>
+              </tbody>
+            </table>
+
+            <div class="mermaid-wrap">
+              <pre class="mermaid">
+gitGraph
+    commit id: "initial"
+    branch develop
+    commit id: "setup"
+    branch feature/login
+    commit id: "feat: add form"
+    commit id: "test: add specs"
+    checkout develop
+    merge feature/login
+    checkout main
+    merge develop tag: "v1.0.0"
+              </pre>
+            </div>
+
+            <div class="callout callout-success">
+              <strong>Loop ends at merge.</strong> Use <code>/release</code> separately when ready to ship to production.
+            </div>
+          </section>
+
+          <!-- Section 14: Progress tracking -->
+          <section id="s14" class="section-card">
+            <h2>14 · Progress tracking</h2>
+
+            <p>When you close a terminal, your context is gone. <code>progress.md</code> is the workaround — a file that captures where you are so you can resume later.</p>
+
+            <h3>Example progress.md</h3>
+            <pre><code># Progress: Feature-123 Login Form
+
+## Status
+IN_PROGRESS
+
+## Tasks
+- [x] Create LoginForm component
+- [x] Add form validation (Zod schema)
+- [ ] Connect to auth API        ← NEXT
+- [ ] Add error handling
+- [ ] Write integration tests
+
+## Decisions
+- Using Zod over yup (team standard)
+- Form state via react-hook-form
+
+## Next action
+Implement `useLogin` hook in `src/hooks/useLogin.ts`</code></pre>
+
+            <h3>How to use it</h3>
+            <table>
+              <thead><tr><th>When</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>Starting a feature</td><td>Create <code>docs/plans/{name}-progress.md</code></td></tr>
+                <tr><td>Completing a step</td><td>Check off the task, update "Next action"</td></tr>
+                <tr><td>Resuming after break</td><td>"Read progress.md and continue"</td></tr>
+                <tr><td>Finishing</td><td>Set Status to DONE</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-success">
+              <strong>progress.md is your external memory.</strong> Claude can't remember across sessions, but it can read files.
+            </div>
+          </section>
+
+          <!-- RECAP 3 -->
+          <section id="recap3" class="recap-card">
+            <h2>Recap: The Work-Loop</h2>
+            <p>You've learned the core workflow that structures your development.</p>
+
+            <h3>The 4 Phases</h3>
+            <ul>
+              <li><strong>/planning</strong> — Analyze requirements, create task list (NO code)</li>
+              <li><strong>/execution</strong> — TDD implementation (RED → GREEN → REFACTOR)</li>
+              <li><strong>/reviewing</strong> — Self-review against acceptance criteria</li>
+              <li><strong>/integration</strong> — PR, merge, close issue</li>
+            </ul>
+
+            <h3>Key Artifacts</h3>
+            <ul>
+              <li><code>plan.md</code> — Task list with file paths and verify commands</li>
+              <li><code>progress.md</code> — Status tracking, decisions, next action</li>
+            </ul>
+
+            <div class="qa-section">
+              <h4>🙋 Q&A — Discussion Questions</h4>
+              <ul>
+                <li>Why is planning a separate phase? What happens if you skip it?</li>
+                <li>Why does /reviewing return to /execution instead of /planning?</li>
+                <li>How does progress.md help with context loss?</li>
+              </ul>
+            </div>
+
+            <div class="callout callout-success" style="margin-top: 1.5rem; margin-bottom: 0;">
+              <strong>🎯 Ready for hands-on!</strong> You now have the conceptual foundation. Time to practice!
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 4: HANDS-ON EXERCISES -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part4" class="part-header">
+            <span class="part-number">Part 4</span>
+            <h2>Hands-On Exercises</h2>
+            <p>Practice what you've learned with 6 guided exercises</p>
+          </div>
+
+          <!-- Section 15: Exercises -->
+          <section id="s15" class="section-card" data-slide="20">
+            <h2>15 · Exercises <button class="slide-btn" onclick="gotoSlide(20)" title="Go to slide 20">📽 20</button></h2>
+
+            <p>6 hands-on exercises that build on each other (~2.5 hours total).</p>
+
+            <table>
+              <thead><tr><th>#</th><th>Exercise</th><th>Skill</th><th>Time</th><th>Goal</th></tr></thead>
+              <tbody>
+                <tr><td>01</td><td>Setup</td><td><code>/onboarding</code></td><td>10m</td><td>Verify environment</td></tr>
+                <tr><td>02</td><td>Git Workflow</td><td><code>/feature-branch</code></td><td>15m</td><td>Branch, commit, merge</td></tr>
+                <tr><td>03</td><td>TDD</td><td><code>/tdd</code></td><td>30m</td><td>Red-green-refactor</td></tr>
+                <tr><td>04</td><td>Code Review</td><td><code>/reviewing</code></td><td>20m</td><td>PR workflow</td></tr>
+                <tr><td>05</td><td>Debugging</td><td><code>/execution</code></td><td>20m</td><td>Systematic debugging</td></tr>
+                <tr><td>06</td><td>Full Cycle</td><td>All 4 phases</td><td>45m</td><td>End-to-end feature</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Progress tracking</h3>
+            <pre><code># View your progress
+csk progress
+
+# Start exercise server (interactive)
+csk exercises
+
+# Reset progress
+csk reset -y</code></pre>
+
+            <h3>Tips for success</h3>
+            <ul>
+              <li>Don't skip exercises — they build on each other</li>
+              <li>Take notes on what works for you</li>
+              <li>Ask Claude for clarification when stuck</li>
+              <li>Share learnings with your team</li>
+            </ul>
+
+            <div class="callout callout-success">
+              <strong>Exercise 06 is the graduation.</strong> If you can complete a full feature cycle — from idea to release — you've mastered the CSK workflow.
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 5: SUPPORTING SKILLS -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part5" class="part-header">
+            <span class="part-number">Part 5</span>
+            <h2>Supporting Skills</h2>
+            <p>Additional skills that enhance your workflow</p>
+          </div>
+
+          <!-- Section 16: /onboarding -->
+          <section id="s16" class="section-card">
+            <h2>16 · /onboarding</h2>
+
+            <p>The onboarding skill checks your environment and guides you through the initial setup.</p>
+
+            <div class="grid grid-2">
+              <div>
+                <h3>What it does</h3>
+                <ol>
+                  <li>Checks all required tools (git, claude, docker, python)</li>
+                  <li>Verifies project structure exists</li>
+                  <li>Shows your current exercise progress</li>
+                  <li>Suggests next steps</li>
+                </ol>
+              </div>
+              <div>
+                <h3>When to use</h3>
+                <ul>
+                  <li>First time opening a project</li>
+                  <li>After returning to a project</li>
+                  <li>When something feels "off"</li>
+                </ul>
+                <div class="callout callout-success">
+                  <strong>Run it every session.</strong> Takes 5 seconds, catches setup issues early.
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Section 17: /tdd -->
+          <section id="s17" class="section-card" data-slide="24">
+            <h2>17 · /tdd <button class="slide-btn" onclick="gotoSlide(24)" title="Go to slide 24">📽 24</button></h2>
+
+            <p>TDD (Test-Driven Development) is a discipline: write the test <em>before</em> the implementation.</p>
+
+            <h3>The cycle</h3>
+            <div class="mermaid-wrap">
+              <pre class="mermaid">
+flowchart LR
+    R["🔴 RED<br>Write failing test"] --> G["🟢 GREEN<br>Make it pass"]
+    G --> RF["🔵 REFACTOR<br>Improve code"]
+    RF --> R
+              </pre>
+            </div>
+
+            <h3>Example</h3>
+            <pre><code>// Step 1: RED — Write failing test
+describe('add', () => {
+  it('should add two numbers', () => {
+    expect(add(2, 3)).toBe(5);
+  });
+});
+
+// Step 2: GREEN — Minimum code to pass
+function add(a, b) {
+  return a + b;
+}
+
+// Step 3: REFACTOR — Improve without breaking tests</code></pre>
+
+            <div class="callout callout-warn">
+              <strong>Don't write implementation first.</strong> If you write code before tests, you'll write tests that pass — not tests that verify correct behavior.
+            </div>
+          </section>
+
+          <!-- Section 18: /grill-me -->
+          <section id="s18" class="section-card" data-slide="22">
+            <h2>18 · /grill-me <button class="slide-btn" onclick="gotoSlide(22)" title="Go to slide 22">📽 22</button></h2>
+
+            <p>The grill-me skill uses <strong>Socratic questioning</strong> to force clarity on your project idea.</p>
+
+            <h3>Question flow</h3>
+            <ol>
+              <li><strong>Problem:</strong> "What specific problem are you solving?"</li>
+              <li><strong>Users:</strong> "Who specifically will use this?"</li>
+              <li><strong>Differentiator:</strong> "Why won't they just use [existing solution]?"</li>
+              <li><strong>Core:</strong> "What's the ONE thing this must do well?"</li>
+              <li><strong>Non-goals:</strong> "What's explicitly NOT in version 1?"</li>
+            </ol>
+
+            <div class="callout callout-warn">
+              <strong>Don't defend — refine.</strong> Each question helps you find holes in your thinking.
+            </div>
+          </section>
+
+          <!-- Section 19: /mockup-to-story -->
+          <section id="s19" class="section-card" data-slide="23">
+            <h2>19 · /mockup-to-story <button class="slide-btn" onclick="gotoSlide(23)" title="Go to slide 23">📽 23</button></h2>
+
+            <p>Convert ASCII wireframes or Mermaid diagrams into structured user stories with acceptance criteria.</p>
+
+            <h3>Output format</h3>
+            <pre><code>### US001: View Daily Time Summary
+
+**As a** freelance developer
+**I want to** see my total tracked time for today
+**So that** I know if I'm on track for my daily goal
+
+#### Acceptance Criteria
+- [ ] AC1: Shows total time in "Xh Ym" format
+- [ ] AC2: Shows progress bar against daily goal
+- [ ] AC3: Updates every 60 seconds when timer running
+- [ ] AC4: Shows "0h 0m" when no time tracked</code></pre>
+          </section>
+
+          <!-- Section 20: /feature-branch -->
+          <section id="s20" class="section-card" data-slide="25">
+            <h2>20 · /feature-branch <button class="slide-btn" onclick="gotoSlide(25)" title="Go to slide 25">📽 25</button></h2>
+
+            <p>Create and manage feature branches with consistent naming and workflow.</p>
+
+            <h3>Branch naming convention</h3>
+            <table>
+              <thead><tr><th>Type</th><th>Pattern</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td>Feature</td><td><code>feature/&lt;description&gt;</code></td><td><code>feature/user-auth</code></td></tr>
+                <tr><td>Bug fix</td><td><code>fix/&lt;description&gt;</code></td><td><code>fix/login-timeout</code></td></tr>
+                <tr><td>Refactor</td><td><code>refactor/&lt;description&gt;</code></td><td><code>refactor/db-queries</code></td></tr>
+                <tr><td>Docs</td><td><code>docs/&lt;description&gt;</code></td><td><code>docs/api-reference</code></td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-danger">
+              <strong>Never commit to main or develop directly.</strong> All changes go through feature branches and PRs.
+            </div>
+          </section>
+
+          <!-- Section 21: /github-issues -->
+          <section id="s21" class="section-card">
+            <h2>21 · /github-issues</h2>
+
+            <p>Create well-structured issues that are actionable and trackable.</p>
+
+            <h3>Feature/Task template</h3>
+            <pre><code>## Description
+[Clear, concise description]
+
+## Acceptance Criteria
+- [ ] AC1: [Specific criterion]
+- [ ] AC2: [Another criterion]
+
+## Definition of Done
+- [ ] Code implemented
+- [ ] Tests pass locally
+- [ ] PR reviewed
+- [ ] Merged to develop</code></pre>
+          </section>
+
+          <!-- Section 22: /release -->
+          <section id="s22" class="section-card">
+            <h2>22 · /release</h2>
+
+            <p>Version, tag, and release your software following semantic versioning.</p>
+
+            <h3>Semantic versioning</h3>
+            <table>
+              <thead><tr><th>Change Type</th><th>Version Bump</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td>Breaking change</td><td>MAJOR</td><td>1.0.0 → 2.0.0</td></tr>
+                <tr><td>New feature</td><td>MINOR</td><td>1.0.0 → 1.1.0</td></tr>
+                <tr><td>Bug fix</td><td>PATCH</td><td>1.0.0 → 1.0.1</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-info">
+              <strong>Release early, release often.</strong> Small, frequent releases are safer than big-bang deployments.
+            </div>
+          </section>
+
+          <!-- Section 23: Code review -->
+          <section id="s23" class="section-card">
+            <h2>23 · Code review</h2>
+
+            <h3>PR checklist (author)</h3>
+            <ul>
+              <li>☐ Self-reviewed the diff</li>
+              <li>☐ Tests pass locally</li>
+              <li>☐ No debug code (console.log, TODO)</li>
+              <li>☐ Follows project conventions</li>
+              <li>☐ PR description explains the change</li>
+            </ul>
+
+            <h3>Good review comments</h3>
+            <pre><code>// ✅ Constructive
+"Consider extracting this into a helper function
+for reusability."
+
+// ✅ Specific with solution
+"This could throw if `user` is null. Add a guard:
+if (!user) return null;"
+
+// ✅ Questioning (not demanding)
+"Why did you choose X over Y here?"</code></pre>
+
+            <div class="callout callout-success">
+              <strong>Reviews improve everyone.</strong> Approach them as collaborative learning.
+            </div>
+          </section>
+
+          <!-- Section 24: Debugging -->
+          <section id="s24" class="section-card" data-slide="26">
+            <h2>24 · Debugging <button class="slide-btn" onclick="gotoSlide(26)" title="Go to slide 26">📽 26</button></h2>
+
+            <h3>Effective debug requests</h3>
+            <pre><code>I have a failing test in parseTime.test.ts.
+
+Test: "should parse '2h 30m'"
+Expected: 9000 (seconds)
+Received: NaN
+
+Please:
+1. Read both files
+2. Trace the execution
+3. Identify root cause
+4. Suggest a fix</code></pre>
+
+            <h3>Debugging checklist</h3>
+            <ul>
+              <li>☐ Exact error message</li>
+              <li>☐ File paths</li>
+              <li>☐ Expected vs actual</li>
+              <li>☐ Ask for root cause</li>
+              <li>☐ Reproduction steps</li>
+            </ul>
+          </section>
+
+          <!-- RECAP 4 -->
+          <section id="recap4" class="recap-card">
+            <h2>Recap: Supporting Skills</h2>
+            <p>You've learned 9 additional skills that enhance your workflow.</p>
+
+            <h3>Key Skills</h3>
+            <ul>
+              <li><strong>/onboarding</strong> — Run every session to check environment</li>
+              <li><strong>/tdd</strong> — RED → GREEN → REFACTOR discipline</li>
+              <li><strong>/grill-me</strong> — Socratic questioning for clarity</li>
+              <li><strong>/feature-branch</strong> — Clean branch management</li>
+            </ul>
+
+            <h3>Workflow Principles</h3>
+            <ul>
+              <li>Write tests before implementation</li>
+              <li>All changes go through feature branches + PRs</li>
+              <li>Reviews are collaborative learning</li>
+              <li>Provide specific context when debugging</li>
+            </ul>
+
+            <div class="qa-section">
+              <h4>🙋 Q&A — Discussion Questions</h4>
+              <ul>
+                <li>Which supporting skill would help your current project most?</li>
+                <li>What makes TDD challenging? How does CSK help?</li>
+                <li>How do you currently handle code reviews?</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 6: ADVANCED -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part6" class="part-header">
+            <span class="part-number">Part 6</span>
+            <h2>Advanced Topics</h2>
+            <p>Power features for experienced users</p>
+          </div>
+
+          <!-- Section 25: Git worktrees -->
+          <section id="s25" class="section-card" data-slide="29">
+            <h2>25 · Git worktrees <button class="slide-btn" onclick="gotoSlide(29)" title="Go to slide 29">📽 29</button></h2>
+
+            <p>Work on multiple features in parallel without stashing or switching branches.</p>
+
+            <h3>What is a Worktree?</h3>
+            <p>A worktree is a separate working directory linked to the same repository. Each worktree has its own branch.</p>
+
+            <pre><code># Start Claude with automatic worktree creation
+claude --worktree feature-b
+
+# Claude creates .worktrees/feature-b/ and starts there
+# Now you have two directories:
+# ./                        (main repo)
+# .worktrees/feature-b/     (isolated workspace)</code></pre>
+
+            <div class="callout callout-success">
+              <strong>Worktrees + CI Overlap = productivity.</strong> Never wait for CI. Start the next feature while tests run.
+            </div>
+          </section>
+
+          <!-- Section 26: MCP plugins -->
+          <section id="s26" class="section-card" data-slide="30">
+            <h2>26 · MCP plugins <button class="slide-btn" onclick="gotoSlide(30)" title="Go to slide 30">📽 30</button></h2>
+
+            <p>MCP (Model Context Protocol) extends Claude Code with custom tools and data sources.</p>
+
+            <h3>Common MCP Servers</h3>
+            <table>
+              <thead><tr><th>Server</th><th>Provides</th></tr></thead>
+              <tbody>
+                <tr><td>Playwright</td><td>Browser automation, screenshots, testing</td></tr>
+                <tr><td>PostgreSQL</td><td>Direct database queries</td></tr>
+                <tr><td>GitHub</td><td>Issues, PRs, repository management</td></tr>
+                <tr><td>Slack</td><td>Send messages, read channels</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-warn">
+              <strong>Security:</strong> MCP servers can access your system. Only use trusted servers.
+            </div>
+          </section>
+
+          <!-- Section 27: Hooks -->
+          <section id="s27" class="section-card" data-slide="31">
+            <h2>27 · Hooks <button class="slide-btn" onclick="gotoSlide(31)" title="Go to slide 31">📽 31</button></h2>
+
+            <p>Hooks let you run custom code before/after Claude Code actions.</p>
+
+            <table>
+              <thead><tr><th>Hook</th><th>When</th><th>Use Case</th></tr></thead>
+              <tbody>
+                <tr><td><code>UserPromptSubmit</code></td><td>Before prompt sent</td><td>Validation, logging</td></tr>
+                <tr><td><code>PreToolUse</code></td><td>Before tool execution</td><td>Approval gates</td></tr>
+                <tr><td><code>PostToolUse</code></td><td>After tool execution</td><td>Notifications</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-info">
+              <strong>Hooks run synchronously.</strong> Keep them fast (&lt;1s) to avoid blocking.
+            </div>
+          </section>
+
+          <!-- Section 28: Agent team -->
+          <section id="s28" class="section-card">
+            <h2>28 · Agent Teams — Parallel & Specialized Work</h2>
+
+            <p>Spawn <strong>subagents</strong> for parallel tasks or specialized roles. Each agent runs with its own context window.</p>
+
+            <h3>When to Use Agents</h3>
+            <table>
+              <thead><tr><th>Scenario</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Parallel work</strong></td><td>Review 5 files simultaneously</td></tr>
+                <tr><td><strong>Specialization</strong></td><td>Security audit, QA testing, documentation</td></tr>
+                <tr><td><strong>Fresh context</strong></td><td>Avoid polluting main conversation</td></tr>
+                <tr><td><strong>CI wait time</strong></td><td>Plan next feature while tests run</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Agents + Work-Loop Integration</h3>
+            <p>Different agents can own different phases:</p>
+            <pre><code># Main agent: coordinates the work
+You: "Plan authentication feature"
+Claude: *runs /planning, creates task list*
+
+# Spawn specialized agent for execution
+You: "Spawn Tom to implement the login form"
+Claude: *spawns subagent with task context*
+
+# Spawn QA agent for review
+You: "Spawn Scott to review the auth code for security issues"
+Claude: *spawns code-reviewer subagent*
+
+# Spawn DevOps agent for deployment
+You: "Spawn Dan to set up CI pipeline for auth tests"</code></pre>
+
+            <h3>Agent Profiles</h3>
+            <p>Define specialized agents in <code>.claude/agents/</code>:</p>
+            <table>
+              <thead><tr><th>Agent</th><th>Focus</th><th>Profile</th></tr></thead>
+              <tbody>
+                <tr><td>Tom</td><td>Full-stack development</td><td><code>.claude/agents/tom.md</code></td></tr>
+                <tr><td>Scott</td><td>QA / Testing</td><td><code>.claude/agents/scott.md</code></td></tr>
+                <tr><td>Aksel</td><td>Architecture review</td><td><code>.claude/agents/aksel.md</code></td></tr>
+                <tr><td>Dan</td><td>DevOps / CI/CD</td><td><code>.claude/agents/dan.md</code></td></tr>
+                <tr><td>Quinn</td><td>Security audit</td><td><code>.claude/agents/quinn.md</code></td></tr>
+              </tbody>
+            </table>
+
+            <h3>How to Spawn Agents</h3>
+            <pre><code># Simple spawn
+"Spawn a code-reviewer agent to check auth.ts"
+
+# Spawn with specific focus
+"Spawn a security agent to audit the payment flow for OWASP issues"
+
+# Spawn multiple in parallel
+"Spawn 3 agents: one for API review, one for frontend, one for tests"
+
+# Spawn with worktree isolation
+"Spawn Tom in a worktree to implement feature-x while I work on feature-y"</code></pre>
+
+            <div class="callout callout-warning">
+              <strong>Critical:</strong> Subagents don't see your conversation history. Brief them with ALL context they need — files, goals, constraints. Think of it like onboarding a new team member.
+            </div>
+
+            <h3>Anti-patterns</h3>
+            <table>
+              <thead><tr><th>Don't</th><th>Do</th></tr></thead>
+              <tbody>
+                <tr><td>"Review the code" (no context)</td><td>"Review auth.ts for SQL injection, check line 45-80"</td></tr>
+                <tr><td>Spawn for simple tasks</td><td>Use agents for 10+ minute tasks</td></tr>
+                <tr><td>Forget to collect results</td><td>Always ask agent for summary before dismissing</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Section 29: Multi-file editing -->
+          <section id="s29" class="section-card">
+            <h2>29 · Multi-file editing</h2>
+
+            <p>Claude Code excels at coordinated changes across multiple files.</p>
+
+            <h3>Coordination Strategies</h3>
+            <pre><code># Strategy 1: Define interface first
+"Create a TypeScript interface for User in types.ts,
+then implement the User service, controller, and tests."
+
+# Strategy 2: Follow existing pattern
+"Add a delete endpoint for orders following
+the same pattern as the users delete endpoint."
+
+# Strategy 3: Explicit file list
+"Update these files to add email notifications:
+- src/services/notification.ts
+- src/controllers/order.ts
+- src/types/notification.ts"</code></pre>
+          </section>
+
+          <!-- Section 30: Prompt engineering -->
+          <section id="s30" class="section-card">
+            <h2>30 · Prompt engineering</h2>
+
+            <h3>Effective Patterns</h3>
+            <table>
+              <thead><tr><th>Pattern</th><th>Example</th></tr></thead>
+              <tbody>
+                <tr><td>Be specific</td><td>"Add email validation to the signup form using Zod"</td></tr>
+                <tr><td>Give context</td><td>"This is a React app using Tailwind. Add dark mode."</td></tr>
+                <tr><td>Reference files</td><td>"Follow the pattern in auth.ts for this new endpoint"</td></tr>
+                <tr><td>Define scope</td><td>"Only modify the login component, nothing else"</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Anti-patterns</h3>
+            <table>
+              <thead><tr><th>❌ Avoid</th><th>✅ Better</th></tr></thead>
+              <tbody>
+                <tr><td>"Make this better"</td><td>"Reduce this function to under 20 lines"</td></tr>
+                <tr><td>"Fix all the bugs"</td><td>"Fix the null pointer in processOrder()"</td></tr>
+                <tr><td>"Refactor everything"</td><td>"Extract the validation logic to a separate function"</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Section 31: Permissions -->
+          <section id="s31" class="section-card">
+            <h2>31 · Permissions &amp; Security</h2>
+
+            <h3>Permission Modes</h3>
+            <table>
+              <thead><tr><th>Mode</th><th>File Access</th><th>Commands</th></tr></thead>
+              <tbody>
+                <tr><td><code>default</code></td><td>Asks before write</td><td>Asks before run</td></tr>
+                <tr><td><code>auto</code></td><td>Auto-approve safe</td><td>Auto-approve safe</td></tr>
+                <tr><td><code>plan</code></td><td>Read only</td><td>None</td></tr>
+              </tbody>
+            </table>
+
+            <div class="callout callout-warn">
+              <strong>Claude inherits your access.</strong> Use a sandbox for risky experiments.
+            </div>
+          </section>
+
+          <!-- Section 32: Cost optimization -->
+          <section id="s32" class="section-card" data-slide="18">
+            <h2>32 · Cost optimization <button class="slide-btn" onclick="gotoSlide(18)" title="Go to slide 18">📽 18</button></h2>
+
+            <h3>Token-saving Strategies</h3>
+            <table>
+              <thead><tr><th>Strategy</th><th>Savings</th><th>How</th></tr></thead>
+              <tbody>
+                <tr><td>Use Sonnet for simple tasks</td><td>~80%</td><td><code>/model sonnet</code></td></tr>
+                <tr><td>Clear context regularly</td><td>~50%</td><td><code>/clear</code> between tasks</td></tr>
+                <tr><td>Be specific upfront</td><td>~30%</td><td>Avoid back-and-forth</td></tr>
+                <tr><td>Use skills</td><td>~20%</td><td>Structured prompts</td></tr>
+              </tbody>
+            </table>
+
+            <pre><code>/cost              # Show session cost
+/compact           # Compress context
+/model sonnet      # Start with cheaper model</code></pre>
+          </section>
+
+          <!-- RECAP 5 -->
+          <section id="recap5" class="recap-card">
+            <h2>Recap: Advanced Topics</h2>
+            <p>You've learned power features for experienced users.</p>
+
+            <h3>Key Concepts</h3>
+            <ul>
+              <li><strong>Git worktrees</strong> — Parallel work without stashing</li>
+              <li><strong>MCP plugins</strong> — Extend Claude with custom tools</li>
+              <li><strong>Hooks</strong> — Automate actions around Claude</li>
+              <li><strong>Cost optimization</strong> — Sonnet first, Opus when needed</li>
+            </ul>
+
+            <h3>Power User Tips</h3>
+            <ul>
+              <li>Use worktrees to overlap CI wait times</li>
+              <li>Be specific in prompts to avoid back-and-forth</li>
+              <li>Clear context when switching tasks</li>
+            </ul>
+
+            <div class="qa-section">
+              <h4>🙋 Q&A — Discussion Questions</h4>
+              <ul>
+                <li>When would you use git worktrees vs. stashing?</li>
+                <li>What MCP plugins would be useful for your workflow?</li>
+                <li>How do you balance cost vs. capability?</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <!-- PART 7: REFERENCE -->
+          <!-- ═══════════════════════════════════════════════════════════════════════ -->
+          <div id="part7" class="part-header">
+            <span class="part-number">Part 7</span>
+            <h2>Reference</h2>
+            <p>Quick reference, troubleshooting, and further reading</p>
+          </div>
+
+          <!-- Section 33-41: Condensed reference sections -->
+          <section id="s33" class="section-card">
+            <h2>33 · Keyboard shortcuts</h2>
+            <div class="grid grid-2">
+              <div>
+                <h3>Navigation</h3>
+                <table>
+                  <tbody>
+                    <tr><td><kbd>Ctrl+C</kbd></td><td>Cancel operation</td></tr>
+                    <tr><td><kbd>Ctrl+D</kbd></td><td>Exit Claude Code</td></tr>
+                    <tr><td><kbd>↑</kbd> / <kbd>↓</kbd></td><td>Prompt history</td></tr>
+                    <tr><td><kbd>Tab</kbd></td><td>Autocomplete paths</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div>
+                <h3>Slash Commands</h3>
+                <table>
+                  <tbody>
+                    <tr><td><code>/help</code></td><td>Show commands</td></tr>
+                    <tr><td><code>/clear</code></td><td>Clear history</td></tr>
+                    <tr><td><code>/compact</code></td><td>Compress context</td></tr>
+                    <tr><td><code>/cost</code></td><td>Token usage</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="s34" class="section-card">
+            <h2>34 · IDE integration</h2>
+            <table>
+              <thead><tr><th>Interface</th><th>Best For</th><th>Setup</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Terminal CLI</strong></td><td>Full control, scripting</td><td><code>npm i -g @anthropic-ai/claude-code</code></td></tr>
+                <tr><td><strong>VS Code Extension</strong></td><td>Integrated editing</td><td>Install from marketplace</td></tr>
+                <tr><td><strong>JetBrains Plugin</strong></td><td>IntelliJ, WebStorm</td><td>Install from plugin marketplace</td></tr>
+                <tr><td><strong>Web App</strong></td><td>Quick access</td><td>claude.ai/code</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="s35" class="section-card">
+            <h2>35 · CI overlap</h2>
+            <p>When CI runs on one feature, don't wait — start the next one.</p>
+            <pre><code># Feature A is in CI, start new terminal for Feature B
+claude --worktree feature-b
+/planning                   # Start planning Feature B</code></pre>
+            <div class="callout callout-success">
+              <strong>CI time is not idle time.</strong> A 10-minute CI run is 2-3 planning cycles.
+            </div>
+          </section>
+
+          <section id="s36" class="section-card">
+            <h2>36 · Failure modes</h2>
+            <table>
+              <thead><tr><th>Symptom</th><th>Cause</th><th>Fix</th></tr></thead>
+              <tbody>
+                <tr><td>Claude forgets instructions</td><td>Too many files in context</td><td><code>/clear</code> or restart</td></tr>
+                <tr><td>Claude breaks convention</td><td>Doesn't see the pattern</td><td>Point to existing file</td></tr>
+                <tr><td>Adds unwanted features</td><td>Vague instructions</td><td>Be explicit about scope</td></tr>
+                <tr><td>Session lost</td><td>No progress tracking</td><td>Use progress.md</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <!-- Section 37: The Non-Determinism Problem -->
+          <section id="s37" class="section-card">
+            <h2>37 · The Non-Determinism Problem</h2>
+
+            <p>To work effectively with Claude, you must understand one fundamental truth: <strong>LLMs are probabilistic, not deterministic.</strong> This explains why Claude sometimes ignores instructions, why outputs vary between runs, and why guardrails exist throughout this entire framework.</p>
+
+            <div class="callout callout-danger">
+              <strong>Industry data (2026):</strong> AI-generated code contains roughly <strong>1.7× more defects</strong> than human-written code. AI code generation increases velocity by 25-35%, but creates a quality gap as code volume outstrips human review capacity. — <a href="https://newrelic.com/blog/ai/state-of-ai-coding-2026" target="_blank">New Relic State of AI Coding 2026</a>
+            </div>
+
+            <h3>Harness Engineering: The Solution</h3>
+            <p>The industry term for solving this is <strong>Harness Engineering</strong> — building the deterministic runtime layer that wraps an LLM. As <a href="https://martinfowler.com/articles/harness-engineering.html" target="_blank">Martin Fowler writes</a>:</p>
+
+            <blockquote style="border-left: 4px solid var(--cyan); padding-left: 1rem; margin: 1rem 0; font-style: italic; color: var(--muted);">
+              "LLM compliance with instructions is probabilistic, not deterministic. They must be combined with deterministic outer-harness constraints, such as linters and CI gates, to be reliable at scale."
+            </blockquote>
+
+            <p>The key insight: <strong>Telling an agent "follow coding standards" in a prompt is fundamentally different from wiring a linter that blocks the PR when standards are violated.</strong> The first relies on probabilistic compliance; the second enforces deterministic constraints.</p>
+
+            <div class="callout callout-success">
+              <strong>Proof it works:</strong> LangChain's case study showed harness-only changes moved their coding agent from <strong>rank 30 → top 5</strong> on Terminal Bench 2.0 with <em>no model swap</em>. "Harness design is the primary performance lever, not model capability."
+            </div>
+
+            <h3>Mental Model: Image Generation for Code</h3>
+            <p>Think of Claude like Midjourney for images. You describe intent ("A sunset over mountains"), and you get varying outputs. Different runs produce different images. Fewer constraints = more variation.</p>
+
+            <p>Same with code. You describe a feature, Claude generates implementation. Different runs might produce different designs. Without guardrails, you might get:</p>
+
+            <ul>
+              <li>Inconsistent naming (camelCase one run, snake_case the next)</li>
+              <li>Different architectural approaches (class-based vs functional)</li>
+              <li>Hallucinated imports (functions that don't exist)</li>
+              <li>Forgotten acceptance criteria</li>
+              <li>Subtle bugs that appear only sometimes</li>
+            </ul>
+
+            <h3>What This Means Practically</h3>
+            <table>
+              <thead><tr><th>Reality</th><th>Why</th></tr></thead>
+              <tbody>
+                <tr><td>Claude ignores instructions when it "decides to"</td><td>Probabilistic inference doesn't guarantee compliance</td></tr>
+                <tr><td>Output varies between runs</td><td>Sampling != determinism</td></tr>
+                <tr><td>Different model versions behave differently</td><td>Training differences, capability gaps</td></tr>
+                <tr><td>Hallucinations happen (imports, patterns, claims)</td><td>LLMs generate plausible-sounding text</td></tr>
+                <tr><td>You can't trust Claude to "just do it right"</td><td>Probability ≠ correctness guarantee</td></tr>
+              </tbody>
+            </table>
+
+            <h3>The Solution: Layered Guardrails</h3>
+            <p>The more Claude can do, the tighter the leash must be. CSK's entire architecture is built around catching the problems that probabilistic inference creates:</p>
+
+            <table>
+              <thead><tr><th>Layer</th><th>Tool</th><th>Catches</th><th>When</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Editor</strong></td><td>TypeScript strict mode, ESLint</td><td>Type errors, style violations, obvious mistakes</td><td>Immediately after Claude writes code</td></tr>
+                <tr><td><strong>Pre-commit</strong></td><td>Biome, custom hooks</td><td>Format, banned patterns, schema drift</td><td>Before commit to git</td></tr>
+                <tr><td><strong>Pre-push</strong></td><td>Unit tests, type-check, compilation</td><td>Broken builds, logic errors, regressions</td><td>Before pushing to remote</td></tr>
+                <tr><td><strong>CI Pipeline</strong></td><td>Full test suite, E2E tests, linters</td><td>Subtle bugs, integration failures, regressions</td><td>Before merge</td></tr>
+                <tr><td><strong>Code Review</strong></td><td>Human eyes (not AI)</td><td>Subtle AI-introduced bugs, missed ACs, security issues</td><td>Before production</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Why Each Layer Matters</h3>
+
+            <div class="callout callout-info">
+              <strong>Editor layer:</strong> Catches the obvious — typos, missing imports, type errors. Fast feedback loop. Claude sees red squiggles and can fix immediately.
+            </div>
+
+            <div class="callout callout-info">
+              <strong>Pre-commit layer:</strong> Prevents bad commits. Format consistency, no debug code, no secrets. Stops bad code from reaching git history.
+            </div>
+
+            <div class="callout callout-info">
+              <strong>Pre-push layer:</strong> Unit tests verify logic. Type-check verifies interface contracts. Compilation verifies structure. Catches logic errors BEFORE CI.
+            </div>
+
+            <div class="callout callout-info">
+              <strong>CI layer:</strong> Full integration test suite. E2E tests. Catches bugs that only appear in realistic contexts (race conditions, timing, state interaction).
+            </div>
+
+            <div class="callout callout-danger">
+              <strong>Code review layer:</strong> The guardrail of last resort. Humans catch the subtle bugs: missed acceptance criteria, security issues, architectural mismatches. This is why code review is NOT optional.
+            </div>
+
+            <h3>The Rule: The More Claude Can Do, The Tighter The Leash</h3>
+
+            <table>
+              <thead><tr><th>Capability Level</th><th>Task Scope</th><th>Required Guardrails</th></tr></thead>
+              <tbody>
+                <tr><td><strong>Narrow</strong><td>Single file, single function</td><td>ESLint, unit tests</td></tr>
+                <tr><td><strong>Medium</strong></td><td>Feature across multiple files</td><td>+ Pre-commit hooks, type-check, integration tests</td></tr>
+                <tr><td><strong>Broad</strong></td><td>Full feature from idea to release</td><td>+ E2E tests, CI pipeline, human code review</td></tr>
+                <tr><td><strong>Autonomous</strong></td><td>Batch task execution without supervision</td><td>+ Video recordings, acceptance criteria tests, monitoring</td></tr>
+              </tbody>
+            </table>
+
+            <h3>Harden Over Time</h3>
+            <p>Every bad behavior Claude exhibits → add a guardrail. Every time a bug slips through → tighten the layer that missed it.</p>
+
+            <pre><code>Example: Claude keeps forgetting to validate user input
+→ Add Zod validation to error checklist
+→ Add ESLint rule for unvalidated params
+→ Add unit test template for all endpoints
+→ Next time Claude forgets → caught immediately</code></pre>
+
+            <h3>Acceptance Criteria Must Be Testable</h3>
+            <p>For this system to work, every acceptance criterion must have a corresponding test:</p>
+
+            <ul>
+              <li><strong>❌ Untestable:</strong> "The form should work well"</li>
+              <li><strong>✅ Testable:</strong> "Submitting valid data returns 200 and saves to database"</li>
+              <li><strong>✅ Testable:</strong> "Submitting invalid email shows error message"</li>
+              <li><strong>✅ Testable:</strong> "Loading takes <500ms (measured with Lighthouse)"</li>
+            </ul>
+
+            <p>Use video recordings for before/after comparison of visual features.</p>
+
+            <div class="callout callout-info">
+              <strong>📝 Hands-on:</strong> <a href="../exercises/08-guardrails.md">Exercise 08: Building Guardrails</a> walks you through creating a pre-commit hook that catches a common Claude mistake.
+            </div>
+
+            <h3>The Core Principle</h3>
+            <div style="background: linear-gradient(135deg, rgba(239,68,68,0.15), rgba(234,179,8,0.1)); border-left: 4px solid var(--red); padding: 1.2rem; margin: 1.5rem 0; border-radius: 8px;">
+              <p style="margin: 0; color: var(--text); font-weight: 600; margin-bottom: 0.5rem;">
+                You cannot trust Claude to produce correct code without verification.
+              </p>
+              <p style="margin: 0; color: var(--muted); font-size: 0.95rem;">
+                This is not a flaw of Claude. It's the nature of probabilistic AI. The answer is not to hope for better — it's to build layers of verification that make correctness inevitable.
+              </p>
+            </div>
+
+            <h3>Why This Matters for Your Team</h3>
+            <ul>
+              <li><strong>No "we'll fix it later."</strong> Every layer catches bugs that would cost money or customer trust to fix in production.</li>
+              <li><strong>No single-point failures.</strong> If one layer fails, the next one catches it. Redundancy is intentional.</li>
+              <li><strong>No false confidence.</strong> A test passing is not proof of correctness. A PR approved is not proof of correctness. Only a deployed feature used by real customers is proof.</li>
+              <li><strong>Automate ruthlessly.</strong> If a check is important, automate it. Pre-commit hooks, CI gates, linters. Make correctness the path of least resistance.</li>
+            </ul>
+
+            <div class="callout callout-success">
+              <strong>The good news:</strong> Once these layers are in place, you can work fast. Claude can write more code, take more risks, explore more solutions. The guardrails catch the problems.
+            </div>
+          </section>
+
+          <section id="s38" class="section-card" data-slide="22">
+            <h2>38 · Gotchas <button class="slide-btn" onclick="gotoSlide(22)" title="Go to slide 22">📽 22</button></h2>
+            <table>
+              <thead><tr><th>❌ Don't</th><th>✅ Do Instead</th></tr></thead>
+              <tbody>
+                <tr><td>Paste 500 lines into prompt</td><td>"Read src/file.ts and fix the loop"</td></tr>
+                <tr><td><code>git push origin main</code></td><td><code>gh pr create --base main</code></td></tr>
+                <tr><td>"Make this better"</td><td>"Reduce cyclomatic complexity below 10"</td></tr>
+                <tr><td>Skip tests, "I'll add later"</td><td>Write test first with <code>/tdd</code></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="s39" class="section-card" data-slide="23">
+            <h2>39 · Troubleshooting <button class="slide-btn" onclick="gotoSlide(23)" title="Go to slide 23">📽 23</button></h2>
+            <table>
+              <thead><tr><th>Error</th><th>Fix</th></tr></thead>
+              <tbody>
+                <tr><td><code>ANTHROPIC_API_KEY not set</code></td><td><code>export ANTHROPIC_API_KEY=sk-ant-...</code></td></tr>
+                <tr><td><code>401 Unauthorized</code></td><td>Check key at console.anthropic.com</td></tr>
+                <tr><td><code>429 Rate Limited</code></td><td>Wait 60s, or upgrade plan</td></tr>
+                <tr><td>Generic responses</td><td><code>/clear</code> or <code>/compact</code></td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="s40" class="section-card">
+            <h2>40 · Adopting CSK</h2>
+            <p>Add CSK to an existing project:</p>
+            <pre><code># In your existing project
+claude
+/adopt
+
+# Follow interactive prompts</code></pre>
+            <div class="callout callout-info">
+              <strong>Non-destructive.</strong> Existing files are backed up before overwriting.
+            </div>
+          </section>
+
+          <section id="s41" class="section-card">
+            <h2>41 · CLI reference</h2>
+            <table>
+              <thead><tr><th>Command</th><th>Purpose</th></tr></thead>
+              <tbody>
+                <tr><td><code>csk doctor</code></td><td>Check environment</td></tr>
+                <tr><td><code>csk init &lt;name&gt;</code></td><td>Create new project</td></tr>
+                <tr><td><code>csk exercises</code></td><td>Start exercise server</td></tr>
+                <tr><td><code>csk progress</code></td><td>View exercise progress</td></tr>
+                <tr><td><code>csk reset [-y]</code></td><td>Reset progress</td></tr>
+                <tr><td><code>csk workshop</code></td><td>Start workshop server</td></tr>
+              </tbody>
+            </table>
+          </section>
+
+          <section id="s42" class="section-card" data-slide="24">
+            <h2>42 · Further reading <button class="slide-btn" onclick="gotoSlide(24)" title="Go to slide 24">📽 24</button></h2>
+
+            <h3>Resources</h3>
+            <ul>
+              <li><a href="https://claude.ai/code" style="color: var(--cyan);">Claude Code</a> — Official documentation</li>
+              <li><a href="https://docs.anthropic.com" style="color: var(--cyan);">Anthropic Docs</a> — API reference</li>
+              <li><a href="https://martinfowler.com/bliki/TestDrivenDevelopment.html" style="color: var(--cyan);">TDD by Martin Fowler</a></li>
+              <li><a href="https://conventionalcommits.org" style="color: var(--cyan);">Conventional Commits</a></li>
+            </ul>
+
+            <h3>🚀 Get Started</h3>
+            <pre><code>csk doctor && claude /onboarding</code></pre>
+
+            <div class="callout callout-success" style="margin-top: 2rem;">
+              <strong>You've got this!</strong> Start with Exercise 01, work through them in order, and you'll be proficient with Claude Code by the end of the day.
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+      // Initialize Mermaid
+      mermaid.initialize({
+        startOnLoad: true,
+        theme: 'dark',
+        themeVariables: {
+          primaryColor: '#06b6d4',
+          primaryTextColor: '#e2e8f0',
+          primaryBorderColor: '#334155',
+          lineColor: '#64748b',
+          secondaryColor: '#1e293b',
+          tertiaryColor: '#0f172a'
+        }
+      });
+
+      // Theme toggle
+      function toggleTheme() {
+        document.documentElement.classList.toggle('light');
+        const btn = document.getElementById('theme-toggle');
+        btn.textContent = document.documentElement.classList.contains('light') ? '☽' : '☀︎';
+        localStorage.setItem('theme', document.documentElement.classList.contains('light') ? 'light' : 'dark');
+      }
+
+      if (localStorage.getItem('theme') === 'light') {
+        document.documentElement.classList.add('light');
+        document.getElementById('theme-toggle').textContent = '☽';
+      }
+
+      // Search/filter sections
+      function filterSections(query) {
+        const links = document.querySelectorAll('#sidebar-nav .nav-link');
+        const q = query.toLowerCase().trim();
+        links.forEach(link => {
+          const text = link.textContent.toLowerCase();
+          link.style.display = (q === '' || text.includes(q)) ? 'block' : 'none';
+        });
+      }
+
+      document.getElementById('search-input').addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          e.target.value = '';
+          filterSections('');
+          e.target.blur();
+        }
+      });
+
+      // Navigation highlighting (scroll spy)
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sections = document.querySelectorAll('section');
+
+      function updateNav() {
+        let current = '';
+        sections.forEach(section => {
+          const sectionTop = section.offsetTop;
+          if (scrollY >= sectionTop - 150) {
+            current = section.getAttribute('id');
+          }
+        });
+
+        navLinks.forEach(link => {
+          link.classList.remove('active');
+          if (link.getAttribute('href') === '#' + current) {
+            link.classList.add('active');
+          }
+        });
+
+        const navUp = document.getElementById('nav-up');
+        const navDn = document.getElementById('nav-dn');
+        navUp.classList.toggle('show', scrollY > 300);
+        navDn.classList.toggle('show', scrollY < document.body.scrollHeight - window.innerHeight - 300);
+      }
+
+      window.addEventListener('scroll', updateNav);
+      updateNav();
+
+      function getCurrentSectionIndex() {
+        let closest = 0;
+        let closestDist = Infinity;
+        sections.forEach((s, i) => {
+          const dist = Math.abs(s.getBoundingClientRect().top - 80);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = i;
+          }
+        });
+        return closest;
+      }
+
+      document.getElementById('nav-up').addEventListener('click', () => {
+        const currentIndex = getCurrentSectionIndex();
+        const prevSection = sections[Math.max(0, currentIndex - 1)];
+        prevSection.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      document.getElementById('nav-dn').addEventListener('click', () => {
+        const currentIndex = getCurrentSectionIndex();
+        const nextSection = sections[Math.min(sections.length - 1, currentIndex + 1)];
+        nextSection.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      // Help modal
+      function openHelp() {
+        document.getElementById('help-overlay').classList.add('show');
+        document.getElementById('help-modal').classList.add('show');
+      }
+
+      function closeHelp() {
+        document.getElementById('help-overlay').classList.remove('show');
+        document.getElementById('help-modal').classList.remove('show');
+      }
+
+      // Keyboard shortcuts
+      document.addEventListener('keydown', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+        if (e.altKey) {
+          switch(e.key) {
+            case 'ArrowLeft': prevSlide(); e.preventDefault(); return;
+            case 'ArrowRight': nextSlide(); e.preventDefault(); return;
+            case 'ArrowUp': document.getElementById('nav-up').click(); e.preventDefault(); return;
+            case 'ArrowDown': document.getElementById('nav-dn').click(); e.preventDefault(); return;
+          }
+        }
+
+        switch(e.key) {
+          case '?': case 'h': case 'H':
+            document.getElementById('help-modal').classList.contains('show') ? closeHelp() : openHelp();
+            break;
+          case 'Escape': closeHelp(); break;
+          case 't': case 'T': toggleTheme(); break;
+          case 'Home': window.scrollTo({ top: 0, behavior: 'smooth' }); e.preventDefault(); break;
+          case 'm': case 'M': window.open('slides.html', 'csk2-slides'); break;
+          case 's': case 'S':
+            var sectionsWithSlide = Array.from(document.querySelectorAll('section[id][data-slide]'));
+            var slideIndex = -1;
+            for (var i = sectionsWithSlide.length - 1; i >= 0; i--) {
+              if (sectionsWithSlide[i].getBoundingClientRect().top <= 80) {
+                slideIndex = parseInt(sectionsWithSlide[i].dataset.slide);
+                break;
+              }
+            }
+            if (slideIndex < 0 && sectionsWithSlide.length > 0) {
+              slideIndex = parseInt(sectionsWithSlide[0].dataset.slide) || 1;
+            }
+            if (slideIndex > 0) bc.postMessage({ type: 'gotoSlide', slide: slideIndex });
+            break;
+          case 'p': case 'P': toggleMinimize(); break;
+          case 'k': case 'K': break; // Already in kompendium, do nothing
+        }
+      });
+
+      // BroadcastChannel for presenter mode sync
+      const bc = new BroadcastChannel('csk2-presenter');
+      let currentSlideNum = 1;
+      let totalSlides = 24;
+
+      const slideTitles = [
+        'Workshop Agenda', 'What is Claude Code?', 'CSK Structure', 'The Work-Loop',
+        '/planning', '/execution', '/reviewing', '/integration',
+        '/grill-me', '/mockup-to-story', '/tdd', 'Git Workflow',
+        'Model Selection', 'CLAUDE.md', 'Skills System', 'MCP Plugins',
+        'Hooks', 'Cost Optimization', 'Git Worktrees', 'Debugging',
+        'Exercises', 'Common Gotchas', 'FAQ', "Let's Go!"
+      ];
+
+      bc.onmessage = (event) => {
+        if (event.data.type === 'slideUpdate') {
+          currentSlideNum = event.data.current;
+          totalSlides = event.data.total;
+          updatePresenterPanel(event.data.title);
+        }
+        if (event.data.type === 'goto-section') {
+          const slideIndex = event.data.index + 1;
+          const section = document.querySelector('[data-slide="' + slideIndex + '"]');
+          if (section) {
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            section.style.outline = '2px solid var(--accent)';
+            setTimeout(() => { section.style.outline = ''; }, 1500);
+          }
+        }
+      };
+
+      function toggleMinimize() {
+        const panel = document.getElementById('presenter-panel');
+        panel.classList.toggle('minimized');
+        document.getElementById('pp-minimize').textContent = panel.classList.contains('minimized') ? '⌃' : '⌄';
+      }
+
+      function updatePresenterPanel(title) {
+        const counter = document.getElementById('pp-counter');
+        const progress = document.getElementById('pp-progress');
+        const titleEl = document.getElementById('pp-title');
+        if (counter) counter.textContent = currentSlideNum + ' / ' + totalSlides;
+        if (progress) progress.style.width = ((currentSlideNum / totalSlides) * 100) + '%';
+        if (titleEl) titleEl.textContent = title || slideTitles[currentSlideNum - 1] || '';
+        updateGotoButton();
+      }
+
+      function prevSlide() {
+        if (currentSlideNum > 1) currentSlideNum--;
+        updatePresenterPanel();
+        bc.postMessage({ type: 'prevSlide' });
+      }
+
+      function nextSlide() {
+        if (currentSlideNum < totalSlides) currentSlideNum++;
+        updatePresenterPanel();
+        bc.postMessage({ type: 'nextSlide' });
+      }
+
+      function gotoSlide(n) {
+        currentSlideNum = Math.max(1, Math.min(n, totalSlides));
+        updatePresenterPanel();
+        bc.postMessage({ type: 'gotoSlide', slide: n });
+      }
+
+      function gotoMatchingSection() {
+        const section = document.querySelector('[data-slide="' + currentSlideNum + '"]');
+        if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+
+      function updateGotoButton() {
+        const btn = document.getElementById('pp-goto-section');
+        const section = document.querySelector('[data-slide="' + currentSlideNum + '"]');
+        if (btn) btn.style.display = section ? 'block' : 'none';
+      }
+
+      updatePresenterPanel(slideTitles[0]);
+    </script>
+</body>
+</html>

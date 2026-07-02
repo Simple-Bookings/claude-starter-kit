@@ -1,0 +1,2523 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Workshop — Slides</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.6/dist/mermaid.min.js"></script>
+    <script>
+    "use strict";
+    try {
+      if (localStorage.getItem("csk2-sidebar") === "1") {
+        document.documentElement.setAttribute("data-sidebar-collapsed", "1");
+      }
+      if (localStorage.getItem("csk2-theme") === "dark") {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    } catch (e) {}
+    </script>
+    <style>
+    body {
+      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+    }
+    html[data-sidebar-collapsed="1"] #slideSidebar {
+      width: 0 !important;
+      overflow: hidden !important;
+      border-right: none !important;
+    }
+    html[data-sidebar-collapsed="1"] #sidebarTitle,
+    html[data-sidebar-collapsed="1"] #slideNav {
+      display: none !important;
+    }
+    html[data-sidebar-collapsed="1"] #sidebarExpand {
+      display: flex !important;
+    }
+    html[data-sidebar-collapsed="1"] header {
+      padding-left: 3.5rem !important;
+    }
+    .slide {
+      display: none;
+    }
+    .slide.active {
+      display: flex;
+    }
+    .nav-item {
+      width: 100%;
+      text-align: left;
+      border-left: 3px solid transparent;
+      transition: background 0.15s;
+    }
+    .nav-item.current {
+      font-weight: 600;
+      color: #0891b2;
+      background: #ecfeff;
+      border-left-color: #06b6d4;
+    }
+    .nav-item:not(.current):hover {
+      background: #f1f5f9;
+    }
+    pre.shell {
+      padding: 1rem 1.2rem;
+      overflow-x: auto;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.92rem;
+      line-height: 1.55;
+      color: #e2e8f0;
+      background: #020617;
+      border-radius: 8px;
+    }
+    pre.mermaid {
+      background: transparent !important;
+    }
+    code.inline {
+      padding: 2px 7px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+      color: #1e293b;
+      background: #f1f5f9;
+      border-radius: 5px;
+    }
+    .slide table {
+      width: 100%;
+      margin: 0.8rem 0;
+      border-collapse: collapse;
+    }
+    .slide th {
+      padding: 10px 14px;
+      font-size: 0.92rem;
+      color: #0891b2;
+      text-align: left;
+      background: #ecfeff;
+    }
+    .slide td {
+      padding: 9px 14px;
+      font-size: 0.92rem;
+      vertical-align: top;
+      color: #1e293b;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .help-modal {
+      color: #1e293b;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+    }
+    .help-modal kbd {
+      padding: 2px 7px;
+      font-family: monospace;
+      font-size: 0.77rem;
+      color: #1e293b;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+    }
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    /* Dark mode */
+    .dark body {
+      color: #e2e8f0 !important;
+      background: #0f172a !important;
+    }
+    .dark aside {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    .dark aside .border-gray-200 {
+      border-color: #334155 !important;
+    }
+    .dark header {
+      background: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    .dark main {
+      background: #0f172a !important;
+    }
+    .dark .bg-white {
+      background: #1e293b !important;
+    }
+    .dark .bg-gray-50 {
+      background: #0f172a !important;
+    }
+    .dark .bg-cyan-50 {
+      background: #083344 !important;
+    }
+    .dark .border-gray-200 {
+      border-color: #334155 !important;
+    }
+    .dark .text-gray-900 {
+      color: #f1f5f9 !important;
+    }
+    .dark .text-gray-700 {
+      color: #cbd5e1 !important;
+    }
+    .dark .text-gray-600 {
+      color: #94a3b8 !important;
+    }
+    .dark .text-cyan-700 {
+      color: #22d3ee !important;
+    }
+    .dark code.inline {
+      color: #e2e8f0 !important;
+      background: #334155 !important;
+    }
+    /* Speaker notes panel */
+    #notesPanel {
+      position: fixed;
+      bottom: 0;
+      left: 256px;
+      right: 0;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 1rem 1.5rem;
+      background: #1e293b;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+      border-top: 3px solid #0891b2;
+      transform: translateY(100%);
+      transition: transform 0.2s ease, left 0.2s ease;
+      z-index: 100;
+    }
+    html[data-sidebar-collapsed="1"] #notesPanel {
+      left: 0;
+    }
+    #notesPanel.visible {
+      transform: translateY(0);
+    }
+    #notesPanel h4 {
+      color: #22d3ee;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    #notesPanel ul {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+    #notesPanel li {
+      margin-bottom: 0.3rem;
+    }
+    #notesPanel .notes-hint {
+      position: absolute;
+      top: 0.5rem;
+      right: 1rem;
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+    </style>
+    <!-- Bygget/opdateret: 2026-06-30 — Claude Code Workshop — korrektur: ok -->
+</head>
+  <body class="bg-gray-50 text-gray-800">
+    <div class="flex h-screen overflow-hidden">
+      <!-- Sidebar -->
+      <aside
+        id="slideSidebar"
+        class="w-64 bg-white border-r border-gray-200 flex flex-col flex-shrink-0 overflow-hidden transition-all duration-200"
+      >
+        <div
+          class="px-4 py-4 border-b border-gray-200 bg-cyan-700 flex items-center justify-between"
+        >
+          <div id="sidebarTitle">
+            <div class="font-bold text-white text-sm">Claude Code Workshop</div>
+            <div class="text-cyan-200 text-xs">Global Workshop Series</div>
+          </div>
+          <button
+            id="sidebarCollapse"
+            class="text-cyan-200 hover:text-white p-1"
+            title="Collapse sidebar"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"/>
+            </svg>
+          </button>
+        </div>
+        <div class="px-3 py-2 border-b border-gray-200">
+          <a href="./" class="text-cyan-600 hover:text-cyan-800 text-sm">← Back to Workshop</a>
+        </div>
+        <nav id="slideNav" class="flex-1 overflow-y-auto py-3 px-2 space-y-0.5"></nav>
+      </aside>
+
+      <!-- Expand button (hidden by default) -->
+      <button
+        id="sidebarExpand"
+        class="hidden fixed left-2 top-2 z-50 bg-cyan-700 text-white p-2 rounded shadow-lg hover:bg-cyan-600"
+        title="Expand sidebar"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"/>
+        </svg>
+      </button>
+
+      <div class="flex-1 flex flex-col overflow-hidden">
+        <!-- Header -->
+        <header class="bg-white border-b border-gray-200 px-6 py-3 flex items-center justify-between flex-shrink-0">
+          <div class="flex items-center gap-4">
+            <span id="slideCounter" class="text-sm text-gray-500">1 / 36</span>
+            <h1 id="slideTitle" class="font-semibold text-gray-900">Workshop agenda</h1>
+          </div>
+          <div class="flex items-center gap-2">
+            <button id="prevBtn" class="px-3 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded">← Prev</button>
+            <button id="nextBtn" class="px-3 py-1.5 text-sm bg-cyan-600 text-white hover:bg-cyan-700 rounded">Next →</button>
+            <button id="presenterBtn" class="px-3 py-1.5 text-sm bg-purple-600 text-white hover:bg-purple-700 rounded" title="Open presenter notes (P)">🎤 Presenter</button>
+            <button id="themeToggle" class="ml-2 px-2 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded" title="Toggle dark mode">🌓</button>
+            <button id="helpBtn" class="px-2 py-1.5 text-sm bg-gray-100 hover:bg-gray-200 rounded" title="Keyboard shortcuts">?</button>
+          </div>
+        </header>
+
+        <!-- Main content -->
+        <main class="flex-1 overflow-y-auto p-8 bg-gray-50">
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 1: Part 1 Header — Introduction -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 1: Introduction">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 1</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">Introduction</h2>
+              <p class="text-xl text-gray-600">What is Claude Code, why it exists, and how to get started</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 2: Workshop Agenda -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Workshop agenda">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">
+                Full-Day Workshop · 09:00–16:00
+              </div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                Goal: Every participant builds a feature with Claude Code
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Full-day session — theory in the morning, hands-on exercises after lunch.
+              </p>
+              <div class="grid grid-cols-3 gap-4">
+                <div class="bg-cyan-50 border-l-4 border-cyan-500 border border-gray-200 rounded-lg p-5">
+                  <div class="text-cyan-700 font-semibold text-sm mb-2">
+                    09:00–11:30 · Morning
+                  </div>
+                  <ul class="text-gray-800 text-sm space-y-1.5 list-disc list-inside">
+                    <li><strong>Part 1:</strong> Introduction</li>
+                    <li><strong>Part 2:</strong> Foundation (CLAUDE.md, Skills, Models)</li>
+                    <li><strong>Part 3:</strong> The Work-Loop</li>
+                  </ul>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 border border-gray-200 rounded-lg p-5">
+                  <div class="text-amber-700 font-semibold text-sm mb-2">
+                    11:30–12:00 · Lunch
+                  </div>
+                  <p class="text-gray-800 text-sm">Break</p>
+                </div>
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 border border-gray-200 rounded-lg p-5">
+                  <div class="text-emerald-700 font-semibold text-sm mb-2">
+                    12:00–16:00 · Afternoon
+                  </div>
+                  <ul class="text-gray-800 text-sm space-y-1.5 list-disc list-inside">
+                    <li><strong>Part 4:</strong> Hands-On Exercises</li>
+                    <li><strong>Part 5:</strong> Supporting Skills</li>
+                    <li><strong>Part 6:</strong> Advanced Topics</li>
+                    <li><strong>Part 7:</strong> Reference & Wrap-up</li>
+                  </ul>
+                </div>
+              </div>
+              <p class="text-gray-500 text-sm mt-5">
+                The kompendium opens next to your terminal during hands-on. It has the implementation detail; these slides give the talking-points.
+              </p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 2: What is Claude Code? -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="What is Claude Code?">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 1 · Intro</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                What is Claude Code?
+              </h2>
+              <p class="text-gray-600 mb-6">
+                Anthropic's official CLI for AI-assisted software development — an intelligent pair programmer that reads, writes, and executes code.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">What it CAN do</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li>Read and understand your entire codebase</li>
+                    <li>Write, edit, and refactor code across files</li>
+                    <li>Run shell commands (git, npm, tests)</li>
+                    <li>Search the web for documentation</li>
+                    <li>Create and review pull requests</li>
+                    <li>Debug failing tests with context</li>
+                  </ul>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">What it WON'T do</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li>Replace human judgment on design</li>
+                    <li>Understand your business domain magically</li>
+                    <li>Execute destructive commands without asking</li>
+                    <li>Remember context between sessions</li>
+                  </ul>
+                  <p class="text-gray-600 text-sm mt-3">
+                    It's a <strong>tool</strong>, not a replacement. You're still the architect.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 3: Workshop Tools -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Workshop Tools">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 1 · Intro</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                How We Work Today
+              </h2>
+              <p class="text-gray-600 mb-6">
+                Two things you need to know: <strong>Skills</strong> (slash commands) and <strong>CLAUDE.md</strong> (project context).
+              </p>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">📁 Skills (.claude/skills/)</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li><code class="inline">/planning</code> — create a plan</li>
+                    <li><code class="inline">/execution</code> — implement with TDD</li>
+                    <li><code class="inline">/reviewing</code> — code review</li>
+                    <li><code class="inline">/integration</code> — PR and merge</li>
+                    <li>+ more helper skills</li>
+                  </ul>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">📄 CLAUDE.md</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li>Project overview</li>
+                    <li>Tech stack</li>
+                    <li>Key commands</li>
+                    <li>Code conventions</li>
+                    <li>Definition of Done</li>
+                  </ul>
+                  <p class="text-gray-500 text-xs mt-3">Claude reads this file FIRST — always.</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 4: Recap — Introduction -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Recap: Introduction">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Recap</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-6">What we learned: Introduction</h2>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                  <h3 class="font-semibold text-emerald-700 mb-2">Key Concepts</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Claude Code er en pair programmer, ikke en erstatning</li>
+                    <li>Skills guider Claude gennem workflows</li>
+                    <li>CLAUDE.md giver projekt-kontekst</li>
+                    <li>Setup verifiable with /onboarding skill</li>
+                  </ul>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="font-semibold text-amber-700 mb-2">Remember</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Don't expect Claude to read minds</li>
+                    <li>CLAUDE.md is required, not optional</li>
+                    <li>Trust but verify — review Claude's output</li>
+                    <li>Skills are reusable workflows</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <p class="text-gray-500">❓ Questions before we continue?</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 5: Part 2 Header — Foundation -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 2: Foundation">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 2</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">Foundation</h2>
+              <p class="text-xl text-gray-600">CLAUDE.md, conventions, skills, and context management</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 6: CLAUDE.md -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="CLAUDE.md">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 2 · Foundation</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                📄 CLAUDE.md — Your Project's Bible
+              </h2>
+              <p class="text-gray-600 mb-5">
+                The first file Claude reads. Without it, Claude has no context.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Required Sections</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li><strong>Project Overview</strong> — what it is</li>
+                    <li><strong>Tech Stack</strong> — languages, frameworks</li>
+                    <li><strong>Key Commands</strong> — dev, test, build</li>
+                    <li><strong>Conventions</strong> — style, patterns</li>
+                    <li><strong>Don't</strong> — things to avoid</li>
+                  </ul>
+                </div>
+                <pre class="shell text-xs">
+# CLAUDE.md
+
+## Project Overview
+TimeTracker — time tracking for
+freelancers.
+
+## Tech Stack
+- React 18, TypeScript
+- Tailwind, shadcn/ui
+- Vitest for testing
+
+## Key Commands
+npm run dev    # Start dev server
+npm test       # Run tests
+
+## Don't
+- Don't use `any` type
+- Don't commit to main</pre>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 7: Skills System -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Skills System">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 2 · Foundation</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                ⚡ Skills System
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Slash commands that teach Claude specific workflows. Located in <code class="inline">.claude/skills/</code>.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Skill</th>
+                    <th>Purpose</th>
+                    <th>When to Use</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code class="inline">/onboarding</code></td>
+                    <td>Verify environment</td>
+                    <td>First session, returning to project</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/grill-me</code></td>
+                    <td>Clarify requirements</td>
+                    <td>Before starting any feature</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/planning</code></td>
+                    <td>Create task list</td>
+                    <td>Start of implementation</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/execution</code></td>
+                    <td>Implement tasks</td>
+                    <td>Building the feature</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/reviewing</code></td>
+                    <td>Self-review code</td>
+                    <td>After implementation</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/tdd</code></td>
+                    <td>Test-driven cycle</td>
+                    <td>Writing any new code</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/release</code></td>
+                    <td>Tag and release</td>
+                    <td>Ready to ship</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">/security-audit</code></td>
+                    <td>OWASP security review</td>
+                    <td>Before launch, after auth changes</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 8: Rules (Path-Activated) -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Rules">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 2 · Foundation</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                📏 Rules — Always-On Context
+              </h2>
+              <p class="text-gray-600 mb-4">
+                Rules in <code>.claude/rules/</code> are <strong>passive</strong> — loaded automatically. Skills are <strong>active</strong> — triggered by /command.
+              </p>
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 class="text-blue-700 font-semibold text-sm mb-2">Global Rules</h3>
+                  <p class="text-gray-700 text-sm mb-2">Loaded at session start</p>
+                  <pre class="text-xs bg-white p-2 rounded"># coding-patterns.md
+- camelCase for vars
+- No `any` types
+- No console.log</pre>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <h3 class="text-purple-700 font-semibold text-sm mb-2">Path-Activated Rules</h3>
+                  <p class="text-gray-700 text-sm mb-2">Loaded when working in matching paths</p>
+                  <pre class="text-xs bg-white p-2 rounded"># e2e-testing.md
+---
+path: e2e-test/**
+---
+- Max 10s timeouts
+- Use data-testid</pre>
+                </div>
+              </div>
+              <table class="text-sm">
+                <thead><tr><th>File</th><th>Path</th><th>When Active</th></tr></thead>
+                <tbody>
+                  <tr><td><code>coding-patterns.md</code></td><td>(global)</td><td>Always</td></tr>
+                  <tr><td><code>e2e-testing.md</code></td><td><code>e2e-test/**</code></td><td>E2E tests only</td></tr>
+                  <tr><td><code>security.md</code></td><td><code>**/auth/**</code></td><td>Auth code only</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 9: Model Selection -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Model Selection">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 2 · Foundation</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🧠 Model Selection
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Different tasks need different models. Default is Sonnet — switch to Opus when needed.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Model</th>
+                    <th>Why</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Pattern replication</td>
+                    <td><code class="inline">sonnet</code></td>
+                    <td>Fast, follows existing patterns</td>
+                  </tr>
+                  <tr>
+                    <td>Writing tests</td>
+                    <td><code class="inline">sonnet</code></td>
+                    <td>Usually straightforward</td>
+                  </tr>
+                  <tr>
+                    <td>Refactoring</td>
+                    <td><code class="inline">sonnet</code></td>
+                    <td>Mechanical, bounded scope</td>
+                  </tr>
+                  <tr>
+                    <td>Architecture decisions</td>
+                    <td><code class="inline">opus</code></td>
+                    <td>Needs trade-off analysis</td>
+                  </tr>
+                  <tr>
+                    <td>Security-critical code</td>
+                    <td><code class="inline">opus</code></td>
+                    <td>High consequence of errors</td>
+                  </tr>
+                  <tr>
+                    <td>Sonnet failed twice</td>
+                    <td><code class="inline">opus</code></td>
+                    <td>Problem harder than expected</td>
+                  </tr>
+                </tbody>
+              </table>
+              <pre class="shell mt-4">/model sonnet    # Fast, cheap (default)
+/model opus      # Slower, deeper reasoning</pre>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 9: Cost Optimization -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Cost Optimization">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 2 · Foundation</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                💰 Cost Optimization
+              </h2>
+              <p class="text-gray-600 mb-5">
+                AI tokens cost money. Here's how to get more done with less.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Strategy</th>
+                    <th>Savings</th>
+                    <th>How</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Use Sonnet for simple tasks</td>
+                    <td>~80%</td>
+                    <td><code class="inline">/model sonnet</code></td>
+                  </tr>
+                  <tr>
+                    <td>Clear context regularly</td>
+                    <td>~50%</td>
+                    <td><code class="inline">/clear</code> between tasks</td>
+                  </tr>
+                  <tr>
+                    <td>Be specific upfront</td>
+                    <td>~30%</td>
+                    <td>Avoid back-and-forth</td>
+                  </tr>
+                  <tr>
+                    <td>Use skills</td>
+                    <td>~20%</td>
+                    <td>Structured prompts</td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="bg-gray-50 border border-gray-200 rounded p-3">
+                  <strong class="text-cyan-700">Sonnet</strong>
+                  <p class="text-gray-700 text-sm">$3/1M input — fast, good for routine</p>
+                </div>
+                <div class="bg-gray-50 border border-gray-200 rounded p-3">
+                  <strong class="text-purple-700">Opus</strong>
+                  <p class="text-gray-700 text-sm">$15/1M input — slow, deep reasoning</p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 10: Recap — Foundation -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Recap: Foundation">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Recap</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-6">What we learned: Foundation</h2>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                  <h3 class="font-semibold text-emerald-700 mb-2">Key Concepts</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>CLAUDE.md = first file Claude reads</li>
+                    <li>Skills = reusable, discoverable workflows</li>
+                    <li>Model selection: Sonnet default, Opus for complexity</li>
+                    <li>Cost management through smart tool choices</li>
+                  </ul>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="font-semibold text-amber-700 mb-2">Remember</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Keep CLAUDE.md current — it's living docs</li>
+                    <li>Use /clear to reset context between big tasks</li>
+                    <li>Sonnet is 5x cheaper than Opus</li>
+                    <li>Two Sonnet failures = time to switch to Opus</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <p class="text-gray-500">❓ Questions before we continue?</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 11: Part 3 Header — The Work-Loop -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 3: The Work-Loop">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 3</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">The Work-Loop</h2>
+              <p class="text-xl text-gray-600">Planning → Execution → Reviewing → Integration</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 12: The 4 Phases -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="The 4 Phases">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 3 · Work-Loop</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                The 4 Phases
+              </h2>
+              <p class="text-gray-700 mb-4">
+                Four phases that take you from idea to merged code. Each phase has a dedicated skill.
+              </p>
+              <pre class="mermaid" style="text-align:center;">
+flowchart LR
+    P["/planning"] --> E["/execution"]
+    E --> R["/reviewing"]
+    R --> I["/integration"]
+    R -->|NEEDS_FIXES| E
+    I --> Done["✅ Merged"]
+    style P fill:#ecfeff,stroke:#06b6d4
+    style E fill:#f0fdf4,stroke:#22c55e
+    style R fill:#fefce8,stroke:#eab308
+    style I fill:#faf5ff,stroke:#a855f7
+    style Done fill:#f0fdf4,stroke:#22c55e
+              </pre>
+              <div class="bg-cyan-50 border-l-4 border-cyan-500 p-3 rounded mt-3">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-cyan-700">Key insight:</strong>
+                  Each phase produces artifacts that the next phase consumes. The loop is idempotent — you can restart from any point.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 13: /planning Phase -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/planning">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 3 · Work-Loop</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                Work-loop 1/4 — /planning
+              </h2>
+              <p class="text-gray-700 mb-3">
+                Analyze the codebase, understand requirements, write a task list so precise that execution never needs to make a design decision.
+              </p>
+              <pre class="mermaid" style="text-align:center;">
+sequenceDiagram
+    autonumber
+    participant Dev
+    participant Claude as Claude Code
+    participant Files as Filesystem
+    Dev->>Claude: /planning "add dark mode"
+    Claude->>Files: Read CLAUDE.md, existing components
+    Claude->>Files: Analyze current styling patterns
+    Claude->>Files: Write docs/plans/feature-plan.md
+    Claude->>Dev: Task list with file paths + verify commands
+              </pre>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded">
+                  <p class="text-gray-800 text-sm">
+                    <strong class="text-emerald-700">Output:</strong> plan.md with concrete tasks, each with file path and verification command
+                  </p>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded">
+                  <p class="text-gray-800 text-sm">
+                    <strong class="text-amber-700">Rule:</strong> No code written! Planning only. Read-only exploration.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 14: /execution Phase -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/execution">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 3 · Work-Loop</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                Work-loop 2/4 — /execution
+              </h2>
+              <p class="text-gray-700 mb-3">
+                Implement tasks one at a time from the plan. Each task = one iteration. Test-Driven Development by default.
+              </p>
+              <pre class="mermaid" style="text-align:center;">
+sequenceDiagram
+    autonumber
+    participant Dev
+    participant Claude as Claude Code
+    participant Files as Filesystem
+    participant Tests as Test Runner
+    loop For each task in plan
+        Claude->>Files: Read task from plan.md
+        Claude->>Files: Write failing test first
+        Tests->>Claude: ❌ Test fails (expected)
+        Claude->>Files: Implement feature
+        Tests->>Claude: ✅ Test passes
+        Claude->>Files: Update progress.md
+    end
+              </pre>
+              <div class="bg-cyan-50 border-l-4 border-cyan-500 p-3 rounded mt-3">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-cyan-700">TDD cycle:</strong>
+                  Red (write failing test) → Green (make it pass) → Refactor. Never skip the red phase.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 15: /reviewing Phase -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/reviewing">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 3 · Work-Loop</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                Work-loop 3/4 — /reviewing
+              </h2>
+              <p class="text-gray-700 mb-3">
+                Self-review against acceptance criteria. Output is APPROVED or NEEDS_FIXES.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Review Checklist</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li>All acceptance criteria met?</li>
+                    <li>Tests exist and pass?</li>
+                    <li>No debug code (console.log)?</li>
+                    <li>Follows project conventions?</li>
+                    <li>No security vulnerabilities?</li>
+                    <li>Build still works?</li>
+                  </ul>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Outcomes</h3>
+                  <div class="space-y-3">
+                    <div class="bg-emerald-50 border border-emerald-200 rounded p-3">
+                      <strong class="text-emerald-700">APPROVED</strong>
+                      <p class="text-gray-700 text-sm">→ proceed to /integration</p>
+                    </div>
+                    <div class="bg-amber-50 border border-amber-200 rounded p-3">
+                      <strong class="text-amber-700">NEEDS_FIXES</strong>
+                      <p class="text-gray-700 text-sm">→ loop back to /execution</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 16: /integration Phase -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/integration">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 3 · Work-Loop</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                Work-loop 4/4 — /integration
+              </h2>
+              <p class="text-gray-700 mb-3">
+                Create PR, handle CI, get it merged. Cleanup branches.
+              </p>
+              <pre class="mermaid" style="text-align:center;">
+sequenceDiagram
+    autonumber
+    participant Dev
+    participant Claude as Claude Code
+    participant Git as Git/GitHub
+    participant CI as CI Pipeline
+    Claude->>Git: git add -p (selective staging)
+    Claude->>Git: git commit -m "feat: ..."
+    Claude->>Git: git push origin feature/xxx
+    Claude->>Git: gh pr create --base develop
+    Git->>CI: Trigger CI checks
+    CI->>Git: ✅ All checks pass
+    Dev->>Git: Approve and merge PR
+    Claude->>Git: git branch -d feature/xxx
+              </pre>
+              <div class="bg-purple-50 border-l-4 border-purple-500 p-3 rounded mt-3">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-purple-700">Done:</strong>
+                  Feature merged to develop, branch cleaned up, progress.md marked complete.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 17: Progress Tracking -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Progress Tracking">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 3 · Work-Loop</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                📝 Progress Tracking — Your External Memory
+              </h2>
+              <p class="text-gray-700 mb-4">
+                Claude doesn't remember between sessions. <code class="inline">progress.md</code> is the workaround.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <pre class="shell text-xs">
+# Progress: Feature Login
+
+## Status
+IN_PROGRESS
+
+## Tasks
+- [x] Create LoginForm
+- [x] Add Zod validation
+- [ ] Connect to auth API  ← NEXT
+- [ ] Add error handling
+- [ ] Write tests
+
+## Next action
+Implement useLogin hook</pre>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">How to Use</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li><strong>Starting:</strong> Create progress.md</li>
+                    <li><strong>Each step:</strong> Check off task, update "Next"</li>
+                    <li><strong>Resuming:</strong> "Read progress.md and continue"</li>
+                    <li><strong>Done:</strong> Set Status to DONE</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="bg-cyan-50 border-l-4 border-cyan-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-cyan-700">Key insight:</strong>
+                  progress.md is your external memory. Claude can't remember across sessions, but it can read files.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 18: Recap — The Work-Loop -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Recap: The Work-Loop">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Recap</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-6">What we learned: The Work-Loop</h2>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                  <h3 class="font-semibold text-emerald-700 mb-2">Key Concepts</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Planning = no code, only analysis and task list</li>
+                    <li>Execution = TDD: RED → GREEN → REFACTOR</li>
+                    <li>Reviewing = self-review against acceptance criteria</li>
+                    <li>Integration = PR, CI, merge, cleanup</li>
+                    <li>NEEDS_FIXES loops are normal, not failures</li>
+                  </ul>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="font-semibold text-amber-700 mb-2">Remember</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>NEVER skip the RED phase in TDD</li>
+                    <li>Each phase produces artifacts for next phase</li>
+                    <li>Loop is idempotent — restart from any point</li>
+                    <li>Verify phase outputs before moving forward</li>
+                    <li>Review founds bugs — always do it</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <p class="text-gray-500">❓ Questions before we move to hands-on?</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 18: Part 4 Header — Hands-On -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 4: Hands-On">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 4</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">Hands-On Exercises</h2>
+              <p class="text-xl text-gray-600">6 exercises that take you from setup to full feature cycle</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 19: Exercises Overview -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Exercises">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 4 · Hands-On</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                📚 Workshop Exercises
+              </h2>
+              <p class="text-gray-600 mb-4">
+                10 exercises (8 core + 2 bonus). Everyone should reach 06. Fast movers reach 08-10.
+              </p>
+              <table class="text-sm">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Exercise</th>
+                    <th>Skill</th>
+                    <th>Time</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>01</td><td>Setup & First Conversation</td><td><code class="inline">/onboarding</code></td><td>15m</td></tr>
+                  <tr><td>02</td><td>Git Workflow</td><td><code class="inline">/feature-branch</code></td><td>15m</td></tr>
+                  <tr><td>03</td><td>TDD</td><td><code class="inline">/tdd</code></td><td>30m</td></tr>
+                  <tr><td>04</td><td>Code Review</td><td><code class="inline">/reviewing</code></td><td>20m</td></tr>
+                  <tr><td>05</td><td>Debugging</td><td><code class="inline">/execution</code></td><td>20m</td></tr>
+                  <tr class="font-semibold bg-emerald-50"><td>06</td><td>Full Cycle 🎓</td><td>All 4 phases</td><td>45m</td></tr>
+                  <tr><td>07</td><td>When Claude Fails</td><td><code class="inline">/grill-me</code></td><td>25m</td></tr>
+                  <tr><td>08</td><td>Harness Engineering</td><td>Guardrails</td><td>25m</td></tr>
+                  <tr class="text-purple-700"><td>09</td><td>Agent Teams (bonus)</td><td>Subagents</td><td>20m</td></tr>
+                  <tr class="text-purple-700"><td>10</td><td>Custom Rules (bonus)</td><td>Path-activation</td><td>15m</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 20: Part 5 Header — Supporting Skills -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 5: Supporting Skills">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 5</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">Supporting Skills</h2>
+              <p class="text-xl text-gray-600">Clarification, design, testing, and debugging tools</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 21: /grill-me Skill -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/grill-me">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 5 · Supporting</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🔥 /grill-me — Clarify Before You Build
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Socratic questioning until your concept is crystal clear. Run BEFORE /planning.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Questions You'll Face</h3>
+                  <ul class="text-gray-700 text-sm space-y-2">
+                    <li><strong>Problem:</strong> What specific problem are you solving?</li>
+                    <li><strong>Users:</strong> Who specifically will use this?</li>
+                    <li><strong>Differentiator:</strong> Why not use existing solutions?</li>
+                    <li><strong>Core:</strong> What's the ONE thing it must do well?</li>
+                    <li><strong>Non-goals:</strong> What's explicitly NOT in v1?</li>
+                    <li><strong>Data:</strong> What data do you need to store?</li>
+                  </ul>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Output</h3>
+                  <pre class="shell text-xs">
+## Concept: TimeTracker
+**Problem:** Freelancers lose billable
+  hours because they forget to track
+
+**Core feature:** One-click timer
+
+**Non-goals:**
+- Invoicing (v2)
+- Team features (v2)
+- Mobile app (v2)</pre>
+                </div>
+              </div>
+              <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-amber-700">Don't defend — refine.</strong>
+                  Each pushback helps find holes in your thinking before you write code.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 22: /mockup-to-story -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/mockup-to-story">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 5 · Supporting</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                📝 /mockup-to-story — From UI to User Stories
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Paste an ASCII mockup. Get structured user stories with acceptance criteria.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-gray-900 rounded-lg p-5">
+                  <h3 class="text-cyan-400 font-semibold text-sm mb-3">Input: ASCII Mockup</h3>
+                  <pre class="text-gray-300 text-sm font-mono leading-relaxed">
+┌─────────────────────────────┐
+│  TimeTracker        [⚙️]   │
+├─────────────────────────────┤
+│   Today: 4h 32m             │
+│   ████████░░░░  8h goal     │
+│                             │
+│   [  Start Tracking  ]      │
+└─────────────────────────────┘</pre>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Output: User Stories</h3>
+                  <div class="text-sm space-y-2">
+                    <div class="bg-gray-50 rounded p-2">
+                      <strong>US001:</strong> View Daily Summary<br>
+                      <span class="text-gray-600">AC: Time shown as "Xh Ym"</span>
+                    </div>
+                    <div class="bg-gray-50 rounded p-2">
+                      <strong>US002:</strong> See Progress Bar<br>
+                      <span class="text-gray-600">AC: Visual progress against goal</span>
+                    </div>
+                    <div class="bg-gray-50 rounded p-2">
+                      <strong>US003:</strong> Start Timer<br>
+                      <span class="text-gray-600">AC: One-click to begin tracking</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 23: /tdd Skill -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="/tdd">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 5 · Supporting</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🧪 /tdd — Test-Driven Development
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Write the test first. Make it fail. Then make it pass. No exceptions.
+              </p>
+              <pre class="mermaid" style="text-align:center;">
+flowchart LR
+    R["🔴 RED<br>Write failing test"] --> G["🟢 GREEN<br>Make it pass"]
+    G --> RF["🔵 REFACTOR<br>Clean up"]
+    RF --> R
+    style R fill:#fef2f2,stroke:#ef4444
+    style G fill:#f0fdf4,stroke:#22c55e
+    style RF fill:#eff6ff,stroke:#3b82f6
+              </pre>
+              <div class="grid grid-cols-2 gap-4 mt-4">
+                <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded">
+                  <p class="text-gray-800 text-sm">
+                    <strong class="text-red-700">❌ Never skip RED:</strong>
+                    A test that never failed might pass by accident. Always see it fail first.
+                  </p>
+                </div>
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-3 rounded">
+                  <p class="text-gray-800 text-sm">
+                    <strong class="text-emerald-700">✅ Minimal GREEN:</strong>
+                    Write the simplest code that makes the test pass. Refactor after.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 24: Git Workflow -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Git Workflow">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 5 · Supporting</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-3">
+                🌿 Git Workflow
+              </h2>
+              <p class="text-gray-700 mb-4">
+                Feature branches, PRs required, never commit to main.
+              </p>
+              <pre class="shell">
+# Start a feature
+git checkout -b feature/add-timer develop
+
+# Work with Claude
+claude
+/planning "implement timer component"
+/execution
+/reviewing
+
+# Create PR
+git add -p
+git commit -m "feat(timer): add start/stop functionality"
+git push -u origin feature/add-timer
+gh pr create --base develop
+              </pre>
+              <div class="bg-red-50 border-l-4 border-red-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-red-700">⛔ Never push to main directly.</strong>
+                  Main is production. All changes go through develop via PR.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 25: Debugging -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Debugging">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 5 · Supporting</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🐛 Debugging with Claude
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Give context, ask for root cause, not quick fix.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-5">
+                  <h3 class="text-red-700 font-semibold text-sm mb-3">❌ Bad Debug Request</h3>
+                  <pre class="text-gray-800 text-sm">"Fix this test"</pre>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-5">
+                  <h3 class="text-emerald-700 font-semibold text-sm mb-3">✅ Good Debug Request</h3>
+                  <pre class="text-gray-800 text-sm whitespace-pre-wrap">I have a failing test in parseTime.test.ts.
+
+Test: "should parse '2h 30m'"
+Expected: 9000 (seconds)
+Received: NaN
+
+Please:
+1. Read the test file
+2. Read the implementation
+3. Trace the execution
+4. Identify root cause</pre>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 26: Recap — Supporting Skills -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Recap: Supporting Skills">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Recap</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-6">What we learned: Supporting Skills</h2>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                  <h3 class="font-semibold text-emerald-700 mb-2">Key Concepts</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>/grill-me = Socratic questioning for clarity</li>
+                    <li>/mockup-to-story = wireframe to user stories</li>
+                    <li>/tdd = RED-GREEN-REFACTOR cycle</li>
+                    <li>Good debugging = trace execution, find root cause</li>
+                    <li>Git workflow = feature branches, PR-required</li>
+                  </ul>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="font-semibold text-amber-700 mb-2">Remember</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Always run /grill-me before /planning</li>
+                    <li>NEVER skip the RED phase in TDD</li>
+                    <li>Debugging: context + trace + root cause</li>
+                    <li>Feature branches for everything</li>
+                    <li>No direct commits to main</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <p class="text-gray-500">❓ Questions before advanced topics?</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 27: Part 6 Header — Advanced Topics -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 6: Advanced Topics">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 6</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">Advanced Topics</h2>
+              <p class="text-xl text-gray-600">Worktrees, MCP, hooks, and cost optimization</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 28: Git Worktrees (Advanced) -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Git Worktrees">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 6 · Advanced</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🌲 Git Worktrees — Parallel Development
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Work on multiple features without stashing. Each worktree is an independent checkout.
+              </p>
+              <pre class="shell">
+# Terminal 1: Start Claude with worktree for feature-a
+claude --worktree feature-a
+# Claude opretter .worktrees/feature-a og starter dér
+/planning "implement feature A"
+
+# Terminal 2: Start Claude with worktree for feature-b
+claude --worktree feature-b
+# Claude opretter .worktrees/feature-b og starter dér
+/planning "implement feature B"
+              </pre>
+              <div class="bg-cyan-50 border-l-4 border-cyan-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-cyan-700">CI Overlap:</strong>
+                  While CI runs on feature-a, start planning feature-b. A 10-minute CI run = 2-3 planning cycles.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 29: MCP Plugins -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="MCP Plugins">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 6 · Advanced</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🔌 MCP — Extend Claude's Abilities
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Model Context Protocol plugins add tools like database queries, browser automation, and web search.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Common Plugins</h3>
+                  <ul class="text-gray-700 text-sm space-y-1.5 list-disc list-inside">
+                    <li><strong>Playwright</strong> — browser automation</li>
+                    <li><strong>PostgreSQL</strong> — database queries</li>
+                    <li><strong>GitHub</strong> — issues, PRs</li>
+                    <li><strong>WebSearch</strong> — search the web</li>
+                    <li><strong>WebFetch</strong> — read web pages</li>
+                  </ul>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg p-5">
+                  <h3 class="text-cyan-700 font-semibold text-sm mb-3">Configure in settings.json</h3>
+                  <pre class="shell text-xs">
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@anthropic/mcp-playwright"]
+    }
+  }
+}</pre>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 30: Hooks -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Hooks">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 6 · Advanced</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🪝 Hooks — Custom Automation
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Run custom code before/after Claude Code actions.
+              </p>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Hook</th>
+                    <th>When it Fires</th>
+                    <th>Use Case</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code class="inline">UserPromptSubmit</code></td>
+                    <td>Before processing prompt</td>
+                    <td>Auto-add context, validate input</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">PreToolUse</code></td>
+                    <td>Before running any tool</td>
+                    <td>Block dangerous commands</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">PostToolUse</code></td>
+                    <td>After tool completes</td>
+                    <td>Log changes, notify</td>
+                  </tr>
+                  <tr>
+                    <td><code class="inline">PreCompact</code></td>
+                    <td>Before context compression</td>
+                    <td>Save important context</td>
+                  </tr>
+                </tbody>
+              </table>
+              <pre class="shell mt-4">
+// .claude/settings.json
+"hooks": {
+  "PostToolUse": [{
+    "matcher": "Edit",
+    "command": "echo \"$(date): $FILE_PATH\" >> .claude/edit-log.txt"
+  }]
+}</pre>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 31: Agent Teams -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Agent Teams">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 6 · Advanced</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🤖 Agent Teams — Parallel & Specialized Work
+              </h2>
+              <p class="text-gray-600 mb-4">
+                Spawn <strong>subagents</strong> for parallel tasks or specialized roles. Each agent has its own context.
+              </p>
+              <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <h3 class="text-purple-700 font-semibold text-sm mb-2">When to Use Agents</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li><strong>Parallel work:</strong> Review 5 files at once</li>
+                    <li><strong>Specialization:</strong> Security audit, QA, docs</li>
+                    <li><strong>Fresh context:</strong> Avoid pollution</li>
+                    <li><strong>CI wait:</strong> Plan next while CI runs</li>
+                  </ul>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 class="text-blue-700 font-semibold text-sm mb-2">Agents + Work-Loop</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li><strong>/planning:</strong> Main agent plans</li>
+                    <li><strong>/execution:</strong> Spawn Tom for coding</li>
+                    <li><strong>/reviewing:</strong> Spawn Scott for QA</li>
+                    <li><strong>/integration:</strong> Spawn Dan for deploy</li>
+                  </ul>
+                </div>
+              </div>
+              <pre class="shell text-xs">
+# Spawn a subagent for code review
+"Spawn a code-reviewer agent to check auth.ts for security issues"
+
+# Spawn multiple agents in parallel
+"Spawn 3 agents: one to review API, one for frontend, one for tests"
+
+# Agent profiles in .claude/agents/
+.claude/agents/scott.md    # QA focus, testing patterns
+.claude/agents/quinn.md    # Security focus, OWASP rules</pre>
+              <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded mt-3">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-amber-700">Remember:</strong>
+                  Subagents don't see your conversation. Brief them like a new colleague!
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 32: The Non-Determinism Problem -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="The Non-Determinism Problem">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 6 · Advanced</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🎲 The Non-Determinism Problem
+              </h2>
+              <p class="text-gray-600 mb-4">
+                LLMs are <strong>probabilistic</strong>, not deterministic. Output varies. Claude sometimes ignores instructions.
+              </p>
+              <div class="grid grid-cols-2 gap-4">
+                <div class="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <h3 class="text-red-700 font-semibold text-sm mb-2">The Reality</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>AI code has <strong>1.7× more defects</strong></li>
+                    <li>Output varies between runs</li>
+                    <li>Instructions are probabilistic</li>
+                    <li>Hallucinations happen</li>
+                  </ul>
+                </div>
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                  <h3 class="text-emerald-700 font-semibold text-sm mb-2">The Solution: Guardrails</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li><strong>Editor:</strong> TypeScript, ESLint</li>
+                    <li><strong>Pre-commit:</strong> Biome, hooks</li>
+                    <li><strong>CI:</strong> Full test suite</li>
+                    <li><strong>Review:</strong> Human eyes</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-amber-700">Key insight:</strong>
+                  "Follow coding standards" in a prompt ≠ a linter that blocks the PR. The more Claude can do, the tighter the leash.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 32: Recap — Advanced Topics -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Recap: Advanced Topics">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Recap</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-6">What we learned: Advanced Topics</h2>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-emerald-50 border-l-4 border-emerald-500 p-4 rounded">
+                  <h3 class="font-semibold text-emerald-700 mb-2">Key Concepts</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Worktrees = parallel branches without stashing</li>
+                    <li>MCP plugins extend Claude's capabilities</li>
+                    <li>Hooks automate custom workflows</li>
+                    <li>Agents = parallel/specialized work</li>
+                    <li>Subagents need full briefing (no context)</li>
+                  </ul>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="font-semibold text-amber-700 mb-2">Remember</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Worktrees great for CI wait times</li>
+                    <li>MCP setup is in settings.json</li>
+                    <li>Hooks are powerful but optional</li>
+                    <li>Start simple, add complexity later</li>
+                    <li>These are power-user features</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <p class="text-gray-500">❓ Advanced questions?</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 32: Part 7 Header — Reference & Wrap-up -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col items-center justify-center" data-title="Part 7: Reference & Wrap-up">
+            <div class="text-center">
+              <div class="text-6xl font-bold text-gray-300 mb-4">Part 7</div>
+              <h2 class="text-4xl font-bold text-gray-900 mb-4">Reference & Wrap-up</h2>
+              <p class="text-xl text-gray-600">Gotchas, troubleshooting, FAQ, and let's go!</p>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 33: Common Gotchas -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Common Gotchas">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 7 · Reference</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                ⚠️ Common Gotchas
+              </h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Mistake</th>
+                    <th>Consequence</th>
+                    <th>Fix</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Skipping <code class="inline">/grill-me</code></td>
+                    <td>Unclear requirements, rework</td>
+                    <td>Always define before building</td>
+                  </tr>
+                  <tr>
+                    <td>Code before tests</td>
+                    <td>Bugs slip through</td>
+                    <td>Use TDD strictly</td>
+                  </tr>
+                  <tr>
+                    <td>Committing to main</td>
+                    <td>No code review</td>
+                    <td>Use feature branches + PR</td>
+                  </tr>
+                  <tr>
+                    <td>Vague prompts</td>
+                    <td>Unwanted features</td>
+                    <td>Be specific: file paths, scope</td>
+                  </tr>
+                  <tr>
+                    <td>Ignoring test failures</td>
+                    <td>Broken production</td>
+                    <td>Fix immediately, never skip</td>
+                  </tr>
+                  <tr>
+                    <td>Long context sessions</td>
+                    <td>Generic responses</td>
+                    <td><code class="inline">/clear</code> or <code class="inline">/compact</code></td>
+                  </tr>
+                </tbody>
+              </table>
+              <div class="bg-amber-50 border-l-4 border-amber-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-amber-700">Trust but verify.</strong>
+                  Always review Claude's output, especially for security-sensitive code.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 34: When Things Go Wrong -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="When Things Go Wrong">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 7 · Reference</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                🔧 When Things Go Wrong
+              </h2>
+              <p class="text-gray-600 mb-5">
+                Common problems and how to fix them. (Spoiler: most have simple solutions.)
+              </p>
+              <div class="space-y-4">
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                  <h3 class="text-red-700 font-semibold text-sm mb-1">📦 Context Overflow</h3>
+                  <p class="text-gray-800 text-sm"><strong>Symptom:</strong> Claude suddenly forgets what you discussed earlier.</p>
+                  <p class="text-gray-700 text-sm"><strong>Fix:</strong> Run <code class="inline">/clear</code> or <code class="inline">/compact</code> to compress context. Start a fresh session if needed.</p>
+                </div>
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                  <h3 class="text-red-700 font-semibold text-sm mb-1">🤔 Claude Hallucinates</h3>
+                  <p class="text-gray-800 text-sm"><strong>Symptom:</strong> Claude references files or functions that don't exist.</p>
+                  <p class="text-gray-700 text-sm"><strong>Fix:</strong> Always verify with <code class="inline">grep</code> or file read before acting. "Trust but verify" — don't blindly accept Claude's claims.</p>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="text-amber-700 font-semibold text-sm mb-1">🧪 Tests Fail in CI but Pass Locally</h3>
+                  <p class="text-gray-800 text-sm"><strong>Symptom:</strong> Test passes in terminal but fails in GitHub Actions.</p>
+                  <p class="text-gray-700 text-sm"><strong>Fix:</strong> CI environment differs (database, caching, parallel execution). Download CI logs, check for timing issues or race conditions. Add explicit waits or dependencies.</p>
+                </div>
+                <div class="bg-amber-50 border-l-4 border-amber-500 p-4 rounded">
+                  <h3 class="text-amber-700 font-semibold text-sm mb-1">📋 Planning Missed the Mark</h3>
+                  <p class="text-gray-800 text-sm"><strong>Symptom:</strong> Plan looked good, but midway through execution it's wrong.</p>
+                  <p class="text-gray-700 text-sm"><strong>Fix:</strong> Go back to planning. Refine the plan, verify file paths are correct, check if requirements changed. A bad plan found early saves hours.</p>
+                </div>
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded">
+                  <h3 class="text-red-700 font-semibold text-sm mb-1">🚫 Claude Refuses to Execute</h3>
+                  <p class="text-gray-800 text-sm"><strong>Symptom:</strong> "I can't do that" / "I don't have permission."</p>
+                  <p class="text-gray-700 text-sm"><strong>Fix:</strong> Check if command is destructive (git reset --hard). If allowed, be explicit: "Run this command: X". If truly blocked, use a safe alternative.</p>
+                </div>
+              </div>
+              <div class="bg-cyan-50 border-l-4 border-cyan-500 p-3 rounded mt-4">
+                <p class="text-gray-800 text-sm">
+                  <strong class="text-cyan-700">Golden rule:</strong>
+                  When stuck, trace back to the previous stable point. Review Claude's logic. Verify assumptions. Root cause beats quick fixes.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 35: FAQ -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="FAQ">
+            <div class="max-w-4xl mx-auto w-full">
+              <div class="text-cyan-600 text-xs uppercase tracking-widest mb-2">Part 7 · Reference</div>
+              <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                ❓ Frequently Asked Questions
+              </h2>
+              <table>
+                <thead>
+                  <tr>
+                    <th>Question</th>
+                    <th>Answer</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Can Claude access the internet?</td>
+                    <td>Yes, via WebSearch/WebFetch MCP plugins</td>
+                  </tr>
+                  <tr>
+                    <td>Does Claude remember between sessions?</td>
+                    <td>No. Use CLAUDE.md and progress.md</td>
+                  </tr>
+                  <tr>
+                    <td>Can I use Claude offline?</td>
+                    <td>No, requires API connection</td>
+                  </tr>
+                  <tr>
+                    <td>Is my code sent to Anthropic?</td>
+                    <td>Yes, for processing. Check their data policy</td>
+                  </tr>
+                  <tr>
+                    <td>Can multiple people share an API key?</td>
+                    <td>Yes, but you share rate limits and billing</td>
+                  </tr>
+                  <tr>
+                    <td>What if Claude makes a mistake?</td>
+                    <td>Git tracks everything. Review before commit.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <!-- Slide 41: Let's Go! -->
+          <!-- ══════════════════════════════════════════════════════════════ -->
+          <section class="slide flex-col" data-title="Let's Go!">
+            <div class="max-w-4xl mx-auto w-full">
+              <h2 class="text-4xl font-bold text-gray-900 mb-4 text-center">
+                🚀 Let's Go!
+              </h2>
+              <p class="text-xl text-gray-600 mb-6 text-center">
+                Start exercises: <code class="inline text-lg">csk progress</code>
+              </p>
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-4">
+                  <h3 class="text-emerald-700 font-semibold mb-3">🎯 Today</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li>Complete Exercise 06 (Full Cycle)</li>
+                    <li>Raise your hand if you get stuck</li>
+                    <li>Try things — Claude can fix mistakes</li>
+                  </ul>
+                </div>
+                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h3 class="text-blue-700 font-semibold mb-3">📅 Week 1 Roadmap</h3>
+                  <ul class="text-gray-700 text-sm space-y-1 list-disc list-inside">
+                    <li><strong>Days 1-2:</strong> Use Claude on a REAL project</li>
+                    <li><strong>Days 3-4:</strong> Create 2-3 custom skills</li>
+                    <li><strong>Day 5:</strong> Share with team, get feedback</li>
+                  </ul>
+                </div>
+              </div>
+              <div class="mt-6 text-center">
+                <p class="text-gray-500">
+                  Press <kbd class="px-2 py-1 bg-gray-200 rounded text-gray-600">K</kbd> for handout · <kbd class="px-2 py-1 bg-gray-200 rounded text-gray-600">?</kbd> for shortcuts
+                </p>
+              </div>
+            </div>
+          </section>
+
+
+        </main>
+        <footer class="fixed bottom-2 left-[272px] text-xs text-gray-400">
+          Claude Code Workshop · Global
+        </footer>
+      </div>
+    </div>
+
+    <!-- Speaker Notes Panel (hidden - use P to open presenter window) -->
+    <div id="notesPanel" style="display: none;">
+      <span class="notes-hint">Press P to open presenter window</span>
+      <h4>Speaker Notes</h4>
+      <div id="notesContent">Select a slide to see notes.</div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="helpModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div class="help-modal rounded-lg shadow-xl max-w-md w-full mx-4 p-6">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="help-title">Keyboard Shortcuts</h3>
+          <button class="help-close" id="helpClose">×</button>
+        </div>
+        <table class="w-full">
+          <thead>
+            <tr><th class="text-left">Key</th><th class="text-left">Action</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><kbd>←</kbd> / <kbd>→</kbd></td><td>Navigate slides</td></tr>
+            <tr><td><kbd>Home</kbd> / <kbd>End</kbd></td><td>First / last slide</td></tr>
+            <tr><td><kbd>G</kbd></td><td>Go to slide (enter number)</td></tr>
+            <tr><td><kbd>T</kbd></td><td>Toggle dark mode</td></tr>
+            <tr><td><kbd>S</kbd></td><td>Sync to kompendium section</td></tr>
+            <tr><td><kbd>K</kbd></td><td>Open kompendium</td></tr>
+            <tr><td><kbd>M</kbd></td><td>Toggle sidebar</td></tr>
+            <tr><td><kbd>P</kbd> / <kbd>N</kbd></td><td>Open presenter notes (separate window)</td></tr>
+            <tr><td><kbd>H</kbd> / <kbd>?</kbd></td><td>Show this help</td></tr>
+            <tr><td><kbd>Esc</kbd></td><td>Close modal</td></tr>
+          </tbody>
+        </table>
+        <p class="text-sm text-gray-500 mt-4">
+          <strong>Presenter mode:</strong> Press <kbd>P</kbd> to open speaker notes in a separate window.
+          Control slides from either window. Timer included!
+        </p>
+      </div>
+    </div>
+
+    <script>
+    // Initialize Mermaid
+    mermaid.initialize({ startOnLoad: false, theme: 'neutral' });
+
+    // Speaker notes for each slide
+    // Format: 📚 LEARNING GOAL | 💡 Key points | ❌ Anti-patterns | 🎬 Demo | ❓ Questions | ⏱️ Timing | 🔥 Provocation
+    const speakerNotes = [
+      // Slide 1: Part 1 Header
+      `<p><strong>🎯 WELCOME!</strong></p>
+      <ul>
+        <li><strong>⏱️ 1 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Welcome! Today you'll learn how to work with an AI pair programmer."</li>
+        <li>🎤 <strong>SAY:</strong> "After today, you'll NEVER go back to coding alone."</li>
+        <li><strong>→ NEXT:</strong> Move forward quickly.</li>
+      </ul>`,
+
+      // Slide 2: Workshop Agenda
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand today's structure.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "We'll spend 45 minutes on theory, the rest hands-on. You learn by DOING."</li>
+        <li>❓ <strong>ASK:</strong> "Raise your hand: Who's used ChatGPT or Copilot for code?"</li>
+        <li>❓ <strong>FOLLOW UP:</strong> "What DIDN'T work?" (Expect: "guesses wrong", "doesn't understand context")</li>
+        <li>🎤 <strong>SAY:</strong> "Exactly. Claude Code solves those problems. With STRUCTURE."</li>
+        <li>🎤 <strong>SAY:</strong> "The handout is your reference. Slides are the big picture. Exercises are where you learn."</li>
+        <li><strong>→ NEXT:</strong> "So what IS Claude Code..."</li>
+      </ul>`,
+
+      // Slide 3: What is Claude Code?
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand the difference between Claude Code and copy-paste AI.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Claude Code is NOT autocomplete. It's a colleague working in your repo."</li>
+        <li>🎬 <strong>DEMO:</strong> Open terminal → <code>claude</code> → type "Find all TODO comments"</li>
+        <li>🎤 <strong>SAY:</strong> "See — Claude READS the files itself. You copied NOTHING."</li>
+        <li>🎤 <strong>SAY:</strong> "Copy-pasting to ChatGPT is like faxing documents in 2026. Stop doing it."</li>
+        <li>❓ <strong>ASK:</strong> "What's the difference between Copilot and Claude Code?"</li>
+        <li>🎤 <strong>ANSWER:</strong> "Copilot SUGGESTS. Claude EXECUTES. Copilot gives hints. Claude writes whole features."</li>
+        <li>⚠️ <strong>KEY POINT:</strong> "Claude doesn't replace you. You're the pilot. Claude is autopilot. You set the direction."</li>
+        <li><strong>→ NEXT:</strong> "But Claude knows nothing about your project... unless..."</li>
+      </ul>`,
+
+      // Slide 4: Workshop Tools (Skills + CLAUDE.md)
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand why CLAUDE.md and skills exist.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong> Two files that change everything.</li>
+        <li>🎬 <strong>DEMO:</strong> Show CLAUDE.md → "Claude, what is this project?" → Claude cites CLAUDE.md.</li>
+        <li>💡 <strong>Analogy:</strong> "CLAUDE.md is the onboarding document for a new colleague. Skills are your runbooks."</li>
+        <li>❓ <strong>Question:</strong> "What happens if Claude has no CLAUDE.md?" (Guesses → random output)</li>
+        <li><strong>Key insight:</strong> CLAUDE.md is read FIRST. ALWAYS. Put your rules THERE.</li>
+        <li><strong>→ NEXT:</strong> "Let's recap before we move forward..."</li>
+      </ul>`,
+
+      // Slide 5: Recap - Introduction
+      `<p><strong>📚 RECAP — Verify understanding</strong></p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Quick quiz — raise your hand!</li>
+        <li>❓ "What is Claude Code?" → Pair programmer that works in your repo.</li>
+        <li>❓ "What does Claude read first?" → CLAUDE.md.</li>
+        <li>❓ "What is a skill?" → Slash command with instructions.</li>
+        <li>💡 <strong>CHECK:</strong> Do you see confused faces? Take extra time on intro.</li>
+        <li><strong>→ NEXT:</strong> "Now we go into detail..."</li>
+      </ul>`,
+
+      // Slide 6: Part 2 Header - Foundation
+      `<p><strong>🏗️ FOUNDATION CHAPTER</strong></p>
+      <ul>
+        <li><strong>⏱️ 30 sec.</strong> Transition slide — move forward quickly.</li>
+        <li>💡 "Now we go from what to how."</li>
+        <li><strong>→ NEXT:</strong> "CLAUDE.md in detail..."</li>
+      </ul>`,
+
+      // Slide 7: CLAUDE.md Deep Dive
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants can write an effective CLAUDE.md.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "CLAUDE.md is the most important file in the system. Claude reads it FIRST. Every single time."</li>
+        <li>🎬 <strong>DEMO:</strong> Open CLAUDE.md → point to each section: "Overview, Tech Stack, Commands, Conventions, and most importantly: DON'T."</li>
+        <li>🎤 <strong>SAY:</strong> "The DON'T section is critical. Claude takes rules seriously. Write: 'Don't use any', and Claude never uses any."</li>
+        <li>❓ <strong>ASK:</strong> "What would you write in 'Don't' for your project?" → Let 2-3 answer.</li>
+        <li>🔥 <strong>TELL:</strong> "Typical don'ts: 'Don't use var', 'Don't import from internal packages', 'Don't add console.log'."</li>
+        <li>🎤 <strong>SAY:</strong> "Think of CLAUDE.md as the onboarding document for a new colleague. What do they need to know on day 1?"</li>
+        <li><strong>→ NEXT:</strong> "Skills are the next level..."</li>
+      </ul>`,
+
+      // Slide 8: Skills
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants can find and use skills.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Skills are your own Claude workflows. You write them once, everyone on the team uses them."</li>
+        <li>🎬 <strong>DEMO:</strong> <code>ls .claude/skills/</code> → open one file → "See: frontmatter with name and description, then instructions."</li>
+        <li>🎤 <strong>SAY:</strong> "Think of skills like recipes. Claude can cook — skills tell WHICH meal."</li>
+        <li>🎤 <strong>SAY:</strong> "You activate a skill with /command. For example /planning or /execution."</li>
+        <li>🔥 <strong>TELL:</strong> "Power move: Create a skill for your deployment workflow. Share with the team. Now everyone deploys the same way."</li>
+        <li><strong>→ NEXT:</strong> "Rules — the other system..."</li>
+      </ul>`,
+
+      // Slide 9: Rules
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand the difference between rules and skills.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Rules and skills look similar, but they're different. You activate skills yourself. Rules load automatically."</li>
+        <li>🎤 <strong>SAY:</strong> "Rules live in .claude/rules/. They load ALWAYS — you don't do anything."</li>
+        <li>🎤 <strong>SAY:</strong> "But here's the trick: path-activated rules only load for specific files."</li>
+        <li>🎬 <strong>DEMO:</strong> Show a rule with <code>path: e2e-test/**</code> → "This only loads when you work in the test folder."</li>
+        <li>🎤 <strong>RULE OF THUMB:</strong> "Use rules for 'always do X' — coding style, naming, forbidden patterns."</li>
+        <li>🎤 <strong>RULE OF THUMB:</strong> "Use skills for 'how do I do Y' — workflows, processes, complex tasks."</li>
+        <li><strong>→ NEXT:</strong> "Which model should you use..."</li>
+      </ul>`,
+
+      // Slide 10: Model Selection
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants choose the right model for the task.</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Sonnet vs Opus — when to use which?</li>
+        <li>💡 <strong>RULE OF THUMB:</strong> Start with Sonnet. Switch to Opus if Sonnet fails 2x.</li>
+        <li>💡 <strong>Sonnet:</strong> Fast, cheap, good for 80% of tasks.</li>
+        <li>💡 <strong>Opus:</strong> Deep, expensive, for complex refactorings and architecture.</li>
+        <li>🔥 <strong>Practical:</strong> <code>/model sonnet</code> or <code>/model opus</code> in Claude.</li>
+        <li><strong>→ NEXT:</strong> "What does it cost..."</li>
+      </ul>`,
+
+      // Slide 10: Cost Optimization
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants can save money on Claude.</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> AI costs — but you can optimize!</li>
+        <li>💡 <strong>Fact:</strong> Sonnet = ~80% cheaper than Opus.</li>
+        <li>💡 <strong>/clear:</strong> Clear context between independent tasks. Saves tokens.</li>
+        <li>💡 <strong>Specific prompts:</strong> "Add error handling to validateUser" > "Make the code better".</li>
+        <li>🔥 <strong>Real talk:</strong> "A vague prompt costs 3x as much because Claude asks and you answer and Claude asks again..."</li>
+        <li><strong>→ NEXT:</strong> "Recap before the most important part..."</li>
+      </ul>`,
+
+      // Slide 11: Recap - Foundation
+      `<p><strong>📚 RECAP — Foundation</strong></p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Quick verification.</li>
+        <li>❓ "What does Claude read first?" → CLAUDE.md.</li>
+        <li>❓ "When Opus?" → When Sonnet fails 2x, or complex architecture.</li>
+        <li>❓ "How do you save tokens?" → /clear + specific prompts.</li>
+        <li><strong>→ NEXT:</strong> "Now the MOST IMPORTANT: The Work-Loop..."</li>
+      </ul>`,
+
+      // Slide 12: Part 3 Header - Work-Loop
+      `<p><strong>⚙️ WORK-LOOP CHAPTER — THE MOST IMPORTANT!</strong></p>
+      <ul>
+        <li><strong>⏱️ 30 sec.</strong> Stop. Say: "This is the most important thing you'll learn today."</li>
+        <li>💡 Draw the loop in the air with your hand: Planning → Execution → Reviewing → Integration → ↩</li>
+        <li><strong>→ NEXT:</strong> "The loop in detail..."</li>
+      </ul>`,
+
+      // Slide 13: The Work-Loop Overview
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants can run a complete work-loop.</p>
+      <ul>
+        <li><strong>⏱️ 4 min. ⭐ MOST IMPORTANT SLIDE!</strong></li>
+        <li>🎤 <strong>SAY:</strong> "This is the most important thing you'll learn today. Four phases, one loop."</li>
+        <li>🎤 <strong>SAY:</strong> "Planning — NO code, just plan. Execution — TDD, test first. Reviewing — Claude checks itself. Integration — PR and merge."</li>
+        <li>🎤 <strong>SAY:</strong> "See the arrow going BACK from Review to Execution? That's called NEEDS_FIXES."</li>
+        <li>🎤 <strong>SAY:</strong> "NEEDS_FIXES is NORMAL. It's NOT a failure. It's the loop working."</li>
+        <li>🔥 <strong>PROVOCATION:</strong> "If you NEVER get NEEDS_FIXES, you're reviewing too lightly. First version is never perfect."</li>
+        <li>❓ <strong>CHECK:</strong> "Questions about the loop before we move forward?"</li>
+        <li><strong>→ NEXT:</strong> "Let's look at each phase..."</li>
+      </ul>`,
+
+      // Slide 14: /planning Phase
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand that planning = NO CODE.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "The planning phase has ONE rule: NO CODE. Just plan."</li>
+        <li>🎤 <strong>SAY:</strong> "Why? Because planning and implementation are two different things. Mix them, and you get chaos."</li>
+        <li>🎬 <strong>DEMO:</strong> Run <code>/planning "Add user authentication"</code> → show output.</li>
+        <li>🎤 <strong>SAY:</strong> "See the task format: Description, File, Verify command. EVERY task has a Verify."</li>
+        <li>🔥 <strong>TELL:</strong> "I see it all the time: people skip planning and dive straight into code. Result: they forget edge cases, tests, and end up refactoring 3 times."</li>
+        <li>❓ <strong>ASK:</strong> "Who's tried starting a project without a plan?" → Let them nod knowingly.</li>
+        <li><strong>→ NEXT:</strong> "When the plan is ready — TDD..."</li>
+      </ul>`,
+
+      // Slide 15: /execution Phase (TDD)
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand the TDD cycle.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "TDD isn't a religion. It's a pragmatic way to catch bugs BEFORE they reach production."</li>
+        <li>🎤 <strong>SAY:</strong> "Three steps: RED, GREEN, REFACTOR."</li>
+        <li>🎤 <strong>SAY RED:</strong> "First you write the test. It MUST fail. If it doesn't fail, it's wrong."</li>
+        <li>🎤 <strong>SAY GREEN:</strong> "Then you write minimum code to pass. MINIMUM. Not 'what if we also...'."</li>
+        <li>🎤 <strong>SAY REFACTOR:</strong> "Last, you make the code clean. This is the only time you get to do it. Later there's never time."</li>
+        <li>🔥 <strong>WARNING:</strong> "If you skip RED, the test could pass by accident. Then you have a test that lies."</li>
+        <li><strong>→ NEXT:</strong> "When code is written — review..."</li>
+      </ul>`,
+
+      // Slide 16: /reviewing Phase
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand the value of self-review.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Claude reviews itself BEFORE you see the code. It saves you time."</li>
+        <li>🎤 <strong>SAY:</strong> "The review phase checks: Do all tests pass? Is linting clean? Are there edge cases? Security issues?"</li>
+        <li>🎤 <strong>SAY:</strong> "The output is either APPROVED — we move on — or NEEDS_FIXES — and we go BACK to execution."</li>
+        <li>🎤 <strong>SAY:</strong> "In practice, Claude finds 60% of bugs itself. You find the last 40%."</li>
+        <li>🔥 <strong>INSIGHT:</strong> "It's like having a junior who always code-reviews themselves before asking you."</li>
+        <li><strong>→ NEXT:</strong> "Last phase: integration..."</li>
+      </ul>`,
+
+      // Slide 17: /integration Phase
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants know Claude handles git.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "The integration phase is about git. And Claude does ALL the git work."</li>
+        <li>🎤 <strong>SAY:</strong> "Branch, commit, push, PR, wait for CI, merge, cleanup. All of it."</li>
+        <li>🎤 <strong>SAY:</strong> "You just say: 'Create a PR and merge when CI passes.' Done."</li>
+        <li>🔥 <strong>TELL:</strong> "Fun fact: Claude writes better commit messages than most people. Because it actually reads all the changes."</li>
+        <li>❓ <strong>ASK:</strong> "When should you write git commands in this workflow?" → Never. Claude does it.</li>
+        <li><strong>→ NEXT:</strong> "But what happens between sessions?..."</li>
+      </ul>`,
+
+      // Slide 18: Progress Tracking
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand progress.md as "external memory".</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Here's a problem: Claude has NO memory between sessions."</li>
+        <li>🎤 <strong>SAY:</strong> "Close the terminal, and EVERYTHING is lost. Claude starts over."</li>
+        <li>🎤 <strong>SAY:</strong> "The solution? progress.md. It's Claude's 'external memory'."</li>
+        <li>🎬 <strong>DEMO:</strong> Open a progress.md → point: "See — STATUS, TASKS with checkmarks, NOTES with decisions."</li>
+        <li>🎤 <strong>SAY:</strong> "Every time you stop a session: 'Claude, update progress.md.' EVERY time."</li>
+        <li>🔥 <strong>TELL:</strong> "I've seen people waste hours because they forgot to save progress. Claude started over and reinvented the wheel."</li>
+        <li><strong>→ NEXT:</strong> "Let's recap the work-loop..."</li>
+      </ul>`,
+
+      // Slide 19: Recap - Work-Loop
+      `<p><strong>📚 RECAP — Work-Loop</strong></p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Quick quiz!</li>
+        <li>❓ "Four phases?" → Planning → Execution → Reviewing → Integration.</li>
+        <li>❓ "Can there be code in planning?" → NO!</li>
+        <li>❓ "What does NEEDS_FIXES mean?" → Normal part of the loop, not a failure.</li>
+        <li>❓ "How does Claude remember across sessions?" → progress.md.</li>
+        <li><strong>→ NEXT:</strong> "Now exercises..."</li>
+      </ul>`,
+
+      // Slide 20: Part 4 Header - Hands-on
+      `<p><strong>🎯 HANDS-ON CHAPTER</strong></p>
+      <ul>
+        <li><strong>⏱️ 30 sec.</strong> "Theory is over. The rest of the day is YOURS."</li>
+        <li>💡 8 exercises, progressively harder, about 3 hours total.</li>
+        <li><strong>→ NEXT:</strong> "Exercises overview..."</li>
+      </ul>`,
+
+      // Slide 22: Exercises Overview
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants know the exercise structure.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "10 exercises total. 8 core, 2 bonus. Let me explain the structure."</li>
+        <li>🎤 <strong>SAY:</strong> "01-02: Setup and Git. 30 minutes. EVERYONE should reach these. It's the foundation."</li>
+        <li>🎤 <strong>SAY:</strong> "03-05: TDD, Review, Debugging. 70 minutes. These are the core exercises. Here you learn the workflow."</li>
+        <li>🎤 <strong>SAY:</strong> "06: Full Cycle. 45 minutes. THAT'S graduation. 🎓 When you finish 06, you can use Claude."</li>
+        <li>🎤 <strong>SAY:</strong> "07-08: Error handling and Guardrails. For the fast ones."</li>
+        <li>🎤 <strong>SAY:</strong> "09-10: Agents and Rules. Bonus for the VERY fast."</li>
+        <li>🔥 <strong>TELL:</strong> "Goal: EVERYONE reaches exercise 06. Fast people reach 10. Raise your hand when you get stuck!"</li>
+        <li><strong>→ NEXT:</strong> "Let's see the extra skills..."</li>
+      </ul>`,
+
+      // Slide 22: Part 5 Header - Supporting Skills
+      `<p><strong>🛠️ SUPPORTING SKILLS CHAPTER</strong></p>
+      <ul>
+        <li><strong>⏱️ 30 sec.</strong> "Extra tools that make you even better."</li>
+        <li><strong>→ NEXT:</strong> "Brainstorming with /grill-me..."</li>
+      </ul>`,
+
+      // Slide 23: /grill-me
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants think BEFORE they build.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "/grill-me is the Socratic method for developers. Claude asks critical questions BEFORE you code."</li>
+        <li>🎬 <strong>DEMO:</strong> <code>/grill-me "I want to build a task tracker"</code></li>
+        <li>🎤 <strong>SAY:</strong> "See what Claude asks: Who's the user? What's the problem? What's NOT version 1?"</li>
+        <li>🎤 <strong>SAY:</strong> "The output is a clear problem definition, a scope, and — equally important — an anti-scope."</li>
+        <li>🔥 <strong>TELL:</strong> "I know it feels slow. But 30 minutes of brainstorming saves 3 days of refactoring. Every time."</li>
+        <li><strong>→ NEXT:</strong> "From sketch to stories..."</li>
+      </ul>`,
+
+      // Slide 24: Mockup to Stories
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants can go from wireframe to user stories.</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Have a sketch? Convert it to stories!</li>
+        <li>💡 <strong>Input:</strong> ASCII mockup, screenshot, description.</li>
+        <li>💡 <strong>Output:</strong> User stories with acceptance criteria.</li>
+        <li>🔥 <strong>Tip:</strong> "Draw it by hand, take a picture, give it to Claude."</li>
+        <li><strong>→ NEXT:</strong> "TDD in detail..."</li>
+      </ul>`,
+
+      // Slide 25: TDD Cycle
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants internalize RED-GREEN-REFACTOR.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong> TDD works in ALL languages. Also with Claude.</li>
+        <li>💡 <strong>RED:</strong> Write test → test MUST fail → prove the test works.</li>
+        <li>💡 <strong>GREEN:</strong> Minimum code → test passes → STOP.</li>
+        <li>💡 <strong>REFACTOR:</strong> Make it clean → tests still pass → commit.</li>
+        <li>🔥 <strong>NEVER skip RED!</strong> "A test that never failed is worthless."</li>
+        <li><strong>→ NEXT:</strong> "Git workflow..."</li>
+      </ul>`,
+
+      // Slide 26: Git Workflow
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants know the branch strategy.</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Feature branches ALWAYS. Never directly to main.</li>
+        <li>💡 <strong>Branches:</strong> feature/, fix/, docs/ — descriptive names.</li>
+        <li>💡 <strong>Commits:</strong> Conventional commits: feat:, fix:, docs:, refactor:</li>
+        <li>💡 <strong>Flow:</strong> develop = integration, main = production.</li>
+        <li>🔥 <strong>Claude does it:</strong> "Create a feature branch for login" → done.</li>
+        <li><strong>→ NEXT:</strong> "Debugging..."</li>
+      </ul>`,
+
+      // Slide 27: Debugging
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants can write good debug prompts.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Debugging with Claude requires a specific technique. Most people do it wrong."</li>
+        <li>❌ <strong>SHOW:</strong> "'Fix this test' — what happens? Claude guesses blindly. 10 tries, no progress."</li>
+        <li>✅ <strong>SHOW:</strong> "'Trace the execution path, identify where the assertion fails, explain why, then fix.'"</li>
+        <li>🎤 <strong>SAY:</strong> "Three steps. TRACE — follow the code. EXPLAIN — explain WHY it fails. FIX — then fix it."</li>
+        <li>🎤 <strong>SAY:</strong> "The EXPLAIN step is the most important. If Claude can't explain the problem, it can't fix it."</li>
+        <li>🔥 <strong>TELL:</strong> "I have a rule: If Claude says 'try this' without explaining why — stop. Ask for an explanation first."</li>
+        <li><strong>→ NEXT:</strong> "Summary of supporting skills..."</li>
+      </ul>`,
+
+      // Slide 28: Recap - Supporting Skills
+      `<p><strong>📚 RECAP — Supporting Skills</strong></p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Quick summary.</li>
+        <li>❓ "What does /grill-me do?" → Asks critical questions before you build.</li>
+        <li>❓ "Three phases in TDD?" → RED → GREEN → REFACTOR.</li>
+        <li>❓ "Good debugging prompt?" → Trace → Explain → Fix.</li>
+        <li><strong>→ NEXT:</strong> "Advanced features..."</li>
+      </ul>`,
+
+      // Slide 29: Part 6 Header - Advanced
+      `<p><strong>🚀 ADVANCED TOPICS CHAPTER</strong></p>
+      <ul>
+        <li><strong>⏱️ 30 sec.</strong> "These are OPTIONAL. Start simple, add complexity later."</li>
+        <li>💡 Power tools for experienced users: worktrees, MCP, hooks.</li>
+        <li><strong>→ NEXT:</strong> "Worktrees..."</li>
+      </ul>`,
+
+      // Slide 30: Worktrees
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants know worktrees (advanced).</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Worktrees = multiple independent checkouts.</li>
+        <li>💡 <strong>Use case:</strong> CI runs for 10 min → work on the next feature in another worktree.</li>
+        <li>💡 <strong>Command:</strong> <code>claude --worktree</code></li>
+        <li>🔥 <strong>Tip:</strong> "10 min CI time = 2-3 planning cycles in another worktree."</li>
+        <li><strong>→ NEXT:</strong> "MCP..."</li>
+      </ul>`,
+
+      // Slide 31: MCP
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants KNOW MCP exists.</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> MCP = Model Context Protocol — extensions for Claude.</li>
+        <li>💡 <strong>Examples:</strong> Playwright (browser), PostgreSQL (database), Slack (communication).</li>
+        <li>💡 <strong>Practical:</strong> Claude can control a browser, run SQL, send Slack messages.</li>
+        <li>🔥 <strong>Today:</strong> "You don't need this yet. But know it exists."</li>
+        <li><strong>→ NEXT:</strong> "Hooks..."</li>
+      </ul>`,
+
+      // Slide 32: Hooks
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants KNOW hooks exist.</p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Hooks = custom code before/after Claude actions.</li>
+        <li>💡 <strong>Types:</strong> UserPromptSubmit, PreToolUse, PostToolUse.</li>
+        <li>💡 <strong>Use case:</strong> Auto-format code after each edit. Check for secrets before commit.</li>
+        <li>🔥 <strong>Advanced:</strong> "Powerful for teams — but start without it."</li>
+        <li><strong>→ NEXT:</strong> "Agent Teams..."</li>
+      </ul>`,
+
+      // Slide 33: Agent Teams
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand when and how to use agents.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Until now, we've worked with one Claude session. But you can spawn multiple — agents."</li>
+        <li>🎤 <strong>SAY:</strong> "When does it make sense? Four situations:"</li>
+        <li>🎤 <strong>SAY 1:</strong> "Parallel work. Review 5 files at once instead of one at a time."</li>
+        <li>🎤 <strong>SAY 2:</strong> "Specialization. One agent for security, one for QA, one for docs."</li>
+        <li>🎤 <strong>SAY 3:</strong> "Fresh context. When your conversation gets long and confusing, spawn a fresh agent."</li>
+        <li>🎤 <strong>SAY 4:</strong> "CI wait time. While CI runs for 10 minutes, spawn an agent to plan the next feature."</li>
+        <li>🎤 <strong>SAY:</strong> "And here's the key point: subagents combine with the work-loop."</li>
+        <li>🎤 <strong>SAY:</strong> "You do planning. Then spawn an 'execution' agent. Then a 'review' agent. Each with their role."</li>
+        <li>⚠️ <strong>WARNING:</strong> "But remember: subagents see NOTHING from your conversation. Brief them like a new colleague who just started."</li>
+        <li><strong>→ NEXT:</strong> "Why does Claude vary?..."</li>
+      </ul>`,
+
+      // Slide 34: The Non-Determinism Problem
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants understand WHY Claude varies.</p>
+      <ul>
+        <li><strong>⏱️ 4 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Now something important: Claude is NOT deterministic. Same prompt gives different output. Every time."</li>
+        <li>🎤 <strong>SAY:</strong> "Why? Because LLMs are probabilistic. They choose the next word based on probabilities."</li>
+        <li>🎤 <strong>SAY:</strong> "The implication? You can't expect identical results. You MUST plan for variation."</li>
+        <li>🔥 <strong>TELL:</strong> "I've seen people get frustrated: 'But it wrote it differently yesterday!' Yes. That's normal."</li>
+        <li>🎤 <strong>SAY:</strong> "The solution is not better prompts. The solution is: tests, guardrails, review."</li>
+        <li>🎤 <strong>SAY:</strong> "Claude's output may vary. The quality must NOT. That's why you build guardrails."</li>
+        <li>❓ <strong>ASK:</strong> "What do you do when Claude writes bad code?" → Review, guardrails, retry with better prompt.</li>
+        <li><strong>→ NEXT:</strong> "Summary of advanced..."</li>
+      </ul>`,
+
+      // Slide 35: Recap - Advanced
+      `<p><strong>📚 RECAP — Advanced Topics</strong></p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong> Summary of advanced features.</li>
+        <li>❓ "What are worktrees?" → Multiple independent checkouts.</li>
+        <li>❓ "What is MCP?" → Extensions (browser, database, etc.).</li>
+        <li>❓ "When agents?" → Parallel, specialization, fresh context.</li>
+        <li>❓ "Why does Claude vary?" → Probabilistic model.</li>
+        <li>💡 <strong>Key takeaway:</strong> Start simple. Add complexity when needed.</li>
+        <li><strong>→ NEXT:</strong> "Reference and troubleshooting..."</li>
+      </ul>`,
+
+      // Slide 35: Part 7 Header - Reference
+      `<p><strong>📚 REFERENCE & WRAP-UP CHAPTER</strong></p>
+      <ul>
+        <li><strong>⏱️ 30 sec.</strong> "Common pitfalls and how to avoid them."</li>
+        <li><strong>→ NEXT:</strong> "Gotchas..."</li>
+      </ul>`,
+
+      // Slide 36: Common Gotchas
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants avoid the most common mistakes.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Four mistakes I see at EVERY workshop. Let me save you the pain."</li>
+        <li>🎤 <strong>MISTAKE 1:</strong> "'I know what I want to build.' No. Brainstorm first. /grill-me. 30 minutes saves 3 days."</li>
+        <li>🎤 <strong>MISTAKE 2:</strong> "'I'll write tests afterwards.' Never. There's never time afterwards. TDD from the start."</li>
+        <li>🎤 <strong>MISTAKE 3:</strong> "'Make it better.' Claude guesses. Be specific: 'Add error handling to validateUser'."</li>
+        <li>🎤 <strong>MISTAKE 4:</strong> "'It probably works.' Tests fail for a reason. Find the root cause."</li>
+        <li>🔥 <strong>GOLDEN RULE:</strong> "TRUST BUT VERIFY. Claude is smart — but can be wrong. ALWAYS review."</li>
+        <li><strong>→ NEXT:</strong> "When things go wrong..."</li>
+      </ul>`,
+
+      // Slide 37: Troubleshooting
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants know what to do when something goes wrong.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Problems WILL come. Here's what you do."</li>
+        <li>🎤 <strong>PROBLEM 1:</strong> "Context overflow — Claude forgets things. Solution: /clear, start fresh, read progress.md."</li>
+        <li>🎤 <strong>PROBLEM 2:</strong> "Hallucination — Claude makes things up. Solution: 'Read the file first' forces Claude to verify."</li>
+        <li>🎤 <strong>PROBLEM 3:</strong> "Works locally, fails in CI. Solution: Check environment variables. It's almost always env."</li>
+        <li>🎤 <strong>PROBLEM 4:</strong> "Bad plan. Solution: Stop execution, go back to planning, make a new plan. It's OK to start over."</li>
+        <li>🔥 <strong>GOLDEN RULE:</strong> "Root cause is more important than quick fix. Trace back. Find the source."</li>
+        <li><strong>→ NEXT:</strong> "Common questions..."</li>
+      </ul>`,
+
+      // Slide 38: FAQ
+      `<p><strong>📚 LEARNING GOAL:</strong> Participants get answers to common questions.</p>
+      <ul>
+        <li><strong>⏱️ 3 min.</strong></li>
+        <li>🎤 <strong>SAY:</strong> "Before we start exercises — here are the questions I get EVERY time."</li>
+        <li>❓ <strong>QUESTION:</strong> "Does Claude remember anything between sessions?" → "NO. Claude has no memory. Use CLAUDE.md and progress.md."</li>
+        <li>❓ <strong>QUESTION:</strong> "Can I use Claude offline?" → "NO. It requires an API. There ARE local alternatives, but not in this workshop."</li>
+        <li>❓ <strong>QUESTION:</strong> "What about security?" → "Your code is sent to Anthropic. Check your compliance rules. Enterprise has data isolation."</li>
+        <li>❓ <strong>QUESTION:</strong> "What does it cost?" → "$20/month Pro, $100/month Max. Enterprise is custom pricing."</li>
+        <li>🔥 <strong>OPEN:</strong> "Okay — 2-3 questions from the room before we start exercises?" → Take questions.</li>
+        <li><strong>→ NEXT:</strong> "Let's GO!"</li>
+      </ul>`,
+
+      // Slide 39: Let's Go!
+      `<p><strong>🎯 HANDOVER TO HANDS-ON!</strong></p>
+      <ul>
+        <li><strong>⏱️ 2 min.</strong></li>
+        <li>🎤 <strong>SAY WITH ENERGY:</strong> "NOW IT'S YOUR TURN!"</li>
+        <li>🎤 <strong>SAY:</strong> "Open terminal. Type: csk progress. See where you are."</li>
+        <li>🎤 <strong>SAY:</strong> "Press K to open the handout with keyboard shortcuts."</li>
+        <li>🎤 <strong>SAY:</strong> "When you get stuck: RAISE YOUR HAND. We'll come around to everyone."</li>
+        <li>🎤 <strong>SAY:</strong> "Goal: EVERYONE reaches exercise 06. That's graduation. Fast people reach 08 or 10."</li>
+        <li>🎤 <strong>SAY:</strong> "After the workshop: Try it on YOUR projects. Create custom skills. Share with your team."</li>
+        <li>🔥 <strong>END WITH ENERGY:</strong> "Okay? Ready? GO!"</li>
+      </ul>`
+    ];
+
+    // Slide navigation
+    const slides = document.querySelectorAll('.slide');
+    const slideNav = document.getElementById('slideNav');
+    const slideCounter = document.getElementById('slideCounter');
+    const slideTitle = document.getElementById('slideTitle');
+    let currentSlide = 0;
+
+    // Build navigation with part dividers
+    let lastPart = '';
+    slides.forEach((slide, i) => {
+      const title = slide.dataset.title || `Slide ${i + 1}`;
+      // Check if this is a new Part header slide
+      const partMatch = title.match(/^Part (\d+):/);
+      if (partMatch && partMatch[1] !== lastPart) {
+        lastPart = partMatch[1];
+        const divider = document.createElement('div');
+        divider.className = 'px-3 py-2 mt-3 mb-1 text-xs font-bold text-cyan-600 uppercase tracking-wider border-t border-gray-200 pt-3';
+        divider.textContent = `Part ${lastPart}`;
+        divider.dataset.divider = 'true';
+        slideNav.appendChild(divider);
+      }
+      const btn = document.createElement('button');
+      btn.className = 'nav-item px-3 py-2 text-sm text-gray-700 rounded';
+      btn.dataset.slideIndex = i;
+      btn.textContent = `${i + 1}. ${title.replace(/^Part \d+: /, '')}`;
+      btn.onclick = () => goToSlide(i);
+      slideNav.appendChild(btn);
+    });
+
+    function goToSlide(n) {
+      slides[currentSlide].classList.remove('active');
+      const oldNavItem = slideNav.querySelector(`[data-slide-index="${currentSlide}"]`);
+      if (oldNavItem) oldNavItem.classList.remove('current');
+      currentSlide = Math.max(0, Math.min(n, slides.length - 1));
+      slides[currentSlide].classList.add('active');
+      const newNavItem = slideNav.querySelector(`[data-slide-index="${currentSlide}"]`);
+      if (newNavItem) {
+        newNavItem.classList.add('current');
+        newNavItem.scrollIntoView({ block: 'nearest' });
+      }
+      slideCounter.textContent = `${currentSlide + 1} / ${slides.length}`;
+      slideTitle.textContent = slides[currentSlide].dataset.title || '';
+      localStorage.setItem('csk2-slide', currentSlide);
+      // Update speaker notes (safe: notes are hardcoded, not user input)
+      const notesEl = document.getElementById('notesContent');
+      notesEl.innerHTML = speakerNotes[currentSlide] || 'No notes for this slide.';
+      // Re-render Mermaid for this slide
+      setTimeout(() => {
+        const mermaidEls = slides[currentSlide].querySelectorAll('.mermaid');
+        mermaidEls.forEach(el => {
+          if (!el.querySelector('svg')) {
+            mermaid.run({ nodes: [el] });
+          }
+        });
+      }, 50);
+    }
+
+    // Initialize
+    const savedSlide = parseInt(localStorage.getItem('csk2-slide') || '0');
+    goToSlide(savedSlide);
+
+    // Navigation buttons
+    document.getElementById('prevBtn').onclick = () => goToSlide(currentSlide - 1);
+    document.getElementById('nextBtn').onclick = () => goToSlide(currentSlide + 1);
+
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT') return;
+      switch (e.key) {
+        case 'ArrowLeft': goToSlide(currentSlide - 1); break;
+        case 'ArrowRight': goToSlide(currentSlide + 1); break;
+        case 'Home': goToSlide(0); break;
+        case 'End': goToSlide(slides.length - 1); break;
+        case 'g': case 'G':
+          const n = prompt('Go to slide:');
+          if (n) goToSlide(parseInt(n) - 1);
+          break;
+        case 't': case 'T':
+          document.documentElement.classList.toggle('dark');
+          localStorage.setItem('csk2-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+          break;
+        case 's': case 'S':
+          // Sync: tell kompendium to scroll to section matching current slide
+          bc.postMessage({ type: 'goto-section', index: currentSlide });
+          break;
+        case 'k': case 'K':
+          window.open('kompendium.html', 'csk2-kompendium');
+          break;
+        case '?':
+        case 'h': case 'H':
+          document.getElementById('helpModal').classList.toggle('hidden');
+          break;
+        case 'm': case 'M':
+          const collapsed = document.documentElement.getAttribute('data-sidebar-collapsed') === '1';
+          if (collapsed) {
+            document.documentElement.setAttribute('data-sidebar-collapsed', '');
+            localStorage.setItem('csk2-sidebar', '');
+          } else {
+            document.documentElement.setAttribute('data-sidebar-collapsed', '1');
+            localStorage.setItem('csk2-sidebar', '1');
+          }
+          break;
+        case 'n': case 'N':
+        case 'p': case 'P':
+          openPresenterWindow();
+          break;
+        case 'Escape':
+          document.getElementById('helpModal').classList.add('hidden');
+          break;
+      }
+    });
+
+    // Theme toggle button
+    document.getElementById('themeToggle').onclick = () => {
+      document.documentElement.classList.toggle('dark');
+      localStorage.setItem('csk2-theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+    };
+
+    // Sidebar toggle
+    document.getElementById('sidebarCollapse').onclick = () => {
+      document.documentElement.setAttribute('data-sidebar-collapsed', '1');
+      localStorage.setItem('csk2-sidebar', '1');
+    };
+    document.getElementById('sidebarExpand').onclick = () => {
+      document.documentElement.setAttribute('data-sidebar-collapsed', '');
+      localStorage.setItem('csk2-sidebar', '');
+    };
+
+    // Help modal
+    document.getElementById('helpBtn').onclick = () => {
+      document.getElementById('helpModal').classList.remove('hidden');
+    };
+    document.getElementById('helpClose').onclick = () => {
+      document.getElementById('helpModal').classList.add('hidden');
+    };
+    document.getElementById('helpModal').onclick = (e) => {
+      if (e.target.id === 'helpModal') {
+        document.getElementById('helpModal').classList.add('hidden');
+      }
+    };
+
+    // Load saved theme
+    if (localStorage.getItem('csk2-theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+
+    // Presenter window
+    function openPresenterWindow() {
+      window.open('presenter.html', 'csk2-presenter-notes', 'width=650,height=900');
+    }
+    document.getElementById('presenterBtn').onclick = openPresenterWindow;
+
+    // BroadcastChannel for presenter mode (controlled from kompendium)
+    const bc = new BroadcastChannel('csk2-presenter');
+    bc.onmessage = (event) => {
+      switch (event.data.type) {
+        case 'prevSlide':
+          goToSlide(currentSlide - 1);
+          break;
+        case 'nextSlide':
+          goToSlide(currentSlide + 1);
+          break;
+        case 'gotoSlide':
+          goToSlide(event.data.slide - 1);
+          break;
+        case 'requestSlideInfo':
+          bc.postMessage({
+            type: 'slideUpdate',
+            current: currentSlide + 1,
+            total: slides.length,
+            title: slides[currentSlide].dataset.title || '',
+            notes: speakerNotes
+          });
+          break;
+        case 'requestNotes':
+          bc.postMessage({
+            type: 'notesData',
+            notes: speakerNotes
+          });
+          break;
+      }
+    };
+
+    // Broadcast slide changes back to kompendium and presenter
+    const originalGoToSlide = goToSlide;
+    goToSlide = function(n) {
+      originalGoToSlide(n);
+      bc.postMessage({
+        type: 'slideUpdate',
+        current: currentSlide + 1,
+        total: slides.length,
+        title: slides[currentSlide].dataset.title || '',
+        notes: speakerNotes
+      });
+    };
+    </script>
+  </body>
+</html>

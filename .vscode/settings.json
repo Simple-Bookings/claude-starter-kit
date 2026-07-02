@@ -1,0 +1,23 @@
+{
+  "editor.formatOnSave": true,
+  "editor.tabSize": 2,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+
+  "python.defaultInterpreterPath": "/usr/local/bin/python",
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.tabSize": 4
+  },
+
+  "terminal.integrated.defaultProfile.linux": "zsh",
+
+  "git.confirmSync": false,
+  "git.autofetch": true,
+
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/*.pyc": true
+  }
+}
