@@ -7,16 +7,32 @@ import click
 from rich.console import Console
 from rich.tree import Tree
 
+from csk.resources import templates_dir, agents_dir
+
 console = Console()
 
-TEMPLATE_DIR = Path(__file__).parent.parent / "templates"
+TEMPLATE_DIR = templates_dir()
 
 
 def get_template_content(name: str) -> str:
-    """Get template content, falling back to embedded defaults."""
-    template_path = TEMPLATE_DIR / name
-    if template_path.exists():
-        return template_path.read_text()
+    """Get template content, falling back to embedded defaults.
+
+    Template names map to the templates/ directory structure:
+    - "skill-<name>.md"  → templates/.claude/skills/<name>/SKILL.md
+    - "rule-<name>.md"   → templates/.claude/rules/<name>.md
+    - anything else      → templates/<name>
+    """
+    if TEMPLATE_DIR is not None:
+        if name.startswith("skill-") and name.endswith(".md"):
+            skill_name = name[len("skill-"):-len(".md")]
+            template_path = TEMPLATE_DIR / ".claude" / "skills" / skill_name / "SKILL.md"
+        elif name.startswith("rule-") and name.endswith(".md"):
+            rule_name = name[len("rule-"):]
+            template_path = TEMPLATE_DIR / ".claude" / "rules" / rule_name
+        else:
+            template_path = TEMPLATE_DIR / name
+        if template_path.exists():
+            return template_path.read_text()
     return EMBEDDED_TEMPLATES.get(name, "")
 
 
@@ -1014,9 +1030,9 @@ def init(project_name: str, force: bool):
     for filepath, content in files.items():
         (project_path / filepath).write_text(content)
 
-    # Copy agent files from CSK repo
-    csk_agents_dir = Path(__file__).parent.parent.parent / ".claude" / "agents"
-    if csk_agents_dir.exists():
+    # Copy agent files (works in both repo and pip-installed layouts)
+    csk_agents_dir = agents_dir()
+    if csk_agents_dir is not None:
         for agent_file in csk_agents_dir.glob("*.md"):
             dest = project_path / ".claude" / "agents" / agent_file.name
             shutil.copy2(agent_file, dest)

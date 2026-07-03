@@ -13,8 +13,9 @@ from csk.commands.progress import load_progress, save_progress, EXERCISES
 
 console = Console()
 
-EXERCISES_DIR = Path(__file__).parent.parent.parent / "exercises"
-TEMPLATES_DIR = Path(__file__).parent.parent / "templates"
+from csk.resources import exercises_dir
+
+EXERCISES_DIR = exercises_dir() or Path(__file__).parent.parent.parent / "exercises"
 
 
 def generate_html(progress: dict) -> str:

@@ -17,8 +17,10 @@ from csk.commands.progress import load_progress, save_progress, EXERCISES
 
 console = Console()
 
-WORKSHOP_DIR = Path(__file__).parent.parent.parent / "workshop"
-EXERCISES_DIR = Path(__file__).parent.parent.parent / "exercises"
+from csk.resources import workshop_dir, exercises_dir
+
+WORKSHOP_DIR = workshop_dir() or Path(__file__).parent.parent.parent / "workshop"
+EXERCISES_DIR = exercises_dir() or Path(__file__).parent.parent.parent / "exercises"
 PID_FILE = Path("/tmp/csk-workshop.pid")
 
 

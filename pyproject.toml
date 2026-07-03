@@ -49,6 +49,12 @@ csk = "csk.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["csk"]
 
+[tool.hatch.build.targets.wheel.force-include]
+"templates" = "csk/_data/templates"
+"workshop" = "csk/_data/workshop"
+"exercises" = "csk/_data/exercises"
+".claude/agents" = "csk/_data/agents"
+
 [tool.ruff]
 line-length = 100
 target-version = "py310"
